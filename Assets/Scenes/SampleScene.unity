@@ -1417,7 +1417,7 @@ MonoBehaviour:
   discard: {fileID: 1810275727}
   hand: {fileID: 1183011775}
   cameraTransform: {fileID: 1661158432}
-  cameraSwitchTime: 5
+  cameraSwitchTime: 2
 --- !u!4 &202954796
 Transform:
   m_ObjectHideFlags: 0
@@ -1583,7 +1583,7 @@ MonoBehaviour:
   startingCount: 5
   startTransform: {fileID: 127598088}
   endTransform: {fileID: 2126084389}
-  cardPlacementTime: 3
+  cardPlacementTime: 0.5
 --- !u!4 &267753054 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2044727529965676780, guid: 3d72ec991b58f6c49a63e1fa0491c358,
@@ -1744,7 +1744,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 1326648862}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 1
   cardOffsetPosition: 0.1
 --- !u!1 &313362273
@@ -1781,7 +1781,7 @@ MonoBehaviour:
   startingCount: 5
   startTransform: {fileID: 287050681}
   endTransform: {fileID: 1938191634}
-  cardPlacementTime: 3
+  cardPlacementTime: 0.5
 --- !u!4 &313362275
 Transform:
   m_ObjectHideFlags: 0
@@ -3248,7 +3248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 202954795}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 0
   cardOffsetPosition: 0.1
 --- !u!4 &796572345
@@ -3409,7 +3409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 1147572638}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 0
   cardOffsetPosition: 0.1
 --- !u!4 &861950498
@@ -3714,7 +3714,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 1326648862}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 0
   cardOffsetPosition: 0.1
 --- !u!1 &995459087
@@ -4071,7 +4071,7 @@ MonoBehaviour:
   discard: {fileID: 1844349108}
   hand: {fileID: 1836606233}
   cameraTransform: {fileID: 2003423458}
-  cameraSwitchTime: 5
+  cameraSwitchTime: 2
 --- !u!4 &1147572639
 Transform:
   m_ObjectHideFlags: 0
@@ -4162,7 +4162,7 @@ MonoBehaviour:
   startingCount: 5
   startTransform: {fileID: 381912841}
   endTransform: {fileID: 1150161026}
-  cardPlacementTime: 3
+  cardPlacementTime: 0.5
 --- !u!4 &1183011776
 Transform:
   m_ObjectHideFlags: 0
@@ -4908,7 +4908,7 @@ MonoBehaviour:
   discard: {fileID: 309328901}
   hand: {fileID: 247356878}
   cameraTransform: {fileID: 1572534479}
-  cameraSwitchTime: 5
+  cameraSwitchTime: 2
 --- !u!4 &1326648863
 Transform:
   m_ObjectHideFlags: 0
@@ -5258,7 +5258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 2041435916}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 0
   cardOffsetPosition: 0.1
 --- !u!4 &1444586043
@@ -5653,7 +5653,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 2041435916}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 1
   cardOffsetPosition: 0.1
 --- !u!4 &1620013437
@@ -6491,8 +6491,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be9bfee1f897c2544a59f801c317a582, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players: []
-  currentPlayer: 0
+  players:
+  - {fileID: 1326648862}
+  - {fileID: 202954795}
+  - {fileID: 1147572638}
+  - {fileID: 2041435916}
+  playerStartIndex: 0
 --- !u!4 &1732415265
 Transform:
   m_ObjectHideFlags: 0
@@ -6728,7 +6732,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 202954795}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 1
   cardOffsetPosition: 0.1
 --- !u!4 &1810275728
@@ -6785,7 +6789,7 @@ MonoBehaviour:
   startingCount: 5
   startTransform: {fileID: 1239209797}
   endTransform: {fileID: 1972707074}
-  cardPlacementTime: 3
+  cardPlacementTime: 0.5
 --- !u!4 &1836606234
 Transform:
   m_ObjectHideFlags: 0
@@ -6839,7 +6843,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cards: []
   player: {fileID: 1147572638}
-  cardPlacementTime: 2
+  cardPlacementTime: 0.5
   isDiscard: 1
   cardOffsetPosition: 0.1
 --- !u!4 &1844349109
@@ -7415,7 +7419,7 @@ MonoBehaviour:
   discard: {fileID: 1620013436}
   hand: {fileID: 313362274}
   cameraTransform: {fileID: 1545048748}
-  cameraSwitchTime: 5
+  cameraSwitchTime: 2
 --- !u!4 &2041435917
 Transform:
   m_ObjectHideFlags: 0
@@ -7821,3 +7825,72 @@ PrefabInstance:
       objectReference: {fileID: 202954795}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3d72ec991b58f6c49a63e1fa0491c358, type: 3}
+--- !u!1001 &8237007510923154037
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2728967690483735310, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_Name
+      value: CardPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.186546
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -3.0040734
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.8200011
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7432304152676020535, guid: af1440186c49d664b95af477804cc969,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: af1440186c49d664b95af477804cc969, type: 3}
