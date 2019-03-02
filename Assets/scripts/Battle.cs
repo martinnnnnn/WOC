@@ -7,25 +7,25 @@ public class Battle : MonoBehaviour
     public Player[] players;
     public int playerStartIndex = 0;
     private int currentPlayer;
+    CardList cardList;
 
     private void Start()
     {
+        cardList = GetComponent<CardList>();
+        cardList.ReadFile(Application.dataPath + "/data/cards.xml");
+
         //players = FindObjectsOfType<Player>();
         currentPlayer = playerStartIndex;
+        foreach (var p in players)
+        {
+            players[currentPlayer].BattleInit();
+        }
         players[currentPlayer].StartTurn();
     }
 
-    bool startgame = false;
     private void Update()
     {
-        {
-            players[currentPlayer].PlayTurn();
-        }
-    }
-
-    public void OnStartButton()
-    {
-        startgame = true;
+        players[currentPlayer].PlayTurn();
     }
 
     public void OnEndButton()

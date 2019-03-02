@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 using System.Security.Cryptography;
+using System.Xml.Linq;
 
 public class Deck : MonoBehaviour
 {
@@ -13,14 +14,30 @@ public class Deck : MonoBehaviour
     public bool isDiscard = false;
 
 
-    private void Start()
+    //private void Start()
+    //{
+    //    if (!isDiscard)
+    //    {
+    //        AddCards(player.GetComponentsInChildren<Card>());
+    //        Shuffle();
+    //    }
+    //}
+
+    public void InitDefaultDeck()
     {
-        if (!isDiscard)
+        var cardlist = FindObjectOfType<CardList>();
+
+        XDocument xdoc = XDocument.Load(Application.dataPath + "/data/default_deck.xml");
+        foreach (var xcard in xdoc.Element("cards").Elements("card"))
         {
-            AddCards(player.GetComponentsInChildren<Card>());
-            Shuffle();
+            Card card = cardlist.cards[xcard.Attribute("title").Value];
+            GameObject newObj = Instantiate(card.gameObject, transform);
+            newObj.SetActive(true);
+            AddCard(newObj.GetComponent<Card>());
         }
+        ReplaceCards();
     }
+
 
     public Card[] GetNewCards(int count)
     {

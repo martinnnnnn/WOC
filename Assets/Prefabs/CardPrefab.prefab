@@ -26,11 +26,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2101744940893874865}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.209, y: 0.465, z: 0}
+  m_LocalPosition: {x: 0.267, y: 0.511, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 7432304152676020535}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &6853385919274480487
 MeshRenderer:
@@ -123,9 +123,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 5, y: 8, z: 0.1}
   m_Children:
-  - {fileID: 6922841464025592765}
-  - {fileID: 2504956206243632117}
   - {fileID: 4675641319386989537}
+  - {fileID: 2504956206243632117}
+  - {fileID: 6922841464025592765}
   - {fileID: 5937677759129800249}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -155,7 +155,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2b7e65ad7f269da42a406816c89fb7ea, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -197,7 +197,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2728967690483735310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d0ba0d100047ee42836290ab97b8c84, type: 3}
+  m_Script: {fileID: 11500000, guid: 88233aa1b67de7947a6e682b4a07b103, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 0}
@@ -210,14 +210,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2728967690483735310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd166bc9b4132e8449ba84e55230ca8e, type: 3}
+  m_Script: {fileID: 11500000, guid: ca34dc29d26e0a14f8f3de34e6babe8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: Slash
-  effects: 
-  damage: 5
-  manaCost: 1
-  owner: {fileID: 0}
+  nameMesh: {fileID: 114513785871643190}
+  manaMesh: {fileID: 731655803976486279}
+  effectsMesh: {fileID: 2527877180690762298}
+  exhaustMesh: {fileID: 2458732478574281700}
 --- !u!1 &3240856992466875350
 GameObject:
   m_ObjectHideFlags: 0
@@ -230,7 +229,7 @@ GameObject:
   - component: {fileID: 3541601829836460904}
   - component: {fileID: 2458732478574281700}
   m_Layer: 0
-  m_Name: Damage
+  m_Name: Exhaust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -244,7 +243,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3240856992466875350}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.405, y: 0.465, z: 0}
+  m_LocalPosition: {x: -0.282, y: -0.314, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 7432304152676020535}
@@ -295,7 +294,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3240856992466875350}
-  m_Text: 10
+  m_Text: Exhaust
   m_OffsetZ: 0
   m_CharacterSize: 0.03
   m_LineSpacing: 1
@@ -335,11 +334,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3359604289042137518}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.404, y: 0.178, z: 0}
+  m_LocalPosition: {x: -0.478, y: 0.473, z: 0}
   m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
   m_Children: []
   m_Father: {fileID: 7432304152676020535}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &3480627290412726914
 MeshRenderer:
@@ -428,7 +427,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8382559405776924201}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.2, y: -0.134, z: 0}
+  m_LocalPosition: {x: -0.452, y: 0.225, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.5}
   m_Children: []
   m_Father: {fileID: 7432304152676020535}

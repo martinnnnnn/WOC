@@ -8,6 +8,7 @@ public class Character : MonoBehaviour
 
     public float life;
     public Text lifeDisplay;
+    public string title;
 
     private void Start()
     {

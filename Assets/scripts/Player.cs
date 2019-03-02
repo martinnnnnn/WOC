@@ -17,6 +17,13 @@ public class Player : MonoBehaviour
     public float cameraSwitchTime;
     Card selectedCard;
 
+    public void BattleInit()
+    {
+        deck.InitDefaultDeck();
+        deck.Shuffle();
+    }
+
+
     public void PlayTurn()
     {
         if (Input.GetMouseButtonDown(0))
@@ -56,26 +63,27 @@ public class Player : MonoBehaviour
 
     public void EndTurn()
     {
-        mana = manaStart;
-        if (deck.cards.Count == 0)
-        {
-            deck.AddCards(discard.cards.ToArray());
-            discard.cards.Clear();
-            deck.Shuffle();
-        }
+        discard.AddCards(hand.cards.ToArray());
+        hand.Discard();
     }
-
 
     public void StartTurn()
     {
-        SetCamera(() => SetupStartTurnCard());
-    }
+        mana = manaStart;
 
-    void SetupStartTurnCard()
-    {
-        discard.AddCards(hand.cards.ToArray());
-        hand.Discard();
-        hand.Add(deck.GetNewCards(hand.startingCount));
+        SetCamera(() =>
+        {
+            for(int i = 0; i < hand.startingCount; ++i)
+            {
+                if (deck.cards.Count == 0)
+                {
+                    deck.AddCards(discard.cards.ToArray());
+                    discard.cards.Clear();
+                    deck.Shuffle();
+                }
+                hand.Add(deck.GetNewCards(1));
+            }
+        });
     }
 
     void SetCamera(System.Action callback)

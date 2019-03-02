@@ -57,7 +57,7 @@ public class Hand : MonoBehaviour
         for (int i = 0; i < cards.Count; ++i)
         {
             float delta = (float)i / (float)cards.Count;
-            Vector3 newPosition = Vector3.Slerp(startTransform.position, endTransform.position, delta);
+            Vector3 newPosition = Vector3.Lerp(startTransform.position, endTransform.position, delta);
             Quaternion newRotation = Quaternion.Slerp(startTransform.rotation, endTransform.rotation, delta);
             cards[i].Move(newPosition, newRotation, cardPlacementTime);
         }
