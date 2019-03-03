@@ -14,11 +14,10 @@ public class Battle : MonoBehaviour
         cardList = GetComponent<CardList>();
         cardList.ReadFile(Application.dataPath + "/data/cards.xml");
 
-        //players = FindObjectsOfType<Player>();
         currentPlayer = playerStartIndex;
         foreach (var p in players)
         {
-            players[currentPlayer].BattleInit();
+            p.BattleInit();
         }
         players[currentPlayer].StartTurn();
     }

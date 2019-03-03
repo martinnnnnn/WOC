@@ -13,6 +13,15 @@ public class Hand : MonoBehaviour
     public Transform endTransform;
     public float cardPlacementTime;
 
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            ReplaceCards();
+        }
+    }
+
     public void Add(Card newCard)
     {
         if (cards.Count < maxCount)
@@ -58,7 +67,7 @@ public class Hand : MonoBehaviour
         {
             float delta = (float)i / (float)cards.Count;
             Vector3 newPosition = Vector3.Lerp(startTransform.position, endTransform.position, delta);
-            Quaternion newRotation = Quaternion.Slerp(startTransform.rotation, endTransform.rotation, delta);
+            Quaternion newRotation = Quaternion.Lerp(startTransform.rotation, endTransform.rotation, delta);
             cards[i].Move(newPosition, newRotation, cardPlacementTime);
         }
     }

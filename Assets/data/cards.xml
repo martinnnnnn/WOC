@@ -5,32 +5,32 @@
 		<manaCost>5</manaCost>
 		<exhaust>false</exhaust>
 		<color>#3895E9</color>
-		<effect type="Heal" value="15" display="Heal ses grands mort de {0} hp"/>
+		<effect type="Heal" value="15" display="Heal {0} hp"/>
 	</card>
 	<card>
-		<title>he attak</title>
+		<title>Attak</title>
 		<manaCost>3</manaCost>
 		<exhaust>false</exhaust>
 		<color>#EA3939</color>
-		<effect type="Damage" value="12" display="Does much much damage : {0} !"/>
+		<effect type="Damage" value="12" display="Damage {0}"/>
 	</card>
 	<card>
-		<title>he protek</title>
+		<title>Protek</title>
 		<damage>4</damage>
 		<manaCost>8</manaCost>
 		<exhaust>false</exhaust>
 		<color>#B74C0D</color>
-		<effect type="Block" value="40" display="Such shield {0} wow!"/>
+		<effect type="Block" value="40" display="Shield {0}"/>
 	</card>
 	<card>
 		<title>mega spell</title>
 		<manaCost>12</manaCost>
 		<exhaust>true</exhaust>
 		<color>#0BA413</color>
-		<effect type="Damage" value="15" display="Does {0} damage!"/>
-		<effect type="Block" value="15" display="Such shield {0} wow!"/>
-		<effect type="DrawCard" value="15" display="Draw these {0} cards motherfocker!"/>
-		<effect type="DiscardCard" value="15" display="Please discard {0} cards!"/>
+		<effect type="Damage" value="13" display="Does {0} damage!"/>
+		<effect type="Block" value="2" display="shield {0}"/>
+		<effect type="DrawCard" value="1" display="Draw {0} cards"/>
+		<effect type="DiscardCard" value="8" display="Please discard {0} cards!"/>
 		
 	</card>
 </cards>
