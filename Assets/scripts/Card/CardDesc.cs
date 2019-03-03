@@ -13,49 +13,17 @@ public class CardDesc : MonoBehaviour
     public TextMesh effectsMesh;
     public TextMesh exhaustMesh;
 
-    private string title = "default title";
-    public string Title
-    {
-        get { return title; }
-        set { title = value; nameMesh.text = title; }
-    }
+    public string Title = "default title";
+    public int ManaCost;
+    public bool Exhaust = false;
+    public Color CardColor;
 
-    private int manaCost;
-    public int ManaCost
-    {
-        get { return manaCost; }
-        set { manaCost = value; manaMesh.text = manaCost.ToString(); }
-    }
-
-    private bool exhaust;
-    public bool Exhaust
-    {
-        get { return exhaust; }
-        set { exhaust = value; exhaustMesh.text = exhaust ? "Exhaust" : ""; }
-    }
-
-    private List<CardEffect> effects = new List<CardEffect>();
-    public List<CardEffect> Effects
-    {
-        get { return effects; }
-        set { effects = value; }
-    }
-
-    private Color color;
-    public Color Color
-    {
-        get { return color; }
-        set
-        {
-            color = value;
-            GetComponent<MeshRenderer>().material.color = color;
-        }
-    }
+    public List<CardEffect> Effects = new List<CardEffect>();
 
     public void UpdateEffectDisplay()
     {
         string effectsStr = "";
-        foreach (CardEffect e in effects)
+        foreach (CardEffect e in Effects)
         {
             effectsStr += e.ToString();
         }
@@ -64,12 +32,12 @@ public class CardDesc : MonoBehaviour
 
     public bool Play(CardEffect.PlayInfo playInfo)
     {
-        bool result = true;
-        foreach(var effect in effects)
+        bool result = false;
+        foreach(var effect in Effects)
         {
-            if (!effect.Play(playInfo))
+            if (effect.Play(playInfo))
             {
-                result = false;
+                result = true;
             }
         }
         return result;
@@ -77,11 +45,12 @@ public class CardDesc : MonoBehaviour
 
     public void ReadXML(XElement xcard)
     {
-        Title = xcard.Element("title").Value.ToString();
-        ManaCost = int.Parse(xcard.Element("manaCost").Value);
-        Exhaust = bool.Parse(xcard.Element("exhaust").Value);
+        ChangeTitle(xcard.Element("title").Value.ToString());
+        ChangeManaCost(int.Parse(xcard.Element("manaCost").Value));
+        ChangeExhaust(bool.Parse(xcard.Element("exhaust").Value));
         ColorUtility.TryParseHtmlString(xcard.Element("color").Value, out Color color);
-        this.Color = color;
+        this.CardColor = color;
+        GetComponent<MeshRenderer>().material.color = CardColor;
 
         foreach (var xeffect in xcard.Elements("effect"))
         {
@@ -90,5 +59,23 @@ public class CardDesc : MonoBehaviour
             Effects.Add(effect);
         }
         UpdateEffectDisplay();
+    }
+
+    public void ChangeTitle(string title)
+    {
+        Title = title;
+        nameMesh.text = Title;
+    }
+
+    public void ChangeManaCost(int cost)
+    {
+        ManaCost = cost;
+        manaMesh.text = ManaCost.ToString();
+    }
+
+    public void ChangeExhaust(bool ex)
+    {
+        Exhaust = ex;
+        exhaustMesh.text = Exhaust ? "Exhaust" : "";
     }
 }

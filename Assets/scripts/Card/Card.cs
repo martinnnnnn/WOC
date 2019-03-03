@@ -6,7 +6,7 @@ using DG.Tweening;
 
 public class Card : MonoBehaviour
 {
-    CardDesc desc;
+    public CardDesc desc;
 
     private bool isSelected = false;
     public bool IsSelected
@@ -20,11 +20,11 @@ public class Card : MonoBehaviour
             isSelected = value;
             if (isSelected)
             {
-               desc.GetComponent<MeshRenderer>().material.color = Color.red;
+                desc.GetComponent<MeshRenderer>().material.color = Color.red;
             }   
             else
             {
-                desc.GetComponent<MeshRenderer>().material.color = desc.Color;
+                desc.GetComponent<MeshRenderer>().material.color = desc.CardColor;
             }
         }
     }

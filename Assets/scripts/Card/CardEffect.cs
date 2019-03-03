@@ -8,19 +8,6 @@ using System;
 
 public class CardEffect : MonoBehaviour
 {
-    public class PlayInfo
-    {
-        Player owner;
-        Character target;
-    }
-
-    private static Dictionary<Type, Func<PlayInfo, bool>> applyEffects;
-
-    public void Start()
-    {
-        InitEffectFunctions();
-    }
-
     public enum Type
     {
         Damage,
@@ -37,9 +24,28 @@ public class CardEffect : MonoBehaviour
         ShuffleDeck,
         ShuffleDiscard
     }
+
+    public class PlayInfo
+    {
+        public PlayInfo(Player owner, Character target)
+        {
+            this.owner = owner;
+            this.target = target;
+        }
+        public Player owner;
+        public Character target;
+    }
+
+    private static Dictionary<Type, Func<PlayInfo, bool>> applyEffects;
     public int value;
     public Type type;
     public string display = "";
+    bool effectFunctionsInitialized = false;
+
+    public void Start()
+    {
+        InitEffectFunctions();
+    }
 
     public void ReadXML(XElement xeffect)
     {
@@ -58,7 +64,6 @@ public class CardEffect : MonoBehaviour
         return applyEffects[type](info);
     }
 
-    bool effectFunctionsInitialized = false;
     void InitEffectFunctions()
     {
         if (!effectFunctionsInitialized)
@@ -66,7 +71,7 @@ public class CardEffect : MonoBehaviour
             applyEffects = new Dictionary<Type, Func<PlayInfo, bool>>();
             applyEffects.Add(Type.Damage, DamageEffect);
             applyEffects.Add(Type.Block, BlockEffect);
-            applyEffects.Add(Type.Heal, DamageEffect);
+            applyEffects.Add(Type.Heal, HealEffect);
             applyEffects.Add(Type.DrawCard, DrawCardEffect);
             applyEffects.Add(Type.DiscardCard, DiscardCardEffect);
             applyEffects.Add(Type.CopyToDeck, CopyToDeckEffect);
@@ -84,6 +89,11 @@ public class CardEffect : MonoBehaviour
 
     private bool DamageEffect(PlayInfo parameters)
     {
+        if (parameters.target && parameters.owner != parameters.target)
+        {
+            parameters.target.ChangeLife(-value);
+            return true;
+        }
         return false;
     }
 

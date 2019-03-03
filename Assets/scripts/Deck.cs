@@ -31,9 +31,9 @@ public class Deck : MonoBehaviour
         foreach (var xcard in xdoc.Element("cards").Elements("card"))
         {
             Card card = cardlist.cards[xcard.Attribute("title").Value];
-            GameObject newObj = Instantiate(card.gameObject, transform);
-            newObj.SetActive(true);
-            AddCard(newObj.GetComponent<Card>());
+            Card newCard = Instantiate(card, transform);
+            newCard.gameObject.SetActive(true);
+            AddCard(newCard);
         }
         ReplaceCards();
     }

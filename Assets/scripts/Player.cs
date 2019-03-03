@@ -32,13 +32,10 @@ public class Player : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit))
             {
+                if (selectedCard) selectedCard.IsSelected = false;
                 Card card = hit.transform.GetComponent<Card>();
-                if (card)
+                if (card && hand.cards.Contains(card))
                 {
-                    if (selectedCard)
-                    {
-                        selectedCard.IsSelected = false;
-                    }
                     selectedCard = card;
                     selectedCard.IsSelected = true;
                 }
@@ -46,12 +43,10 @@ public class Player : MonoBehaviour
                 {
                     if (selectedCard && selectedCard.owner == this)
                     {
-                        bool result = true;
-                        //bool result = selectedCard.DoEffect(hit.transform.gameObject);
-                        if (result)
+                        if (selectedCard.Play(new CardEffect.PlayInfo(this, hit.transform.GetComponent<Character>())))
                         {
                             selectedCard.IsSelected = false;
-                            //ChangeMana(-selectedCard.manaCost);
+                            ChangeMana(-selectedCard.desc.ManaCost);
                             hand.RemoveCard(selectedCard);
                             discard.AddCard(selectedCard);
                             selectedCard = null;
