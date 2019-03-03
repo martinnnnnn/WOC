@@ -62,12 +62,17 @@ public class CardDesc : MonoBehaviour
         effectsMesh.text = effectsStr;
     }
 
-    public void Apply(Character chara)
+    public bool Play(CardEffect.PlayInfo playInfo)
     {
+        bool result = true;
         foreach(var effect in effects)
         {
-            effect.Apply(chara);
+            if (!effect.Play(playInfo))
+            {
+                result = false;
+            }
         }
+        return result;
     }
 
     public void ReadXML(XElement xcard)
@@ -81,9 +86,7 @@ public class CardDesc : MonoBehaviour
         foreach (var xeffect in xcard.Elements("effect"))
         {
             CardEffect effect = gameObject.AddComponent<CardEffect>();
-            effect.value = int.Parse(xeffect.Attribute("value").Value);
-            effect.type = (CardEffect.Type)Enum.Parse(typeof(CardEffect.Type), xeffect.Attribute("type").Value, true);
-            effect.display = xeffect.Attribute("display").Value;
+            effect.ReadXML(xeffect);
             Effects.Add(effect);
         }
         UpdateEffectDisplay();

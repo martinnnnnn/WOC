@@ -46,7 +46,8 @@ public class Player : MonoBehaviour
                 {
                     if (selectedCard && selectedCard.owner == this)
                     {
-                        bool result = selectedCard.DoEffect(hit.transform.gameObject);
+                        bool result = true;
+                        //bool result = selectedCard.DoEffect(hit.transform.gameObject);
                         if (result)
                         {
                             selectedCard.IsSelected = false;

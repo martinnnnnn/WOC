@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <cards>
 	<card>
-		<title>heal de tes morts</title>
+		<title>heak de tes morts</title>
 		<manaCost>5</manaCost>
 		<exhaust>false</exhaust>
 		<color>#3895E9</color>
@@ -23,7 +23,7 @@
 		<effect type="Block" value="40" display="Shield {0}"/>
 	</card>
 	<card>
-		<title>mega spell</title>
+		<title>OMEGASPEK</title>
 		<manaCost>12</manaCost>
 		<exhaust>true</exhaust>
 		<color>#0BA413</color>
