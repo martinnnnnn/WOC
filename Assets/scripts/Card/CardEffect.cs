@@ -36,7 +36,7 @@ public class CardEffect : MonoBehaviour
         public Character target;
     }
 
-    private static Dictionary<Type, Func<PlayInfo, bool>> applyEffects;
+    private Dictionary<Type, Func<PlayInfo, bool>> applyEffects;
     public int value;
     public Type type;
     public string display = "";
@@ -66,25 +66,20 @@ public class CardEffect : MonoBehaviour
 
     void InitEffectFunctions()
     {
-        if (!effectFunctionsInitialized)
-        {
-            applyEffects = new Dictionary<Type, Func<PlayInfo, bool>>();
-            applyEffects.Add(Type.Damage, DamageEffect);
-            applyEffects.Add(Type.Block, BlockEffect);
-            applyEffects.Add(Type.Heal, HealEffect);
-            applyEffects.Add(Type.DrawCard, DrawCardEffect);
-            applyEffects.Add(Type.DiscardCard, DiscardCardEffect);
-            applyEffects.Add(Type.CopyToDeck, CopyToDeckEffect);
-            applyEffects.Add(Type.CopyToDiscard, CopyToDiscardEffect);
-            applyEffects.Add(Type.UpgradeCard, UpgradeCardEffect);
-            applyEffects.Add(Type.ApplyWeak, ApplyWeakEffect);
-            applyEffects.Add(Type.ApplyStrenght, ApplyStrenghtEffect);
-            applyEffects.Add(Type.ApplyVulnarable, ApplyVulnerableEffect);
-            applyEffects.Add(Type.ShuffleDeck, ShuffleDeckEffect);
-            applyEffects.Add(Type.ShuffleDiscard, ShuffleDiscardEffect);
-
-            effectFunctionsInitialized = true;
-        }
+        applyEffects = new Dictionary<Type, Func<PlayInfo, bool>>();
+        applyEffects.Add(Type.Damage, DamageEffect);
+        applyEffects.Add(Type.Block, BlockEffect);
+        applyEffects.Add(Type.Heal, HealEffect);
+        applyEffects.Add(Type.DrawCard, DrawCardEffect);
+        applyEffects.Add(Type.DiscardCard, DiscardCardEffect);
+        applyEffects.Add(Type.CopyToDeck, CopyToDeckEffect);
+        applyEffects.Add(Type.CopyToDiscard, CopyToDiscardEffect);
+        applyEffects.Add(Type.UpgradeCard, UpgradeCardEffect);
+        applyEffects.Add(Type.ApplyWeak, ApplyWeakEffect);
+        applyEffects.Add(Type.ApplyStrenght, ApplyStrenghtEffect);
+        applyEffects.Add(Type.ApplyVulnarable, ApplyVulnerableEffect);
+        applyEffects.Add(Type.ShuffleDeck, ShuffleDeckEffect);
+        applyEffects.Add(Type.ShuffleDiscard, ShuffleDiscardEffect);
     }
 
     private bool DamageEffect(PlayInfo parameters)
@@ -104,6 +99,11 @@ public class CardEffect : MonoBehaviour
 
     private bool HealEffect(PlayInfo parameters)
     {
+        if (parameters.target)
+        {
+            parameters.target.ChangeLife(value);
+            return true;
+        }
         return false;
     }
 

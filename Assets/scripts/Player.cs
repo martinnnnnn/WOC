@@ -86,7 +86,7 @@ public class Player : MonoBehaviour
     {
         Sequence sequence = DOTween.Sequence();
         sequence.Append(Camera.main.transform.DOMove(cameraTransform.position, cameraSwitchTime));
-        sequence.Join(Camera.main.transform.DORotateQuaternion(cameraTransform.rotation, cameraSwitchTime));
+        sequence.Join(Camera.main.transform.DORotate(cameraTransform.rotation.eulerAngles, cameraSwitchTime));
         sequence.OnComplete(() => callback());
     }
 

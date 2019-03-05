@@ -18,9 +18,8 @@ public class Character : MonoBehaviour
 
     public void ChangeLife(float value)
     {
-        Debug.Log("life change : " + value);
         life += value;
-        lifeDisplay.text = "Player 1 : " + life;
+        lifeDisplay.text = title + " : " + life;
         if (life <= 0)
         {
             Destroy(gameObject);
