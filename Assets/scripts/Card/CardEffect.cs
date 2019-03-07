@@ -13,8 +13,8 @@ public class CardEffect : MonoBehaviour
         Damage,
         Block,
         Heal,
-        DrawCard,
-        DiscardCard,
+        DrawCards,
+        DiscardRandomCards,
         CopyToDeck,
         CopyToDiscard,
         UpgradeCard,
@@ -70,8 +70,8 @@ public class CardEffect : MonoBehaviour
         applyEffects.Add(Type.Damage, DamageEffect);
         applyEffects.Add(Type.Block, BlockEffect);
         applyEffects.Add(Type.Heal, HealEffect);
-        applyEffects.Add(Type.DrawCard, DrawCardEffect);
-        applyEffects.Add(Type.DiscardCard, DiscardCardEffect);
+        applyEffects.Add(Type.DrawCards, DrawCardsEffect);
+        applyEffects.Add(Type.DiscardRandomCards, DiscardRandomCardsEffect);
         applyEffects.Add(Type.CopyToDeck, CopyToDeckEffect);
         applyEffects.Add(Type.CopyToDiscard, CopyToDiscardEffect);
         applyEffects.Add(Type.UpgradeCard, UpgradeCardEffect);
@@ -107,13 +107,23 @@ public class CardEffect : MonoBehaviour
         return false;
     }
 
-    private bool DrawCardEffect(PlayInfo parameters)
+    private bool DrawCardsEffect(PlayInfo parameters)
     {
+        if (parameters.owner)
+        {
+            parameters.owner.DrawCards(value);
+            return true;
+        }
         return false;
     }
 
-    private bool DiscardCardEffect(PlayInfo parameters)
+    private bool DiscardRandomCardsEffect(PlayInfo parameters)
     {
+        if (parameters.owner)
+        {
+            parameters.owner.DiscardRandomCards(value, GetComponent<Card>());
+            return true;
+        }
         return false;
     }
 

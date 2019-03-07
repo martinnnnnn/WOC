@@ -200,6 +200,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88233aa1b67de7947a6e682b4a07b103, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  desc: {fileID: 0}
   owner: {fileID: 0}
 --- !u!114 &523028355096736982
 MonoBehaviour:
@@ -217,6 +218,11 @@ MonoBehaviour:
   manaMesh: {fileID: 731655803976486279}
   effectsMesh: {fileID: 2527877180690762298}
   exhaustMesh: {fileID: 2458732478574281700}
+  Title: default title
+  ManaCost: 0
+  Exhaust: 0
+  CardColor: {r: 0, g: 0, b: 0, a: 0}
+  Effects: []
 --- !u!1 &3240856992466875350
 GameObject:
   m_ObjectHideFlags: 0
@@ -495,4 +501,4 @@ TextMesh:
   m_Font: {fileID: 0}
   m_Color:
     serializedVersion: 2
-    rgba: 4292083908
+    rgba: 4292083712

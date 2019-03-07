@@ -91,7 +91,7 @@ public class Deck : MonoBehaviour
         }
     }
 
-    void ReplaceCards()
+    public void ReplaceCards()
     {
         for (int i = 0; i < cards.Count; ++i)
         {

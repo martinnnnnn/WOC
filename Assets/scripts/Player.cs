@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -23,6 +24,47 @@ public class Player : MonoBehaviour
         deck.Shuffle();
     }
 
+    public void DrawCards(int count, bool discardIfMaxReach = true)
+    {
+        for(int i = 0; i < count; ++i)
+        {
+            if (deck.cards.Count == 0)
+            {
+                deck.AddCards(discard.cards.ToArray());
+                discard.cards.Clear();
+                deck.Shuffle();
+            }
+            if (hand.maxCount == hand.cards.Count)
+            {
+                if (discardIfMaxReach)
+                {
+                    discard.AddCards(deck.GetNewCards(1));
+                }
+                else
+                {
+                    break;
+                }
+            }
+            else
+            {
+                hand.Add(deck.GetNewCards(1));
+            }
+        }
+    }
+
+    public void DiscardRandomCards(int count, Card caller = null)
+    {
+        while (hand.cards.Count > 0 && count > 0)
+        {
+            Card card = hand.DiscardRandom(caller);
+            if (card)
+            {
+                discard.AddCard(card);
+            }
+            --count;
+        }
+        discard.ReplaceCards();
+    }
 
     public void PlayTurn()
     {
@@ -69,16 +111,7 @@ public class Player : MonoBehaviour
 
         SetCamera(() =>
         {
-            for(int i = 0; i < hand.startingCount; ++i)
-            {
-                if (deck.cards.Count == 0)
-                {
-                    deck.AddCards(discard.cards.ToArray());
-                    discard.cards.Clear();
-                    deck.Shuffle();
-                }
-                hand.Add(deck.GetNewCards(1));
-            }
+            DrawCards(hand.startingCount);
         });
     }
 

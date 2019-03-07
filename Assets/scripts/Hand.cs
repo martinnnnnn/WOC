@@ -72,6 +72,31 @@ public class Hand : MonoBehaviour
         }
     }
     
+    public Card DiscardRandom(Card ignore = null)
+    {
+        Card result = null;
+        if (cards.Count == 1)
+        {
+            return result;
+        }
+        if (ignore)
+        {
+            while (!result || result == ignore)
+            {
+                int index = Random.Range(0, cards.Count);
+                result = cards[index];
+                cards.RemoveAt(index);
+            } 
+        }
+        else
+        {
+            int index = Random.Range(0, cards.Count);
+            result = cards[index];
+            cards.RemoveAt(index);
+        }
+        return result;
+    }
+
     public void Discard()
     {
         cards.Clear();
