@@ -34,7 +34,8 @@
 		<manaCost>4</manaCost>
 		<exhaust>true</exhaust>
 		<color>#0100D4</color>
-		<effect type="DiscardRandomCards" value="3" display="Draw {0} cards"/>
+		<effect type="DiscardRandomCards" value="3" display="Discard {0} random cards"/>
+		<effect type="Damage" value="40" display="Damage {0}"/>
 	</card>
 	<card>
 		<title>OMEGASPEK</title>
