@@ -12,7 +12,7 @@ public class CardEffectDraw : CardEffect
     public int value = 0;
     public string display = "";
 
-    public override bool Play(PlayInfoo parameters)
+    public override bool Play(PlayInfo parameters)
     {
         if (parameters.owner)
         {

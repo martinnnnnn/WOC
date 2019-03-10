@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 public class CardEffect : MonoBehaviour
 {
-    public virtual bool Play(PlayInfoo parameters) { return false; }
+    public virtual bool Play(PlayInfo parameters) { return false; }
     public override string ToString() { return ""; }
 
     // temp function : should probably make something better in the future 

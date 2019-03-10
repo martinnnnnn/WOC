@@ -85,7 +85,7 @@ public class Player : MonoBehaviour
                 {
                     if (selectedCard && selectedCard.owner == this)
                     {
-                        PlayInfoo info = new PlayInfoo()
+                        PlayInfo info = new PlayInfo()
                         {
                             owner = this,
                             target = hit.transform.GetComponent<Character>()
