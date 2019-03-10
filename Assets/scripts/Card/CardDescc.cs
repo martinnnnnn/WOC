@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 
 
-
-public class CardDescc : MonoBehaviour
+namespace WOC
 {
-    public string title;
-    public int manaCost;
-    public bool exhaust;
-    public Color color;
+    public class CardDescc : MonoBehaviour
+    {
+        public string title;
+        public int manaCost;
+        public bool exhaust;
+        public Color color;
+    }
 }

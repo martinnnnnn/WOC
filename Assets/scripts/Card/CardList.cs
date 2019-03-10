@@ -10,43 +10,31 @@ using Newtonsoft.Json.Linq;
 
 
 
-public class CardList : MonoBehaviour
+namespace WOC
 {
-    public GameObject cardPrefab;
-    public Dictionary<string, Card> cards;
-
-    //public void ReadFile(string path)
-    //{
-    //    cards = new Dictionary<string, Card>();
-
-    //    XDocument xdoc = XDocument.Load(path);
-    //    var xroot = xdoc.Element("cards");
-    //    foreach (var xcard in xroot.Elements("card"))
-    //    {
-    //        GameObject newCard = Instantiate(cardPrefab, transform);
-    //        CardDesc newDesc = newCard.GetComponent<CardDesc>();
-    //        newDesc.ReadXML(xcard);
-    //        cards.Add(newDesc.Title, newCard.GetComponent<Card>());
-    //        newCard.SetActive(false);
-    //    }
-    //}
-
-    public void ReadJson(string path)
+    public class CardList : MonoBehaviour
     {
-        cards = new Dictionary<string, Card>();
+        public GameObject cardPrefab;
+        public Dictionary<string, Card> cards;
+        
 
-        using (StreamReader reader = File.OpenText(path))
+        public void ReadJson(string path)
         {
-            JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
-            foreach (var jcard in (JArray)o["cards"])
+            cards = new Dictionary<string, Card>();
+
+            using (StreamReader reader = File.OpenText(path))
             {
-                Card newCard = Instantiate(cardPrefab, transform).GetComponent<Card>();
-                newCard.GetComponent<Card>().ReadJson(jcard);
-                newCard.gameObject.SetActive(false);
-                cards.Add(newCard.descc.title, newCard);
+                JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(reader));
+                foreach (var jcard in (JArray)o["cards"])
+                {
+                    Card newCard = Instantiate(cardPrefab, transform).GetComponent<Card>();
+                    newCard.GetComponent<Card>().ReadJson(jcard);
+                    newCard.gameObject.SetActive(false);
+                    cards.Add(newCard.descc.title, newCard);
+                }
             }
         }
+
+
     }
-
-
 }

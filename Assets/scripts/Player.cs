@@ -5,132 +5,136 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System;
 
-public class Player : MonoBehaviour
+namespace WOC
 {
-    public string pseudo;
-    public int mana;
-    public int manaStart;
-    public Text manaText;
-    public Deck deck;
-    public Deck discard;
-    public Hand hand;
-    public Transform cameraTransform;
-    public float cameraSwitchTime;
-    Card selectedCard;
-
-    public void BattleInit()
+    public class Player : MonoBehaviour
     {
-        deck.InitDefaultDeck();
-        deck.Shuffle();
-    }
+        public string pseudo;
+        public int mana;
+        public int manaStart;
+        public Text manaText;
+        public Deck deck;
+        public Deck discard;
+        public Hand hand;
+        public Transform cameraTransform;
+        public float cameraSwitchTime;
+        Card selectedCard;
 
-    public void DrawCards(int count, bool discardIfMaxReach = true)
-    {
-        for(int i = 0; i < count; ++i)
+        public void BattleInit()
         {
-            if (deck.cards.Count == 0)
-            {
-                deck.AddCards(discard.cards.ToArray());
-                discard.cards.Clear();
-                deck.Shuffle();
-            }
-            if (hand.maxCount == hand.cards.Count)
-            {
-                if (discardIfMaxReach)
-                {
-                    discard.AddCards(deck.GetNewCards(1));
-                }
-                else
-                {
-                    break;
-                }
-            }
-            else
-            {
-                hand.Add(deck.GetNewCards(1));
-            }
+            deck.Init();
+            deck.Shuffle();
         }
-    }
 
-    public void DiscardRandomCards(int count, Card caller = null)
-    {
-        while (hand.cards.Count > 0 && count > 0)
+        public void DrawCards(int count, bool discardIfMaxReach = true)
         {
-            Card card = hand.DiscardRandom(caller);
-            if (card)
+            for(int i = 0; i < count; ++i)
             {
-                discard.AddCard(card);
-            }
-            --count;
-        }
-        discard.ReplaceCards();
-    }
-
-    public void PlayTurn()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (selectedCard) selectedCard.IsSelected = false;
-                Card card = hit.transform.GetComponent<Card>();
-                if (card && hand.cards.Contains(card))
+                if (deck.cards.Count == 0)
                 {
-                    selectedCard = card;
-                    selectedCard.IsSelected = true;
+                    deck.AddCards(discard.cards.ToArray());
+                    discard.cards.Clear();
+                    deck.Shuffle();
                 }
-                else
+                if (hand.maxCount == hand.cards.Count)
                 {
-                    if (selectedCard && selectedCard.owner == this)
+                    if (discardIfMaxReach)
                     {
-                        PlayInfo info = new PlayInfo()
+                        discard.AddCards(deck.GetNewCards(1));
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    hand.Add(deck.GetNewCards(1));
+                }
+            }
+        }
+
+        public void DiscardRandomCards(int count, Card caller = null)
+        {
+            while (hand.cards.Count > 0 && count > 0)
+            {
+                Card card = hand.DiscardRandom(caller);
+                if (card)
+                {
+                    discard.AddCard(card);
+                }
+                --count;
+            }
+            discard.ReplaceCards();
+        }
+
+        public void PlayTurn()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    if (selectedCard) selectedCard.IsSelected = false;
+                    Card card = hit.transform.GetComponent<Card>();
+                    if (card && hand.cards.Contains(card))
+                    {
+                        selectedCard = card;
+                        selectedCard.IsSelected = true;
+                    }
+                    else
+                    {
+                        if (selectedCard && selectedCard.owner == this)
                         {
-                            owner = this,
-                            target = hit.transform.GetComponent<Character>()
-                        };
-                        if (selectedCard.Play(info))
-                        {
-                            selectedCard.IsSelected = false;
-                            ChangeMana(-selectedCard.descc.manaCost);
-                            hand.RemoveCard(selectedCard);
-                            discard.AddCard(selectedCard);
-                            selectedCard = null;
+                            PlayInfo info = new PlayInfo()
+                            {
+                                owner = this,
+                                target = hit.transform.GetComponent<Character>()
+                            };
+                            if (selectedCard.Play(info))
+                            {
+                                selectedCard.IsSelected = false;
+                                ChangeMana(-selectedCard.descc.manaCost);
+                                hand.RemoveCard(selectedCard);
+                                discard.AddCard(selectedCard);
+                                selectedCard = null;
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    public void EndTurn()
-    {
-        discard.AddCards(hand.cards.ToArray());
-        hand.Discard();
-    }
-
-    public void StartTurn()
-    {
-        mana = manaStart;
-
-        SetCamera(() =>
+        public void EndTurn()
         {
-            DrawCards(hand.startingCount);
-        });
-    }
+            discard.AddCards(hand.cards.ToArray());
+            hand.Discard();
+        }
 
-    void SetCamera(System.Action callback)
-    {
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(Camera.main.transform.DOMove(cameraTransform.position, cameraSwitchTime));
-        sequence.Join(Camera.main.transform.DORotate(cameraTransform.rotation.eulerAngles, cameraSwitchTime));
-        sequence.OnComplete(() => callback());
-    }
+        public void StartTurn()
+        {
+            mana = manaStart;
 
-    public void ChangeMana(int value)
-    {
-        mana += value;
-        manaText.text = string.Format("{0} : {1}", pseudo, mana);
+            SetCamera(() =>
+            {
+                DrawCards(hand.startingCount);
+            });
+        }
+
+        void SetCamera(System.Action callback)
+        {
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(Camera.main.transform.DOMove(cameraTransform.position, cameraSwitchTime));
+            sequence.Join(Camera.main.transform.DORotate(cameraTransform.rotation.eulerAngles, cameraSwitchTime));
+            sequence.OnComplete(() => callback());
+        }
+
+        public void ChangeMana(int value)
+        {
+            mana += value;
+            manaText.text = string.Format("{0} : {1}", pseudo, mana);
+        }
     }
 }
+

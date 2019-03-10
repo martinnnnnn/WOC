@@ -6,25 +6,27 @@ using DG.Tweening;
 using System.Xml.Linq;
 using System;
 
-
-public class CardEffectDiscard : CardEffect
+namespace WOC
 {
-    public int value = 0;
-    public string display = "";
-
-    public override bool Play(PlayInfo parameters)
+    public class CardEffectDiscard : CardEffect
     {
-        if (parameters.owner)
+        public int value = 0;
+        public string display = "";
+
+        public override bool Play(PlayInfo parameters)
         {
-            parameters.owner.DiscardRandomCards(value, GetComponent<Card>());
-            return true;
+            if (parameters.owner)
+            {
+                parameters.owner.DiscardRandomCards(value, GetComponent<Card>());
+                return true;
+            }
+            return false;
         }
-        return false;
+
+        public override string ToString()
+        {
+            return string.Format(display, value) + "\n";
+        }
     }
 
-    public override string ToString()
-    {
-        return string.Format(display, value) + "\n";
-    }
 }
-

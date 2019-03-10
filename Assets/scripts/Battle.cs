@@ -2,36 +2,39 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Battle : MonoBehaviour
+namespace WOC
 {
-    public Player[] players;
-    public int playerStartIndex = 0;
-    private int currentPlayer;
-    CardList cardList;
-
-    private void Start()
+    public class Battle : MonoBehaviour
     {
-        cardList = GetComponent<CardList>();
-        //cardList.ReadFile(Application.dataPath + "/data/cards.xml");
-        cardList.ReadJson(Application.dataPath + "/data/cards.json");
+        public Player[] players;
+        public int playerStartIndex = 0;
+        private int currentPlayer;
+        CardList cardList;
 
-        currentPlayer = playerStartIndex;
-        foreach (var p in players)
+        private void Start()
         {
-            p.BattleInit();
+            cardList = GetComponent<CardList>();
+            //cardList.ReadFile(Application.dataPath + "/data/cards.xml");
+            cardList.ReadJson(Application.dataPath + "/data/cards.json");
+
+            currentPlayer = playerStartIndex;
+            foreach (var p in players)
+            {
+                p.BattleInit();
+            }
+            players[currentPlayer].StartTurn();
         }
-        players[currentPlayer].StartTurn();
-    }
 
-    private void Update()
-    {
-        players[currentPlayer].PlayTurn();
-    }
+        private void Update()
+        {
+            players[currentPlayer].PlayTurn();
+        }
 
-    public void OnEndButton()
-    {
-        players[currentPlayer].EndTurn();
-        currentPlayer = (currentPlayer + 1) % players.Length;
-        players[currentPlayer].StartTurn();
+        public void OnEndButton()
+        {
+            players[currentPlayer].EndTurn();
+            currentPlayer = (currentPlayer + 1) % players.Length;
+            players[currentPlayer].StartTurn();
+        }
     }
 }

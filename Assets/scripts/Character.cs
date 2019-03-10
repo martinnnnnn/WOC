@@ -3,26 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Character : MonoBehaviour
+namespace WOC
 {
-
-    public float life;
-    public Text lifeDisplay;
-    public string title;
-
-    private void Start()
+    public class Character : MonoBehaviour
     {
-        GetComponent<MeshRenderer>().material.color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
-        ChangeLife(0);
-    }
 
-    public void ChangeLife(float value)
-    {
-        life += value;
-        lifeDisplay.text = title + " : " + life;
-        if (life <= 0)
+        public float life;
+        public Text lifeDisplay;
+        public string title;
+
+        private void Start()
         {
-            Destroy(gameObject);
+            GetComponent<MeshRenderer>().material.color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
+            ChangeLife(0);
+        }
+
+        public void ChangeLife(float value)
+        {
+            life += value;
+            lifeDisplay.text = title + " : " + life;
+            if (life <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

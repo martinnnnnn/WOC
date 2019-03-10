@@ -3,109 +3,112 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Hand : MonoBehaviour
+namespace WOC
 {
-    public List<Card> cards = new List<Card>();
-    public int maxCount;
-    public int startingCount;
-
-    public Transform startTransform;
-    public Transform endTransform;
-    public float cardPlacementTime;
-
-
-    private void Update()
+    public class Hand : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            ReplaceCards();
-        }
-    }
+        public List<Card> cards = new List<Card>();
+        public int maxCount;
+        public int startingCount;
 
-    public void Add(Card newCard)
-    {
-        if (cards.Count < maxCount)
-        {
-            cards.Add(newCard);
-        }
+        public Transform startTransform;
+        public Transform endTransform;
+        public float cardPlacementTime;
 
-        ReplaceCards();
-    }
 
-    public void Add(Card[] newCards)
-    {
-        if (newCards == null)
+        private void Update()
         {
-            return;
-        }
-        if (cards.Count + newCards.Length < maxCount)
-        {
-            cards.AddRange(newCards);
-        }
-
-        ReplaceCards();
-    }
-
-    public void RemoveCard(Card toRemove)
-    {
-        foreach (Card card in cards)
-        {
-            if (card == toRemove)
+            if (Input.GetKeyDown(KeyCode.M))
             {
-                cards.Remove(card);
-                break;
+                ReplaceCards();
             }
         }
 
-        ReplaceCards();
-    }
+        public void Add(Card newCard)
+        {
+            if (cards.Count < maxCount)
+            {
+                cards.Add(newCard);
+            }
+
+            ReplaceCards();
+        }
+
+        public void Add(Card[] newCards)
+        {
+            if (newCards == null)
+            {
+                return;
+            }
+            if (cards.Count + newCards.Length < maxCount)
+            {
+                cards.AddRange(newCards);
+            }
+
+            ReplaceCards();
+        }
+
+        public void RemoveCard(Card toRemove)
+        {
+            foreach (Card card in cards)
+            {
+                if (card == toRemove)
+                {
+                    cards.Remove(card);
+                    break;
+                }
+            }
+
+            ReplaceCards();
+        }
 
 
-    public void ReplaceCards()
-    {
-        for (int i = 0; i < cards.Count; ++i)
+        public void ReplaceCards()
         {
-            float delta = (float)i / (float)cards.Count;
-            Vector3 newPosition = Vector3.Lerp(startTransform.position, endTransform.position, delta);
-            Quaternion newRotation = Quaternion.Lerp(startTransform.rotation, endTransform.rotation, delta);
-            cards[i].Move(newPosition, newRotation, cardPlacementTime);
+            for (int i = 0; i < cards.Count; ++i)
+            {
+                float delta = (float)i / (float)cards.Count;
+                Vector3 newPosition = Vector3.Lerp(startTransform.position, endTransform.position, delta);
+                Quaternion newRotation = Quaternion.Lerp(startTransform.rotation, endTransform.rotation, delta);
+                cards[i].Move(newPosition, newRotation, cardPlacementTime);
+            }
         }
-    }
-    
-    public Card DiscardRandom(Card ignore = null)
-    {
-        Card result = null;
-        if (cards.Count == 1)
+
+        public Card DiscardRandom(Card ignore = null)
         {
-            return result;
-        }
-        if (ignore)
-        {
-            while (!result || result == ignore)
+            Card result = null;
+            if (cards.Count == 1)
+            {
+                return result;
+            }
+            if (ignore)
+            {
+                while (!result || result == ignore)
+                {
+                    int index = Random.Range(0, cards.Count);
+                    result = cards[index];
+                    cards.RemoveAt(index);
+                }
+            }
+            else
             {
                 int index = Random.Range(0, cards.Count);
                 result = cards[index];
                 cards.RemoveAt(index);
-            } 
+            }
+            return result;
         }
-        else
+
+        public void Discard()
         {
-            int index = Random.Range(0, cards.Count);
-            result = cards[index];
-            cards.RemoveAt(index);
+            cards.Clear();
         }
-        return result;
-    }
 
-    public void Discard()
-    {
-        cards.Clear();
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(startTransform.position, 0.3f);
-        Gizmos.DrawSphere(endTransform.position, 0.3f);
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawSphere(startTransform.position, 0.3f);
+            Gizmos.DrawSphere(endTransform.position, 0.3f);
+        }
     }
 }

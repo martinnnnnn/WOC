@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pattern
+
+namespace WOC
 {
-
-}
-
-public class EnemyAI : MonoBehaviour
-{
-    public Pattern[] patterns;
-
-    public void PlayTurn()
+    public class Pattern
     {
 
+    }
 
+    public class EnemyAI : MonoBehaviour
+    {
+        public Pattern[] patterns;
+
+        public void PlayTurn()
+        {
+
+
+        }
     }
 }
