@@ -104,7 +104,6 @@ GameObject:
   - component: {fileID: 2717838678120947176}
   - component: {fileID: 647277782472330703}
   - component: {fileID: 3455528051202343039}
-  - component: {fileID: 523028355096736982}
   m_Layer: 0
   m_Name: CardPrefab
   m_TagString: Untagged
@@ -200,29 +199,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88233aa1b67de7947a6e682b4a07b103, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  desc: {fileID: 0}
   owner: {fileID: 0}
---- !u!114 &523028355096736982
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2728967690483735310}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca34dc29d26e0a14f8f3de34e6babe8c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   nameMesh: {fileID: 114513785871643190}
   manaMesh: {fileID: 731655803976486279}
   effectsMesh: {fileID: 2527877180690762298}
   exhaustMesh: {fileID: 2458732478574281700}
-  Title: default title
-  ManaCost: 0
-  Exhaust: 0
-  CardColor: {r: 0, g: 0, b: 0, a: 0}
-  Effects: []
 --- !u!1 &3240856992466875350
 GameObject:
   m_ObjectHideFlags: 0

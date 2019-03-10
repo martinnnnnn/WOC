@@ -1,0 +1,74 @@
+{
+	"cards": [
+		{
+			"title": "Heal",
+			"manaCost": 5,
+			"exhaust": false,
+			"color": "#3895E9",
+			"effects": [
+				{
+					"type": "Heal",
+					"value": 15,
+					"display": "Heal {0} hp"
+				}
+			]
+		},
+		{
+			"title": "Attak",
+			"manaCost": 3,
+			"exhaust": false,
+			"color": "#EA3939",
+			"effects": [
+				{
+					"type": "Damage",
+					"value": 12,
+					"display": "Damage {0}"
+				}
+			]
+		},
+		{
+			"title": "Protek",
+			"manaCost": 4,
+			"exhaust": false,
+			"color": "#B74C0D",
+			"effects": [
+				{
+					"type": "Block",
+					"value": 40,
+					"display": "Shield {0}"
+				}
+			]
+		},
+		{
+			"title": "Draw",
+			"manaCost": 4,
+			"exhaust": false,
+			"color": "#C400D4",
+			"effects": [
+				{
+					"type": "DrawCards",
+					"value": 15,
+					"display": "Draw {0} cards"
+				}
+			]
+		},
+		{
+			"title": "Discard",
+			"manaCost": 4,
+			"exhaust": false,
+			"color": "#0100D4",
+			"effects": [
+				{
+					"type": "DiscardRandomCards",
+					"value": 2,
+					"display": "Discard {0} random cards"
+				},
+				{
+					"type": "Damage",
+					"value": 40,
+					"display": "Damage {0}"
+				}
+			]
+		}
+	]
+}

@@ -85,10 +85,15 @@ public class Player : MonoBehaviour
                 {
                     if (selectedCard && selectedCard.owner == this)
                     {
-                        if (selectedCard.Play(new CardEffect.PlayInfo(this, hit.transform.GetComponent<Character>())))
+                        PlayInfoo info = new PlayInfoo()
+                        {
+                            owner = this,
+                            target = hit.transform.GetComponent<Character>()
+                        };
+                        if (selectedCard.Play(info))
                         {
                             selectedCard.IsSelected = false;
-                            ChangeMana(-selectedCard.desc.ManaCost);
+                            ChangeMana(-selectedCard.descc.manaCost);
                             hand.RemoveCard(selectedCard);
                             discard.AddCard(selectedCard);
                             selectedCard = null;

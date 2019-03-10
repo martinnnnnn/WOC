@@ -3,44 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using DG.Tweening;
+using Newtonsoft.Json.Linq;
+using System;
+
+public struct PlayInfo
+{
+    public Player owner;
+    public Character target;
+}
 
 public class Card : MonoBehaviour
 {
-    public CardDesc desc;
-
     private bool isSelected = false;
-    public bool IsSelected
-    {
-        get
-        {
-            return isSelected;
-        }
-        set
-        {
-            isSelected = value;
-            if (isSelected)
-            {
-                desc.GetComponent<MeshRenderer>().material.color = Color.red;
-            }   
-            else
-            {
-                desc.GetComponent<MeshRenderer>().material.color = desc.CardColor;
-            }
-        }
-    }
-
     public Player owner;
-
     Sequence sequence;
+
+    public CardDescc descc;
+    public List<CardEffect> effects = new List<CardEffect>();
+
+
     private void Start()
     {
-        desc = GetComponent<CardDesc>();
         sequence = DOTween.Sequence();
     }
 
-    public bool Play(CardEffect.PlayInfo playInfo)
+    public bool Play(PlayInfo playInfo)
     {
-        return desc.Play(playInfo);
+        bool result = false;
+        foreach (var effect in effects)
+        {
+            if (effect.Play(playInfo))
+            {
+                result = true;
+            }
+        }
+        return result;
     }
 
     public void Move(Transform endValue, float time)
@@ -54,4 +51,61 @@ public class Card : MonoBehaviour
         sequence.Append(transform.DOMove(endPosition, time));
         sequence.Join(transform.DORotateQuaternion(endRotation, time));
     }
+
+    public bool IsSelected
+    {
+        get
+        {
+            return isSelected;
+        }
+        set
+        {
+            isSelected = value;
+            if (isSelected)
+            {
+                GetComponent<MeshRenderer>().material.color = Color.red;
+            }
+            else
+            {
+                GetComponent<MeshRenderer>().material.color = descc.color;
+            }
+        }
+    }
+
+
+    Color FromHtmlString(string str = "white")
+    {
+        Color c;
+        return ColorUtility.TryParseHtmlString(str, out c) ? c : Color.gray;
+    }
+
+    public void ReadJson(JToken jcard)
+    {
+        descc = gameObject.AddComponent<CardDescc>();
+        descc.title = jcard["title"]?.ToString();
+        descc.manaCost = jcard["manaCost"] != null ? (int)jcard["manaCost"] : 0;
+        descc.exhaust = jcard["exhaust"] != null ? (bool)jcard["exhaust"] : false;
+        descc.color = FromHtmlString(jcard["color"]?.ToString());
+        
+        foreach (var jeffect in (JArray)jcard["effects"])
+        {
+            effects.Add(CardEffect.FromJson(jeffect, this));
+        }
+
+        GetComponent<MeshRenderer>().material.color = descc.color;
+        nameMesh.text = descc.title;
+        manaMesh.text = descc.manaCost.ToString();
+        exhaustMesh.text = descc.exhaust ? "Exhaust" : "";
+        string effectsStr = "";
+        foreach (CardEffect e in effects)
+        {
+            effectsStr += e.ToString();
+        }
+        effectsMesh.text = effectsStr;
+    }
+
+    public TextMesh nameMesh;
+    public TextMesh manaMesh;
+    public TextMesh effectsMesh;
+    public TextMesh exhaustMesh;
 }
