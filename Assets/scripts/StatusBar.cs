@@ -19,16 +19,17 @@ namespace WOC
         {
             background = transform.Find("Background");
             bar = transform.Find("Bar");
-            barSprite = transform.Find("BarSprite");
+            barSprite = transform.FindDeepChild("BarSprite");
 
             background.localScale = new Vector3(sizeX, sizeY, 1);
             barSprite.localScale = new Vector3(sizeX, sizeY, 1);
-            barSprite.position = new Vector3(sizeX / 2, 0, 0);
-            bar.position = new Vector3(-sizeX / 2, 0, 0);
+            barSprite.localPosition = new Vector3(sizeX / 2, 0, 0);
+            bar.localPosition = new Vector3(-sizeX / 2, 0, 0);
         }
 
         public void Set(float value)
         {
+            Debug.Log(value);
             bar.localScale = new Vector3(value, 1, 1);
         }
 
