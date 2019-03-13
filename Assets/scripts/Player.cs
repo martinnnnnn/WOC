@@ -71,6 +71,7 @@ namespace WOC
                 if (card)
                 {
                     discard.AddCard(card);
+                    IncrementAggro();
                 }
                 --count;
             }
