@@ -25,9 +25,11 @@ namespace WOC
         int turnCardPlayed;
         float currentAggroValue;
         StatusBar aggroBar;
+        [HideInInspector] public Character character;
 
         public void BattleInit()
         {
+            character = GetComponentInChildren<Character>();
             deck.Init();
             deck.Shuffle();
             aggro = 0;
