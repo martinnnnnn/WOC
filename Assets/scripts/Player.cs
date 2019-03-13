@@ -19,11 +19,20 @@ namespace WOC
         public Transform cameraTransform;
         public float cameraSwitchTime;
         Card selectedCard;
+        [HideInInspector] public float aggro;
+        public float aggroX;
+        public float aggroMax;
+        int turnCardPlayed;
+        float currentAggroValue;
+        StatusBar aggroBar;
 
         public void BattleInit()
         {
             deck.Init();
             deck.Shuffle();
+            aggro = 0;
+            aggroBar = GetComponentInChildren<StatusBar>();
+            aggroBar.Set(aggro / aggroMax);
         }
 
         public void DrawCards(int count, bool discardIfMaxReach = true)
@@ -99,11 +108,22 @@ namespace WOC
                                 hand.RemoveCard(selectedCard);
                                 discard.AddCard(selectedCard);
                                 selectedCard = null;
+
+                                IncrementAggro();
                             }
                         }
                     }
                 }
             }
+        }
+
+        private void IncrementAggro()
+        {
+            aggro = Math.Min(aggro + currentAggroValue, aggroMax);
+            
+            turnCardPlayed++;
+            currentAggroValue += aggroX * turnCardPlayed;
+            aggroBar.Set(aggro / aggroMax);
         }
 
         public void EndTurn()
@@ -115,7 +135,8 @@ namespace WOC
         public void StartTurn()
         {
             mana = manaStart;
-
+            turnCardPlayed = 0;
+            currentAggroValue = 1;
             SetCamera(() =>
             {
                 DrawCards(hand.startingCount);

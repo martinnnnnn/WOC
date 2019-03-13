@@ -36,5 +36,18 @@ namespace WOC
             currentPlayer = (currentPlayer + 1) % players.Length;
             players[currentPlayer].StartTurn();
         }
+
+        public Player GetBiggestAggro()
+        {
+            Player biggestAggroPlayer = players[0];
+            for (int i = 1; i < players.Length; ++i)
+            {
+                if (players[i].aggro > biggestAggroPlayer.aggro)
+                {
+                    biggestAggroPlayer = players[i];
+                }
+            }
+            return biggestAggroPlayer;
+        }
     }
 }
