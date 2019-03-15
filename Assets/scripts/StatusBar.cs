@@ -29,7 +29,6 @@ namespace WOC
 
         public void Set(float value)
         {
-            Debug.Log(value);
             bar.localScale = new Vector3(value, 1, 1);
         }
 

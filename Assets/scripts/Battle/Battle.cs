@@ -6,7 +6,7 @@ namespace WOC
 {
     public class Battle : MonoBehaviour
     {
-        public Player[] players;
+        public Fighter[] players;
         public int playerStartIndex = 0;
         private int currentPlayer;
         CardList cardList;
@@ -39,15 +39,16 @@ namespace WOC
 
         public Player GetBiggestAggro()
         {
-            Player biggestAggroPlayer = players[0];
-            for (int i = 1; i < players.Length; ++i)
+            int biggestAggroIndex = -1;
+            for (int i = 0; i < players.Length; ++i)
             {
-                if (players[i].aggro > biggestAggroPlayer.aggro)
+                Player p = players[i] as Player;
+                if (biggestAggroIndex == -1 || (p != null && p.aggro > (players[biggestAggroIndex] as Player).aggro))
                 {
-                    biggestAggroPlayer = players[i];
+                    biggestAggroIndex = i;
                 }
             }
-            return biggestAggroPlayer;
+            return players[biggestAggroIndex] as Player;
         }
     }
 }

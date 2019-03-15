@@ -364,6 +364,7 @@ MonoBehaviour:
   aggro: 0
   aggroX: 0.8
   aggroMax: 50
+  character: {fileID: 0}
 --- !u!1 &4931529025273238901
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,7 +787,7 @@ PrefabInstance:
     - target: {fileID: 8466673451211164256, guid: 53f8abc2bd0e7ea4a978bd7ec8977020,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -3.67
       objectReference: {fileID: 0}
     - target: {fileID: 8466673451211164256, guid: 53f8abc2bd0e7ea4a978bd7ec8977020,
         type: 3}

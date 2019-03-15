@@ -11,7 +11,7 @@ namespace WOC
         HEAL,
     }
 
-    public class EnemyAI : MonoBehaviour
+    public class EnemyAI : Fighter
     {
         public EnemyPattern[] patterns;
         public string name;
@@ -22,25 +22,40 @@ namespace WOC
 
         Battle battle;
         int current = 0;
-
+        Animator animator;
 
         private void Start()
         {
             battle = FindObjectOfType<Battle>();
+            animator = GetComponentInChildren<Animator>();
         }
 
-        public void PlayTurn()
+        public override void PlayTurn()
         {
             switch (patterns[current])
             {
                 case EnemyPattern.ATTACK:
-                    battle.GetBiggestAggro().character.ChangeLife(-attack);
+                    Character target = battle.GetBiggestAggro().character;
+                    transform.LookAt(target.transform);
+                    animator.SetTrigger("Attack");
+                    target.ChangeLife(-attack);
                     break;
                 case EnemyPattern.HEAL:
+                    animator.SetTrigger("Heal");
                     healthCurrent = Mathf.Min(healthCurrent + healAmount, health);
                     break;
             }
             current = (current + 1) % patterns.Length;
+            battle.OnEndButton();
         }
+
+        //IEnumerator Attack()
+        //{
+        //    Character target = battle.GetBiggestAggro().character;
+        //    transform.LookAt(target.transform);
+        //    animator.SetTrigger("Attack");
+        //    target.ChangeLife(-attack);
+        //    yield return WaitForAnimation()
+        //}
     }
 }

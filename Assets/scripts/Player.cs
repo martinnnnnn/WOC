@@ -7,7 +7,7 @@ using System;
 
 namespace WOC
 {
-    public class Player : MonoBehaviour
+    public class Player : Fighter
     {
         public string pseudo;
         public int mana;
@@ -27,7 +27,7 @@ namespace WOC
         StatusBar aggroBar;
         [HideInInspector] public Character character;
 
-        public void BattleInit()
+        public override void BattleInit()
         {
             character = GetComponentInChildren<Character>();
             deck.Init();
@@ -80,7 +80,7 @@ namespace WOC
             discard.ReplaceCards();
         }
 
-        public void PlayTurn()
+        public override void PlayTurn()
         {
             if (Input.GetMouseButtonDown(0))
             {
@@ -104,6 +104,7 @@ namespace WOC
                                 owner = this,
                                 target = hit.transform.GetComponent<Character>()
                             };
+                            if (info.target) Debug.Log("clicked on " + info.target.name);
                             if (selectedCard.Play(info))
                             {
                                 selectedCard.IsSelected = false;
@@ -129,13 +130,13 @@ namespace WOC
             aggroBar.Set(aggro / aggroMax);
         }
 
-        public void EndTurn()
+        public override void EndTurn()
         {
             discard.AddCards(hand.cards.ToArray());
             hand.Discard();
         }
 
-        public void StartTurn()
+        public override void StartTurn()
         {
             mana = manaStart;
             turnCardPlayed = 0;
