@@ -30,13 +30,27 @@ namespace WOC
             animator = GetComponentInChildren<Animator>();
         }
 
+        bool hasPlayedTurn = false;
         public override void PlayTurn()
+        {
+            if (!hasPlayedTurn)
+            {
+                hasPlayedTurn = true;
+                StartCoroutine(PlayTurnRoutine());
+            }
+        }
+
+        public override void OnAggroChange(Character newBiggestAggro)
+        {
+            transform.LookAt(newBiggestAggro.transform);
+        }
+
+        IEnumerator PlayTurnRoutine()
         {
             switch (patterns[current])
             {
                 case EnemyPattern.ATTACK:
                     Character target = battle.GetBiggestAggro().character;
-                    transform.LookAt(target.transform);
                     animator.SetTrigger("Attack");
                     target.ChangeLife(-attack);
                     break;
@@ -46,16 +60,10 @@ namespace WOC
                     break;
             }
             current = (current + 1) % patterns.Length;
+            yield return new WaitForSeconds(Utils.GetClipDuration(animator, "Armature|TRex_Attack"));
+            hasPlayedTurn = false;
             battle.OnEndButton();
+            yield return null;
         }
-
-        //IEnumerator Attack()
-        //{
-        //    Character target = battle.GetBiggestAggro().character;
-        //    transform.LookAt(target.transform);
-        //    animator.SetTrigger("Attack");
-        //    target.ChangeLife(-attack);
-        //    yield return WaitForAnimation()
-        //}
     }
 }

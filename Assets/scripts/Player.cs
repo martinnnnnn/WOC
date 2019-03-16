@@ -128,6 +128,7 @@ namespace WOC
             turnCardPlayed++;
             currentAggroValue += aggroX * turnCardPlayed;
             aggroBar.Set(aggro / aggroMax);
+            FindObjectOfType<Battle>().OnAggroChange();
         }
 
         public override void EndTurn()

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -35,6 +36,15 @@ namespace WOC
             players[currentPlayer].EndTurn();
             currentPlayer = (currentPlayer + 1) % players.Length;
             players[currentPlayer].StartTurn();
+        }
+
+        public void OnAggroChange()
+        {
+            Player biggestAggro = GetBiggestAggro();
+            foreach(var fighter in players)
+            {
+                fighter.OnAggroChange(biggestAggro.character);
+            }
         }
 
         public Player GetBiggestAggro()

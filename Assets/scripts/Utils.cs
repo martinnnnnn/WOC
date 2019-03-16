@@ -20,5 +20,17 @@ namespace WOC
             }
             return null;
         }
+
+        public static float GetClipDuration(Animator animator, string clipname)
+        {
+            foreach (AnimationClip ac in animator.runtimeAnimatorController.animationClips)
+            {
+                if (ac.name == clipname)
+                {
+                    return ac.length;
+                }
+            }
+            return 0.0f;
+        }
     };
 }

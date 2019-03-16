@@ -26,5 +26,10 @@ namespace WOC
         {
 
         }
+
+        public virtual void OnAggroChange(Character newBiggestAggro)
+        {
+
+        }
     }
 }
