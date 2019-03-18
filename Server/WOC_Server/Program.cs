@@ -13,34 +13,6 @@ namespace WOC_Server
             Server server = new Server();
             bool portReady = false;
 
-
-            string name = "martin";
-            string password = "hello";
-            List<bool> stuff = new List<bool>() { false, true, false, false, true };
-            Dictionary<int, bool> stufff = new Dictionary<int, bool>()
-            {
-                { 3, true },
-                { 12, false },
-                { 16, false },
-                { 13, false },
-                { 10, true },
-            };
-
-            WOC_Network.PacketData packet = new WOC_Network.PacketData()
-            {
-                type = "account_create",
-                data = new Dictionary<string, object>()
-                {
-                    { "name", name },
-                    { "password", password },
-                    { "stuff", stuff },
-                    { "stufff", stufff }
-                }
-            };
-
-            string hello = JsonConvert.SerializeObject(packet, Formatting.Indented);
-            Console.WriteLine(hello);
-
             Console.WriteLine("TCP listener and proxy. Default mode is \"text\".");
             Console.WriteLine();
             Console.WriteLine("|--- \"/exit\" to exit.                                  ---|");

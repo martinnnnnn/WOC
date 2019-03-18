@@ -4,20 +4,56 @@ using System.Collections.Generic;
 
 namespace WOC_Network
 {
+    public interface IPacketData { }
+
+    public class PacketDataAccountCreate : IPacketData
+    {
+        public string name;
+        public string password;
+    }
+
+    public class PacketDataAccountConnect : IPacketData
+    {
+        public string name;
+        public string password;
+    }
+
+    public class PacketDataAccountDisconnect : IPacketData
+    {
+        public string name;
+        public string password;
+    }
+
+
+    public class PacketDataAccountList : IPacketData
+    {
+    }
 
     public class PacketData
     {
-        public string type;
-        public Dictionary<string, object> data = new Dictionary<string, object>();
+        static JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All
+        };
 
-        public static string ToJson(PacketData packet, bool indent = false)
+        public static string ToJson(IPacketData packet, bool indent = false)
         {
-            return JsonConvert.SerializeObject(packet, Formatting.Indented);
+            return JsonConvert.SerializeObject(packet, Formatting.Indented, settings);
         }
-        public static PacketData FromJson(string jpackage)
+
+        public static IPacketData FromJson(string jpackage)
         {
-            return JsonConvert.DeserializeObject<PacketData>(jpackage);
+            IPacketData data;
+            try
+            {
+                data = JsonConvert.DeserializeObject<IPacketData>(jpackage, settings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                data = new PacketDataAccountList();
+            }
+            return data;
         }
     }
-
 }

@@ -114,14 +114,6 @@ namespace WOC_Server
                     lock (connections)
                     {
                         HandleClientMessage(connection, Encoding.UTF8.GetString(connection.Buffer, 0, bytesRead));
-                        //foreach (ConnectionInfo conn in connections)
-                        //{
-                        //    if (connection != conn)
-                        //    {
-                        //        conn.Socket.Send(connection.Buffer, bytesRead,
-                        //            SocketFlags.None);
-                        //    }
-                        //}
                     }
                     connection.Socket.BeginReceive(connection.Buffer, 0,
                         connection.Buffer.Length, SocketFlags.None,
@@ -145,47 +137,23 @@ namespace WOC_Server
         {
             try
             {
-                PacketData packet = PacketData.FromJson(message);
+                IPacketData packet = PacketData.FromJson(message);
 
                 if (packet != null)
                 {
-                    switch (packet.type)
+                    switch (packet)
                     {
-                        case "account_create":
-                            {
-                                packet.data.TryGetValue("name", out object name);
-                                packet.data.TryGetValue("password", out object password);
-                                bool result = accountHandler.Create(name as string, password as string);
-                                break;
-                            }
-                        case "account_connect":
-                            {
-                                packet.data.TryGetValue("name", out object name);
-                                packet.data.TryGetValue("password", out object password);
-                                bool result = accountHandler.Connect(name as string, password as string);
-                                break;
-                            }
-                        case "account_disconnect":
-                            {
-                                packet.data.TryGetValue("name", out object name);
-                                packet.data.TryGetValue("password", out object password);
-                                bool result = accountHandler.Disconnect(name as string, password as string);
-                                break;
-                            }
-                        case "account_list":
-                            {
-                                string jlist = accountHandler.GetAccountsList();
-                                byte[] bytes = Encoding.UTF8.GetBytes(jlist + "\n");
-                                connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
-                            }
+                        case PacketDataAccountCreate data:
+                            AccountCreate(connection, data);
                             break;
-                        case "battle_start":
+                        case PacketDataAccountConnect data:
+                            AccountConnect(connection, data);
                             break;
-                        case "battle_connect":
+                        case PacketDataAccountDisconnect data:
+                            AccountDisconnect(connection, data);
                             break;
-                        case "battle_action":
-                            break;
-                        case "battle_quit":
+                        case PacketDataAccountList data:
+                            AccountList(connection, data);
                             break;
                     }
                 }
@@ -207,7 +175,27 @@ namespace WOC_Server
            
         }
 
-        
+        private void AccountCreate(ConnectionInfo connection, PacketDataAccountCreate data)
+        {
+            Console.WriteLine("AccountCreate : {0} // {1}", data.name, data.password);
+        }
+
+        private void AccountConnect(ConnectionInfo connection, PacketDataAccountConnect data)
+        {
+            Console.WriteLine("AccountConnect : {0} // {1}", data.name, data.password);
+        }
+
+        private void AccountDisconnect(ConnectionInfo connection, PacketDataAccountDisconnect data)
+        {
+            Console.WriteLine("AccountDisconnect : {0} // {1}", data.name, data.password);
+        }
+
+        private void AccountList(ConnectionInfo connection, PacketDataAccountList data)
+        {
+            Console.WriteLine("AccountList");
+        }
+
+
         private void CloseConnection(ConnectionInfo ci)
         {
             ci.Socket.Close();

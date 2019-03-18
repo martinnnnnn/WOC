@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C5D19F26-2739-4F2B-B772-08DC95D8F8C3}</ProjectGuid>
+    <ProjectGuid>{F30D5785-EBAD-4C1F-86AD-D177C4CA9F3E}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>WOC_Server</RootNamespace>
-    <AssemblyName>WOC_Server</AssemblyName>
+    <RootNamespace>ClientPlayground</RootNamespace>
+    <AssemblyName>ClientPlayground</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,10 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccountHandler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="server.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
