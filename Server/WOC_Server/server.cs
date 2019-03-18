@@ -4,8 +4,11 @@ using System.Text;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
-namespace WOC
+namespace WOC_Server
 {
     public class ConnectionInfo
     {
@@ -13,20 +16,20 @@ namespace WOC
         public byte[] Buffer;
     }
 
-    class Program
+    class Server
     {
-        private static object serverLock = new object();
-        private static bool showText = true;
+        private object serverLock = new object();
+        private bool showText = true;
 
-        private static int port;
-        private static Socket serverSocket;
+        private int port;
+        private Socket serverSocket;
 
-        private static List<ConnectionInfo> connections = new List<ConnectionInfo>();
+        public AccountHandler accountHandler = new AccountHandler();
+        private List<ConnectionInfo> connections = new List<ConnectionInfo>();
 
-        private static void SetupServerSocket()
+        private void SetupServerSocket()
         {
-            IPEndPoint myEndpoint = new IPEndPoint(
-                IPAddress.Any, port);
+            IPEndPoint myEndpoint = new IPEndPoint(IPAddress.Any, port);
 
             // Create the socket, bind it, and start listening
             serverSocket = new Socket(AddressFamily.InterNetwork,
@@ -37,7 +40,7 @@ namespace WOC
             serverSocket.Listen((int)SocketOptionName.MaxConnections);
         }
 
-        public static void Start()
+        public void Start()
         {
             Console.Write("Starting TCP server... ");
             try
@@ -56,7 +59,7 @@ namespace WOC
         }
 
 
-        private static void AcceptCallback(IAsyncResult result)
+        private void AcceptCallback(IAsyncResult result)
         {
             Console.WriteLine("Accept!");
             ConnectionInfo connection = new ConnectionInfo();
@@ -91,7 +94,7 @@ namespace WOC
             }
         }
 
-        private static void ReceiveCallback(IAsyncResult result)
+        private void ReceiveCallback(IAsyncResult result)
         {
             ConnectionInfo connection = (ConnectionInfo)result.AsyncState;
             try
@@ -109,14 +112,15 @@ namespace WOC
                     }
                     lock (connections)
                     {
-                        foreach (ConnectionInfo conn in connections)
-                        {
-                            if (connection != conn)
-                            {
-                                conn.Socket.Send(connection.Buffer, bytesRead,
-                                    SocketFlags.None);
-                            }
-                        }
+                        HandleClientMessage(connection, Encoding.UTF8.GetString(connection.Buffer, 0, bytesRead));
+                        //foreach (ConnectionInfo conn in connections)
+                        //{
+                        //    if (connection != conn)
+                        //    {
+                        //        conn.Socket.Send(connection.Buffer, bytesRead,
+                        //            SocketFlags.None);
+                        //    }
+                        //}
                     }
                     connection.Socket.BeginReceive(connection.Buffer, 0,
                         connection.Buffer.Length, SocketFlags.None,
@@ -124,108 +128,114 @@ namespace WOC
                 }
                 else CloseConnection(connection);
             }
-            catch (SocketException)
+            catch (SocketException e)
             {
+                Console.WriteLine(e.Message);
                 CloseConnection(connection);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e.Message);
                 CloseConnection(connection);
             }
         }
 
-        private static void CloseConnection(ConnectionInfo ci)
+        public void HandleClientMessage(ConnectionInfo connection, string message)
+        {
+            //StreamReader reader = new StreamReader(message);
+            //JObject jroot = (JObject)JToken.ReadFrom(new JsonTextReader(message));
+
+            try
+            {
+                JObject jroot = (JObject)JToken.Parse(message);
+                bool parseSuccess = jroot.TryGetValue("action_type", out JToken value);
+                if (parseSuccess)
+                {
+                    switch (value.ToString())
+                    {
+                        case "account_create":
+                            {
+                                bool result = accountHandler.Create(jroot["name"].ToString(), jroot["password"].ToString());
+                                break;
+                            }
+                        case "account_connect":
+                            {
+                                bool result = accountHandler.Connect(jroot["name"].ToString(), jroot["password"].ToString());
+                                break;
+                            }
+                        case "account_disconnect":
+                            {
+                                bool result = accountHandler.Disconnect(jroot["name"].ToString(), jroot["password"].ToString());
+                                break;
+                            }
+                        case "account_list":
+                            {
+                                string jlist = accountHandler.GetAccountsList();
+                                byte[] bytes = Encoding.UTF8.GetBytes(jlist + "\n");
+                                connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
+                            }
+                            break;
+                        case "battle_start":
+                            break;
+                        case "battle_connect":
+                            break;
+                        case "battle_action":
+                            break;
+                        case "battle_quit":
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Unknow JSON message : " + message);
+                    byte[] bytes = Encoding.UTF8.GetBytes("Wrong JSON sent to server : " + message + "\n");
+                    connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
+                }
+            }
+            catch(Exception)
+            {
+                Console.WriteLine("Error while parsing JSON message : " + message);
+                byte[] bytes = Encoding.UTF8.GetBytes("Couldn't parse this message from you. : " + message + "\n");
+                connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
+            }
+            
+            
+           
+        }
+
+        
+        private void CloseConnection(ConnectionInfo ci)
         {
             ci.Socket.Close();
             lock (connections) connections.Remove(ci);
         }
 
-        static void Main(string[] args)
+        public void ShowText()
         {
-            Console.WriteLine("TCP listener and proxy. Default mode is \"text\".");
-            Console.WriteLine();
-            Console.WriteLine("|--- \"exit\" to exit.                                  ---|");
-            Console.WriteLine("|--- \"show text\" to display tcp data as text.         ---|");
-            Console.WriteLine("|--- \"hide text\" to stop displaying tcp data as text. ---|");
-            Console.WriteLine("|--- \"drop all\" to drop all connections.              ---|");
-            Console.WriteLine();
-            Console.Write("Please enter port number: ");
-            bool portReady = false;
-            string line = Console.ReadLine();
-            while (line != "exit")
+            lock (serverLock)
             {
-                if (!portReady)
+                if (showText == false)
                 {
-                    try
-                    {
-                        port = int.Parse(line);
-                        if (port > short.MaxValue || port < 2)
-                        {
-                            Console.WriteLine("Invalid port number.");
-                            Console.Write("Please enter port number: ");
-                        }
-                        else
-                        {
-                            Start();
-                            portReady = true;
-                        }
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Invalid port number.");
-                        Console.Write("Please enter port number: ");
-                    }
+                    showText = true;
+                    Console.WriteLine("Text output enabled.");
                 }
-                else
-                {
-                    if (line == "show text")
-                    {
-                        lock (serverLock)
-                        {
-                            if (showText == false)
-                            {
-                                showText = true;
-                                Console.WriteLine("Text output enabled.");
-                            }
-                        }
-                    }
-                    else if (line == "hide text")
-                    {
-                        lock (serverLock)
-                        {
-                            if (showText == true)
-                            {
-                                showText = false;
-                                Console.WriteLine("Text output disabled.");
-                            }
-                        }
-                    }
-                    else if (line == "drop all")
-                    {
-                        lock (connections)
-                        {
-                            for (int i = connections.Count - 1; i >= 0; i--)
-                            {
-                                CloseConnection(connections[i]);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        lock (connections)
-                        {
-                            foreach (ConnectionInfo conn in connections)
-                            {
-                                byte[] bytes = Encoding.UTF8.GetBytes(line + "\n");
-                                conn.Socket.Send(bytes, bytes.Length,
-                                    SocketFlags.None);
-                            }
-                        }
-                    }
-                }
-                line = Console.ReadLine();
             }
-            Console.Write("Shutting down server... ");
+        }
+
+        public void HideText()
+        {
+            lock (serverLock)
+            {
+                if (showText == true)
+                {
+                    showText = false;
+                    Console.WriteLine("Text output disabled.");
+                }
+            }
+        }
+
+        public void DropAll()
+        {
             lock (connections)
             {
                 for (int i = connections.Count - 1; i >= 0; i--)
@@ -233,8 +243,56 @@ namespace WOC
                     CloseConnection(connections[i]);
                 }
             }
-            Console.WriteLine("Bye.");
-            Thread.Sleep(500);
+        }
+
+        public void SendAll(string line)
+        {
+            lock (connections)
+            {
+                foreach (ConnectionInfo conn in connections)
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(line + "\n");
+                    conn.Socket.Send(bytes, bytes.Length,
+                        SocketFlags.None);
+                }
+            }
+        }
+
+        public bool TryStart(string line)
+        {
+            bool portReady = false;
+            try
+            {
+                port = int.Parse(line);
+                if (port > short.MaxValue || port < 2)
+                {
+                    Console.WriteLine("Invalid port number.");
+                    Console.Write("Please enter port number: ");
+                }
+                else
+                {
+                    Start();
+                    portReady = true;
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Invalid port number.");
+                Console.Write("Please enter port number: ");
+            }
+
+            return portReady;
+        }
+
+        public void Shutdown()
+        {
+            lock (connections)
+            {
+                for (int i = connections.Count - 1; i >= 0; i--)
+                {
+                    CloseConnection(connections[i]);
+                }
+            }
         }
     }
 }
