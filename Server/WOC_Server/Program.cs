@@ -26,7 +26,7 @@ namespace WOC_Server
                 { 10, true },
             };
 
-            WOC_Network.Packet packet = new WOC_Network.Packet()
+            WOC_Network.PacketData packet = new WOC_Network.PacketData()
             {
                 type = "account_create",
                 data = new Dictionary<string, object>()

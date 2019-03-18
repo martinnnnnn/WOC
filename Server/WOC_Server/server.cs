@@ -7,6 +7,7 @@ using System.Threading;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using WOC_Network;
 
 namespace WOC_Server
 {
@@ -142,30 +143,33 @@ namespace WOC_Server
 
         public void HandleClientMessage(ConnectionInfo connection, string message)
         {
-            //StreamReader reader = new StreamReader(message);
-            //JObject jroot = (JObject)JToken.ReadFrom(new JsonTextReader(message));
-
             try
             {
-                JObject jroot = (JObject)JToken.Parse(message);
-                bool parseSuccess = jroot.TryGetValue("action_type", out JToken value);
-                if (parseSuccess)
+                PacketData packet = PacketData.FromJson(message);
+
+                if (packet != null)
                 {
-                    switch (value.ToString())
+                    switch (packet.type)
                     {
                         case "account_create":
                             {
-                                bool result = accountHandler.Create(jroot["name"].ToString(), jroot["password"].ToString());
+                                packet.data.TryGetValue("name", out object name);
+                                packet.data.TryGetValue("password", out object password);
+                                bool result = accountHandler.Create(name as string, password as string);
                                 break;
                             }
                         case "account_connect":
                             {
-                                bool result = accountHandler.Connect(jroot["name"].ToString(), jroot["password"].ToString());
+                                packet.data.TryGetValue("name", out object name);
+                                packet.data.TryGetValue("password", out object password);
+                                bool result = accountHandler.Connect(name as string, password as string);
                                 break;
                             }
                         case "account_disconnect":
                             {
-                                bool result = accountHandler.Disconnect(jroot["name"].ToString(), jroot["password"].ToString());
+                                packet.data.TryGetValue("name", out object name);
+                                packet.data.TryGetValue("password", out object password);
+                                bool result = accountHandler.Disconnect(name as string, password as string);
                                 break;
                             }
                         case "account_list":
