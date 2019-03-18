@@ -109,17 +109,17 @@ namespace WOC_Server
                 int bytesRead = connection.Socket.EndReceive(result);
                 if (0 != bytesRead)
                 {
+                    string packetReceived = Encoding.UTF8.GetString(connection.Buffer, 0, bytesRead);
                     lock (serverLock)
                     {
                         if (showText)
                         {
-                            string text = Encoding.UTF8.GetString(connection.Buffer, 0, bytesRead);
-                            Console.Write(text);
+                            Console.Write(packetReceived);
                         }
                     }
                     lock (connections)
                     {
-                        HandleClientMessage(connection, Encoding.UTF8.GetString(connection.Buffer, 0, bytesRead));
+                        HandleClientMessage(connection, packetReceived);
                     }
                     connection.Socket.BeginReceive(connection.Buffer, 0,
                         connection.Buffer.Length, SocketFlags.None,

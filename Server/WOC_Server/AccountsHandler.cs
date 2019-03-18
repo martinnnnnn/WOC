@@ -106,3 +106,46 @@ namespace WOC_Server
         }
     }
 }
+
+/*
+
+    Card:
+        string name
+
+    CardList:
+        Dictionary string, Card
+
+    Deck:
+        string name
+        list Card
+
+    Character:
+        string name
+        string prefabPath
+
+    Player:
+        list Deck
+        list Character
+ 
+    AccountInfo: 
+        string name
+        Player player
+
+    ConnectionInfo:
+        Socket
+        Buffer
+
+    SessionInfo:
+        AccountInfo
+        ConnectionInfo
+
+    Monster
+        string name
+
+    Battle:
+        string name
+        Monster monster
+        List SessionInfo
+
+
+ */
