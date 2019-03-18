@@ -166,36 +166,60 @@ namespace WOC_Server
                 else
                 {
                     Console.WriteLine("Unknow JSON message : " + message);
-                    byte[] bytes = Encoding.UTF8.GetBytes("Wrong JSON sent to server : " + message + "\n");
-                    connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
+                    Send(connection, "Wrong JSON sent to server : " + message);
                 }
             }
             catch(Exception)
             {
                 Console.WriteLine("Error while parsing JSON message : " + message);
-                byte[] bytes = Encoding.UTF8.GetBytes("Couldn't parse this message from you. : " + message + "\n");
-                connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
+                Send(connection, "Couldn't parse this message : " + message);
             }
         }
 
         private void AccountCreate(ConnectionInfo connection, PacketDataAccountCreate data)
         {
-            accountHandler.Create(data.name, data.password);
+            if (accountHandler.Create(data.name, data.password))
+            {
+                Send(connection, "Account creation successful");
+            }
+            else
+            {
+                Send(connection, "Account creation failed");
+            }
         }
 
         private void AccountConnect(ConnectionInfo connection, PacketDataAccountConnect data)
         {
-            accountHandler.Connect(data.name, data.password);
+            if (accountHandler.Connect(data.name, data.password))
+            {
+                Send(connection, "Connect successful");
+            }
+            else
+            {
+                Send(connection, "Account connection failed");
+            }
         }
 
         private void AccountDisconnect(ConnectionInfo connection, PacketDataAccountDisconnect data)
         {
-            accountHandler.Disconnect(data.name, data.password);
+            if (accountHandler.Disconnect(data.name, data.password))
+            {
+                Send(connection, "Disconnect successful");
+            }
+            else
+            {
+                Send(connection, "Failed to disconnect");
+            }
         }
 
         private void AccountList(ConnectionInfo connection, PacketDataAccountList data)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(accountHandler.List() + "\n");
+            Send(connection, accountHandler.List());
+        }
+
+        private void Send(ConnectionInfo connection, string msg)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(msg + "\n");
             connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
         }
 
@@ -258,9 +282,7 @@ namespace WOC_Server
             {
                 foreach (ConnectionInfo conn in connections)
                 {
-                    byte[] bytes = Encoding.UTF8.GetBytes(line + "\n");
-                    conn.Socket.Send(bytes, bytes.Length,
-                        SocketFlags.None);
+                    Send(conn, line);
                 }
             }
         }
