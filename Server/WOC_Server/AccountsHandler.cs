@@ -14,10 +14,23 @@ namespace WOC_Server
         public bool online;
     }
 
-    class AccountHandler
+    class AccountsHandler
     {
         Dictionary<string, Account> accounts = new Dictionary<string, Account>();
         static int currentId = 0;
+
+        public void AddFromJson(string jhandler)
+        {
+            foreach(var pair in JsonConvert.DeserializeObject<Dictionary<string, Account>>(jhandler))
+            {
+                accounts[pair.Key] = pair.Value;
+            }
+        }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(accounts, Formatting.Indented);
+        }
 
         public bool Connect(string providedName, string password)
         {
@@ -64,7 +77,7 @@ namespace WOC_Server
             return result;
         }
 
-        public string GetAccountsList()
+        public string List()
         {
             StringBuilder sb = new StringBuilder();
             StringWriter sw = new StringWriter(sb);

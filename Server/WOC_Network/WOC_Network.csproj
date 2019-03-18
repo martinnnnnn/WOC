@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PacketData.cs" />
+    <Compile Include="PacketDataAccount.cs" />
+    <Compile Include="PacketDataDeck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

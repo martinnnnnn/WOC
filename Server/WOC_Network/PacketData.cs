@@ -6,29 +6,6 @@ namespace WOC_Network
 {
     public interface IPacketData { }
 
-    public class PacketDataAccountCreate : IPacketData
-    {
-        public string name;
-        public string password;
-    }
-
-    public class PacketDataAccountConnect : IPacketData
-    {
-        public string name;
-        public string password;
-    }
-
-    public class PacketDataAccountDisconnect : IPacketData
-    {
-        public string name;
-        public string password;
-    }
-
-
-    public class PacketDataAccountList : IPacketData
-    {
-    }
-
     public class PacketData
     {
         static JsonSerializerSettings settings = new JsonSerializerSettings

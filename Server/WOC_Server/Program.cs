@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 
@@ -19,6 +20,8 @@ namespace WOC_Server
             Console.WriteLine("|--- \"/show_text\" to display tcp data as text.         ---|");
             Console.WriteLine("|--- \"/hide_text\" to stop displaying tcp data as text. ---|");
             Console.WriteLine("|--- \"/drop_all\" to drop all connections.              ---|");
+            Console.WriteLine("|--- \"/load accounts\" to drop all connections.         ---|");
+            Console.WriteLine("|--- \"/save accounts\" to drop all connections.         ---|");
             Console.WriteLine();
             Console.Write("Please enter port number: ");
 
@@ -42,6 +45,16 @@ namespace WOC_Server
                     else if (line == "/drop_all")
                     {
                         server.DropAll();
+                    }
+                    else if (line == "/load accounts")
+                    {
+                        string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                        server.LoadAccounts(exeDir + "/accounts.json");
+                    }
+                    else if (line == "/save accounts")
+                    {
+                        string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                        server.SaveAccounts(exeDir + "/accounts.json");
                     }
                     else
                     {

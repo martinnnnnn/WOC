@@ -17,6 +17,12 @@ namespace WOC_Server
         public byte[] Buffer;
     }
 
+    public class SessionInfo
+    {
+        ConnectionInfo connection;
+        Account account;
+    }
+
     class Server
     {
         private object serverLock = new object();
@@ -25,7 +31,7 @@ namespace WOC_Server
         private int port;
         private Socket serverSocket;
 
-        public AccountHandler accountHandler = new AccountHandler();
+        public AccountsHandler accountHandler = new AccountsHandler();
         private List<ConnectionInfo> connections = new List<ConnectionInfo>();
 
         private void SetupServerSocket()
@@ -170,31 +176,40 @@ namespace WOC_Server
                 byte[] bytes = Encoding.UTF8.GetBytes("Couldn't parse this message from you. : " + message + "\n");
                 connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
             }
-            
-            
-           
         }
 
         private void AccountCreate(ConnectionInfo connection, PacketDataAccountCreate data)
         {
-            Console.WriteLine("AccountCreate : {0} // {1}", data.name, data.password);
+            accountHandler.Create(data.name, data.password);
         }
 
         private void AccountConnect(ConnectionInfo connection, PacketDataAccountConnect data)
         {
-            Console.WriteLine("AccountConnect : {0} // {1}", data.name, data.password);
+            accountHandler.Connect(data.name, data.password);
         }
 
         private void AccountDisconnect(ConnectionInfo connection, PacketDataAccountDisconnect data)
         {
-            Console.WriteLine("AccountDisconnect : {0} // {1}", data.name, data.password);
+            accountHandler.Disconnect(data.name, data.password);
         }
 
         private void AccountList(ConnectionInfo connection, PacketDataAccountList data)
         {
-            Console.WriteLine("AccountList");
+            byte[] bytes = Encoding.UTF8.GetBytes(accountHandler.List() + "\n");
+            connection.Socket.Send(bytes, bytes.Length, SocketFlags.None);
         }
 
+        public void LoadAccounts(string path)
+        {
+            accountHandler.AddFromJson(File.ReadAllText(path));
+            Console.WriteLine("loaded accounts from {0}", path);
+        }
+
+        public void SaveAccounts(string path)
+        {
+            File.WriteAllText(path, accountHandler.ToJson());
+            Console.WriteLine("saved accounts to {0}", path);
+        }
 
         private void CloseConnection(ConnectionInfo ci)
         {
