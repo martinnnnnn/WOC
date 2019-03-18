@@ -47,7 +47,7 @@ namespace WOC
                     discard.cards.Clear();
                     deck.Shuffle();
                 }
-                if (hand.maxCount == hand.cards.Count)
+                if (hand.maxCount == hand.Count)
                 {
                     if (discardIfMaxReach)
                     {
@@ -133,8 +133,7 @@ namespace WOC
 
         public override void EndTurn()
         {
-            discard.AddCards(hand.cards.ToArray());
-            hand.Discard();
+            discard.AddCards(hand.Flush());
         }
 
         public override void StartTurn()

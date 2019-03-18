@@ -8,7 +8,7 @@ namespace WOC
         public Transform cameraTransform;
         public float cameraSwitchTime;
 
-        void SetCamera(System.Action callback)
+        private void SetCamera(System.Action callback)
         {
             Sequence sequence = DOTween.Sequence();
             sequence.Append(Camera.main.transform.DOMove(cameraTransform.position, cameraSwitchTime));

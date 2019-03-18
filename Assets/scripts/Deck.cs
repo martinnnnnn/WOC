@@ -14,8 +14,8 @@ namespace WOC
         public List<Card> cards = new List<Card>();
         public Player player;
         public float cardPlacementTime;
-        //public bool isDiscard = false;
 
+        public int Count => cards.Count;
 
         public void Init(string path = "")
         {
@@ -103,6 +103,13 @@ namespace WOC
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawSphere(transform.position, 0.3f);
+        }
+
+        public Card[] Flush()
+        {
+            Card[] result = cards.ToArray();
+            cards.Clear();
+            return result;
         }
     }
 }

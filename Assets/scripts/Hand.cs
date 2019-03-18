@@ -11,18 +11,11 @@ namespace WOC
         public int maxCount;
         public int startingCount;
 
+        public int Count => cards.Count;
+
         public Transform startTransform;
         public Transform endTransform;
         public float cardPlacementTime;
-
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.M))
-            {
-                ReplaceCards();
-            }
-        }
 
         public void Add(Card newCard)
         {
@@ -62,7 +55,6 @@ namespace WOC
             ReplaceCards();
         }
 
-
         public void ReplaceCards()
         {
             for (int i = 0; i < cards.Count; ++i)
@@ -99,9 +91,11 @@ namespace WOC
             return result;
         }
 
-        public void Discard()
+        public Card[] Flush()
         {
+            Card[] result = cards.ToArray();
             cards.Clear();
+            return result;
         }
 
         void OnDrawGizmosSelected()

@@ -25,10 +25,8 @@ namespace WOC
         /// </summary>
         private float total;
 
-        [HideInInspector] public float Value
-        {
-            get => total;
-        }
+        [HideInInspector]
+        public float Value => total;
 
         public void Reset()
         {
@@ -38,11 +36,12 @@ namespace WOC
             aggroBar.Set(0);
         }
 
-        public void EndTurn()
+        public void StartTurn()
         {
             turnCardPlayedCount = 0;
-            current = 0;
+            current = 1;
         }
+
 
         public void IncrementAggro()
         {
@@ -56,5 +55,11 @@ namespace WOC
         public void ChangeTotal(float value)
         {
         }
+
+        //public void EndTurn()
+        //{
+        //    turnCardPlayedCount = 0;
+        //    current = 0;
+        //}
     }
 }
