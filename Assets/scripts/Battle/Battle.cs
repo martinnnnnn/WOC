@@ -14,6 +14,8 @@ namespace WOC
 
         private void Start()
         {
+            Network.Init();
+
             cardList = GetComponent<CardList>();
             //cardList.ReadFile(Application.dataPath + "/data/cards.xml");
             cardList.ReadJson(Application.dataPath + "/data/cards.json");
