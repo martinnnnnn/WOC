@@ -48,6 +48,7 @@
     <Compile Include="PacketDataAccount.cs" />
     <Compile Include="PacketDataDeck.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TcpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
