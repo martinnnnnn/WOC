@@ -11,29 +11,22 @@ namespace WOC_Network
     public class Client
     {
         object _lock = new object();
-        TcpClient tcpClient;
-        NetworkStream netstream;
+        Session session;
 
         public async Task StartListener()
         {
             string host = "127.0.0.1";
             int port = 8000;
 
-            tcpClient = new TcpClient();
+            TcpClient tcpClient = new TcpClient();
             
             await tcpClient.ConnectAsync(host, port);
-            netstream = tcpClient.GetStream();
-            Console.WriteLine("[Client] Starting listening for server messge");
-            var task = StartReadLineAsync(tcpClient);
-            if (task.IsFaulted)
-            {
-                task.Wait();
-            }
+            await StartHandleConnectionAsync(tcpClient);
         }
 
         private async Task StartHandleConnectionAsync(TcpClient tcpClient)
         {
-            Session session = new ClientSideSession(tcpClient);
+            session = new ClientSideSession(tcpClient);
             var sessionTask = session.StartAsync();
 
             try
@@ -51,37 +44,11 @@ namespace WOC_Network
         {
             try
             {
-                var serverResponseBytes = Encoding.UTF8.GetBytes(message);
-                await netstream.WriteAsync(serverResponseBytes, 0, serverResponseBytes.Length);
-
+                await session.SendAsync(message);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Failed to AsyncWrite : {0}", e.Message);
-            }
-        }
-
-        private async Task StartReadLineAsync(TcpClient tcpClient)
-        {
-            await Task.Yield();
-
-            {
-                var buffer = new byte[4096];
-                while (true)
-                {
-                    try
-                    {
-                        Console.WriteLine("[Client] started listening");
-                        var byteCount = await netstream.ReadAsync(buffer, 0, buffer.Length);
-                        var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
-                        Console.WriteLine(string.Format($"Server: {request}"));
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine("Failed to AsyncRead : {0}", e.Message);
-                        break;
-                    }
-                }
             }
         }
     }

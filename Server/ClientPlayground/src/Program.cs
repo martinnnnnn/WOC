@@ -15,7 +15,7 @@ namespace ConnectionClient
         static void Main(string[] args)
         {
             Client client = new Client();
-            client.StartListener().Wait();
+            var clientTask = client.StartListener();
 
             string userInput = string.Empty;
             while (userInput != "quit")
@@ -23,6 +23,7 @@ namespace ConnectionClient
                 userInput = Console.ReadLine();
                 client.WriteAsync(userInput).Wait();
             }
+            clientTask.Wait();
         }
     }
 }
