@@ -123,13 +123,10 @@ namespace WOC_Server
         string name
         string prefabPath
 
-    Player:
-        list Deck
-        list Character
- 
     AccountInfo: 
         string name
-        Player player
+        list Deck
+        list Character
 
     ConnectionInfo:
         Socket
@@ -146,6 +143,15 @@ namespace WOC_Server
         string name
         Monster monster
         List SessionInfo
+
+
+    #### Packets ####
+    
+    Create account
+    Connect account
+    List account
+    Disconnect account
+
 
 
  */

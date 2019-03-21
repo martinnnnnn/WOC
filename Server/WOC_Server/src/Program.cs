@@ -11,24 +11,34 @@ namespace WOC_Server
     {
         static void Main(string[] args)
         {
-            // The entry point of the console app
-            Console.WriteLine("Hit Ctrl-C to exit.");
-            new WOC_Network.TcpServer().StartListener().Wait();
 
+
+            Console.WriteLine(">> WOC Server");
+            WOC_Network.Server server = new WOC_Network.Server();
+            var listener = server.StartListenerAsync();
+
+            string[] cmd = null;
+            while(cmd == null || cmd[0] != "quit")
+            {
+                cmd = Console.ReadLine().Split(' ');
+                Console.WriteLine("omg i'm such an CLI, i'm doing so much work here");
+            }
+            Console.WriteLine(">> quit CLI, waiting for connections to close");
+            server.Close();
+            try
+            {
+                listener.Wait();
+            }
+            catch {}
+
+            //TcpServer tcpServer = new TcpServer(5000, true);
+            //tcpServer.Run();
+            //Console.ReadLine();
 
             //Server server = new Server();
             //bool portReady = false;
 
             //Console.WriteLine("TCP listener and proxy. Default mode is \"text\".");
-            //Console.WriteLine();
-            //Console.WriteLine("|--- \"/exit\" to exit.                                  ---|");
-            //Console.WriteLine("|--- \"/show_text\" to display tcp data as text.         ---|");
-            //Console.WriteLine("|--- \"/hide_text\" to stop displaying tcp data as text. ---|");
-            //Console.WriteLine("|--- \"/drop_all\" to drop all connections.              ---|");
-            //Console.WriteLine("|--- \"/load accounts\" to drop all connections.         ---|");
-            //Console.WriteLine("|--- \"/save accounts\" to drop all connections.         ---|");
-            //Console.WriteLine();
-            //Console.Write("Please enter port number: ");
 
             //string line = Console.ReadLine();
             //while (line != "/exit")
