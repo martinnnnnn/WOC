@@ -44,6 +44,10 @@ namespace WOC
         {
             try
             {
+                message = PacketData.ToJson(new PD_AccountCreate()
+                {
+                    name = "martin"
+                });
                 await session.SendAsync(message);
             }
             catch (Exception e)

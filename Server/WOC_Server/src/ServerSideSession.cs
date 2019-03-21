@@ -65,6 +65,7 @@ namespace WOC_Server
 
         void AccountCreate(PD_AccountCreate data)
         {
+            Console.WriteLine("creating account named {0}", data.name);
             account = new Account()
             {
                 name = data.name
