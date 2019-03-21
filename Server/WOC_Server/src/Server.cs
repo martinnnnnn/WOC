@@ -5,8 +5,9 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using WOC_Network;
 
-namespace WOC_Network
+namespace WOC_Server
 {
 
     public class Server

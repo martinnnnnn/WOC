@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using WOC_Network;
 
-namespace WOC_Network
+namespace WOC
 {
     public class Client
     {
-        object _lock = new object();
         Session session;
 
         public async Task StartListener()

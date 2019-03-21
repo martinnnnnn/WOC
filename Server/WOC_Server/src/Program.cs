@@ -11,10 +11,8 @@ namespace WOC_Server
     {
         static void Main(string[] args)
         {
-
-
             Console.WriteLine(">> WOC Server");
-            WOC_Network.Server server = new WOC_Network.Server();
+            Server server = new Server();
             var listener = server.StartListenerAsync();
 
             string[] cmd = null;
@@ -30,58 +28,6 @@ namespace WOC_Server
                 listener.Wait();
             }
             catch {}
-
-            //TcpServer tcpServer = new TcpServer(5000, true);
-            //tcpServer.Run();
-            //Console.ReadLine();
-
-            //Server server = new Server();
-            //bool portReady = false;
-
-            //Console.WriteLine("TCP listener and proxy. Default mode is \"text\".");
-
-            //string line = Console.ReadLine();
-            //while (line != "/exit")
-            //{
-            //    if (!portReady)
-            //    {
-            //        portReady = server.TryStart(line);
-            //    }
-            //    else
-            //    {
-            //        if (line == "/show_text")
-            //        {
-            //            server.ShowText();
-            //        }
-            //        else if (line == "/hide_text")
-            //        {
-            //            server.HideText();
-            //        }
-            //        else if (line == "/drop_all")
-            //        {
-            //            server.DropAll();
-            //        }
-            //        else if (line == "/load accounts")
-            //        {
-            //            string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //            server.LoadAccounts(exeDir + "/accounts.json");
-            //        }
-            //        else if (line == "/save accounts")
-            //        {
-            //            string exeDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //            server.SaveAccounts(exeDir + "/accounts.json");
-            //        }
-            //        else
-            //        {
-            //            server.SendAll(line);
-            //        }
-            //    }
-            //    line = Console.ReadLine();
-            //}
-            //Console.Write("Shutting down server... ");
-            //server.Shutdown();
-            //Console.WriteLine("Bye.");
-            //Thread.Sleep(500);
         }
 
     }

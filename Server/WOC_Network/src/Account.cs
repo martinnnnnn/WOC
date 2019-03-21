@@ -45,3 +45,51 @@ namespace WOC_Network
         public List<Deck> decks = new List<Deck>();
     }
 }
+
+/*
+
+    Card:
+        string name
+
+    CardList:
+        Dictionary string, Card
+
+    Deck:
+        string name
+        list Card
+
+    Character:
+        string name
+        string prefabPath
+
+    AccountInfo: 
+        string name
+        list Deck
+        list Character
+
+    ConnectionInfo:
+        Socket
+        Buffer
+
+    SessionInfo:
+        AccountInfo
+        ConnectionInfo
+
+    Monster
+        string name
+
+    Battle:
+        string name
+        Monster monster
+        List SessionInfo
+
+
+    #### Packets ####
+    
+    Create account
+    Connect account
+    List account
+    Disconnect account
+
+ */
+
