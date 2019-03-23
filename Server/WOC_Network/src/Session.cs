@@ -11,19 +11,17 @@ namespace WOC_Network
     {
         public TcpClient client;
         public NetworkStream netstream;
-        public Action<string> HandleIncomingAction;
 
         public Session(TcpClient tcpClient)
         {
             client = tcpClient;
             netstream = client.GetStream();
-            HandleIncomingAction = HandleIncoming;
         }
 
     public async Task SendAsync(string message)
         {
             try
-            {
+            {                
                 var bytesMessage = Encoding.UTF8.GetBytes(message);
                 await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
             }
@@ -47,7 +45,7 @@ namespace WOC_Network
                     var byteCount = await netstream.ReadAsync(buffer, 0, buffer.Length);
                     var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
 
-                    HandleIncomingAction(request);
+                    HandleIncoming(request);
                 }
                 catch (Exception ex)
                 {

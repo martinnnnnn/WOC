@@ -85,9 +85,6 @@ namespace WOC_Server
                 {
                     switch (packet)
                     {
-                        case PD_AccountCreate data:
-                            AccountCreate(data);
-                            break;
                         case PD_InfoRequest data:
                             HandleInfoRequest(data);
                             break;
@@ -99,9 +96,6 @@ namespace WOC_Server
                             break;
                         case PD_AccountList data:
                             //AccountList(data);
-                            break;
-                        case PD_CharacterCreate data:
-                            CharacterCreate(data);
                             break;
                     }
                 }
@@ -137,21 +131,20 @@ namespace WOC_Server
             }
         }
 
-        void AccountCreate(PD_AccountCreate data)
-        {
-            Console.WriteLine("creating account named {0}", data.name);
-            account = new Account()
-            {
-                name = data.name
-            };
-        }
-
         void AccountConnect(PD_AccountConnect data)
         {
-            account = new Account()
+            PD_Validate packet = new PD_Validate()
             {
-                name = data.name
+                validationId = data.id,
+                isValid = data.name == account.name
             };
+            //PD_AccountInfo packet = new PD_AccountInfo()
+            //{
+            //    account = this.account
+            //};
+            Console.WriteLine("sending validation message");
+            string message = PacketData.ToJson(packet);
+            SendAsync(message).Wait();
             // load info from db
         }
 
@@ -161,18 +154,6 @@ namespace WOC_Server
             {
                 // save info to db
                 account = null;
-            }
-        }
-
-        void CharacterCreate(PD_CharacterCreate data)
-        {
-            if (account != null)
-            {
-                //account.characters.Add(new Character()
-                //{
-                //    name = data.name,
-                //    type = data.type
-                //});
             }
         }
     }
