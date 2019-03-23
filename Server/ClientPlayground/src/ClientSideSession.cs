@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -28,6 +29,11 @@ namespace WOC
                     {
                         case PD_Validate data:
                             break;
+                        case PD_Info<Account> data:
+                            Console.WriteLine("rece");
+                            Account acc = data.info;
+                            break;
+
                     }
                 }
                 else

@@ -18,9 +18,14 @@ namespace WOC_Network
         public string infoType;
     }
 
-    public class PD_AccountCreate : IPacketData
+    public class PD_Info<T> : IPacketData
     {
-        public string name;
+        public T info;
+    }
+
+    public class PD_Create<T> : IPacketData
+    {
+        public T toCreate;
     }
 
     public class PD_AccountConnect : IPacketData
@@ -37,23 +42,6 @@ namespace WOC_Network
     {
     }
 
-    public class PD_AccountInfo : IPacketData
-    {
-        public Account account;
-    }
-
-    public class PD_CharacterCreate : IPacketData
-    {
-        public Character character;
-    }
-
-    public class PD_DeckCreate : IPacketData
-    {
-        public Deck deck;
-    }
-
-
-    
     public class PacketData
     {
         static JsonSerializerSettings settings = new JsonSerializerSettings

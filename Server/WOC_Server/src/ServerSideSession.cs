@@ -16,6 +16,56 @@ namespace WOC_Server
         public ServerSideSession(TcpClient tcpClient, Server tcpServer) : base(tcpClient)
         {
             server = tcpServer;
+            account = new Account()
+            {
+                name = "martin",
+                characters = new List<Character>()
+                {
+                    new Character() { name = "myhunter", type = "hunter" },
+                    new Character() { name = "mychaman", type = "chaman" },
+                    new Character() { name = "mysorceress", type = "sorceress" },
+                    new Character() { name = "mybarbarian", type = "barbarian"}
+                },
+                decks = new List<Deck>()
+                {
+                    new Deck()
+                    {
+                        name = "tankdeck",
+                        cards = new List<Card>()
+                        {
+                            new Card() { name = "attak" },
+                            new Card() { name = "attack" },
+                            new Card() { name = "attack" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "aggro" },
+                            new Card() { name = "aggro" },
+                            new Card() { name = "aggro" },
+                            new Card() { name = "aggro" }
+                        }
+                    },
+                    new Deck()
+                    {
+                        name = "heal",
+                        cards = new List<Card>()
+                        {
+                            new Card() { name = "attak" },
+                            new Card() { name = "attack" },
+                            new Card() { name = "attack" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "proteck" },
+                            new Card() { name = "heal" },
+                            new Card() { name = "heal" },
+                            new Card() { name = "heal" },
+                            new Card() { name = "heal" }
+                        }
+                    }
+                }
+            };
         }
 
         public async Task Broadcast(string message)
@@ -70,7 +120,19 @@ namespace WOC_Server
         {
             switch(data.infoType)
             {
-                case "Account":
+                case "account":
+
+                    PD_Info<Account> packet = new PD_Info<Account>()
+                    {
+                        info = this.account
+                    };
+                    //PD_AccountInfo packet = new PD_AccountInfo()
+                    //{
+                    //    account = this.account
+                    //};
+                    string message = PacketData.ToJson(packet);
+
+                    SendAsync(message).Wait();
                     break;
             }
         }

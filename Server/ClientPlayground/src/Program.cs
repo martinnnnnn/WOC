@@ -20,30 +20,31 @@ namespace WOC
         {
             var nettask = network.StartListener();
 
-            string userInput = string.Empty;
-            while (userInput != "quit")
-            {
-                if (userInput.StartsWith("acc create"))
-                {
-                    var hello = AccountCreate(userInput.Split(' ')[2]);
-                    if (hello.IsCompleted)
-                    {
+            //network.AccountConnect("martin").Wait();
+            network.InfoRequest("account").Wait();
 
-                    }
-                }
+            //string userInput = string.Empty;
+            //while (userInput != "quit")
+            //{
+            //    if (userInput.StartsWith("acc create"))
+            //    {
+            //        var hello = AccountCreate(userInput.Split(' ')[2]);
+            //        if (hello.IsCompleted)
+            //        {
 
-                Console.Write(">");
-                userInput = Console.ReadLine();
-            }
+            //        }
+            //    }
+
+            //    Console.Write(">");
+            //    userInput = Console.ReadLine();
+            //}
 
             nettask.Wait();
         }
-
-
-
+        
         async Task AccountCreate(string name)
         {
-            Guid packetId = await network.AccountCreate(name);
+            await network.AccountCreate(name);
 
         }
     }

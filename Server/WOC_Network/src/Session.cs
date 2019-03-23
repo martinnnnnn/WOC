@@ -11,14 +11,16 @@ namespace WOC_Network
     {
         public TcpClient client;
         public NetworkStream netstream;
+        public Action<string> HandleIncomingAction;
 
         public Session(TcpClient tcpClient)
         {
             client = tcpClient;
             netstream = client.GetStream();
+            HandleIncomingAction = HandleIncoming;
         }
 
-        public async Task SendAsync(string message)
+    public async Task SendAsync(string message)
         {
             try
             {
@@ -30,6 +32,7 @@ namespace WOC_Network
                 Console.WriteLine("Failed to Send message : {0}", e.Message);
             }
         }
+
 
         public async Task StartAsync()
         {
@@ -44,7 +47,7 @@ namespace WOC_Network
                     var byteCount = await netstream.ReadAsync(buffer, 0, buffer.Length);
                     var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
 
-                    HandleIncoming(request);
+                    HandleIncomingAction(request);
                 }
                 catch (Exception ex)
                 {

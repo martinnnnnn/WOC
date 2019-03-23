@@ -19,23 +19,14 @@ namespace WOC_Network
 
     public class Deck
     {
-        string name;
+        public string name;
         public List<Card> cards = new List<Card>();
-
-        public static Deck FromJson(string jdeck)
-        {
-            return JsonConvert.DeserializeObject<Deck>(jdeck);
-        }
     }
+
     public class Character
     {
         public string name;
         public string type;
-
-        public static Character FromJson(string jcharacter)
-        {
-            return JsonConvert.DeserializeObject<Character>(jcharacter);
-        }
     }
 
     public class Account

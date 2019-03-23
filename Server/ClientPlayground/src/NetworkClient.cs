@@ -53,14 +53,36 @@ namespace WOC
 
         public async Task<Guid> AccountCreate(string accname)
         {
-            PD_AccountCreate packet = new PD_AccountCreate()
+            PD_Create<Account> packet = new PD_Create<Account>()
+            {
+                toCreate = new Account() { name = accname }
+            };
+            string message = PacketData.ToJson(packet);
+
+            await WriteAsync(message);
+            return packet.id;
+        }
+
+        public async Task AccountConnect(string accname)
+        {
+            PD_AccountConnect packet = new PD_AccountConnect()
             {
                 name = accname
             };
             string message = PacketData.ToJson(packet);
 
             await WriteAsync(message);
-            return packet.id;
+        }
+
+        public async Task InfoRequest(string type)
+        {
+            PD_InfoRequest packet = new PD_InfoRequest()
+            {
+                infoType = "account"
+            };
+            string message = PacketData.ToJson(packet);
+
+            await WriteAsync(message);
         }
     }
 }
