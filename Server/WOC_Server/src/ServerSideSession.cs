@@ -94,8 +94,8 @@ namespace WOC_Server
                         case PD_AccountDisconnect data:
                             AccountDisconnect(data);
                             break;
-                        case PD_AccountList data:
-                            //AccountList(data);
+                        case PD_Chat data:
+                            Broadcast(PacketData.ToJson(data)).Wait();
                             break;
                     }
                 }
@@ -115,33 +115,61 @@ namespace WOC_Server
             switch(data.infoType)
             {
                 case "account":
-
+                {
+                    Console.WriteLine("sending account info");
                     PD_Info<Account> packet = new PD_Info<Account>()
                     {
                         info = this.account
                     };
-                    //PD_AccountInfo packet = new PD_AccountInfo()
-                    //{
-                    //    account = this.account
-                    //};
+                    string message = PacketData.ToJson(packet);
+
+                    SendAsync(message).Wait();
+
+                    // temp
+                    Console.WriteLine("sending account list");
+                    List<string> accNames = new List<string>();
+                    server.sessions.ForEach(session => accNames.Add(session.account.name));
+                    PD_Info<AccountList> packet2 = new PD_Info<AccountList>()
+                    {
+                        info = new AccountList()
+                        {
+                            names = accNames
+                        }
+                    };
+                    string message2 = PacketData.ToJson(packet2);
+
+                    SendAsync(message2).Wait();
+                        break;
+                }
+                case "account_list":
+                {
+                    List<string> accNames = new List<string>();
+                    server.sessions.ForEach(session => accNames.Add(session.account.name));
+                    PD_Info<AccountList> packet = new PD_Info<AccountList>()
+                    {
+                        info = new AccountList()
+                        {
+                            names = accNames
+                        }
+                    };
                     string message = PacketData.ToJson(packet);
 
                     SendAsync(message).Wait();
                     break;
+                }
+                    
             }
         }
 
         void AccountConnect(PD_AccountConnect data)
         {
+            account.name = data.name;
             PD_Validate packet = new PD_Validate()
             {
                 validationId = data.id,
-                isValid = data.name == account.name
+                isValid = true
+                //isValid = data.name == account.name
             };
-            //PD_AccountInfo packet = new PD_AccountInfo()
-            //{
-            //    account = this.account
-            //};
             Console.WriteLine("sending validation message");
             string message = PacketData.ToJson(packet);
             SendAsync(message).Wait();

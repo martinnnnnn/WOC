@@ -15,7 +15,7 @@ namespace WOC_Server
         object _lock = new object();
         List<Task> _connections = new List<Task>();
 
-        public List<Session> sessions = new List<Session>();
+        public List<ServerSideSession> sessions = new List<ServerSideSession>();
         TcpListener listener;
 
         public async Task StartListenerAsync()
@@ -41,7 +41,7 @@ namespace WOC_Server
 
         private async Task StartHandleConnectionAsync(TcpClient tcpClient)
         {
-            Session session = new ServerSideSession(tcpClient, this);
+            ServerSideSession session = new ServerSideSession(tcpClient, this);
             var sessionTask = session.StartAsync();
 
             lock (_lock)

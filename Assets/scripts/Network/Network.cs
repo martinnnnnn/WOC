@@ -11,8 +11,8 @@ namespace WOC
 
     class Network : Singleton<Network>
     {
-        public string ip;
-        public int port;
+        public string ip = "127.0.0.1";
+        public int port = 8000;
 
         Account account = new Account();
 
@@ -21,7 +21,9 @@ namespace WOC
         TcpClient tcpClient;
 
         public Action<Account> ConnectCompleted;
-        
+        public Action<PD_Chat> ChatMessageReceived;
+        public Action<PD_Info<AccountList>> AccountListUpdated;
+
         protected void Start()
         {
             //network = new NetworkClient();
@@ -53,6 +55,8 @@ namespace WOC
                 if (validation.isValid)
                 {
                     session.HandleValidate -= OnValidation;
+                    session.HandleChatMessage += ChatMessageReceived;
+                    session.HandleAccountList += AccountListUpdated;
                     StartCoroutine(RequestInfoRoutine("account"));
                 }
             }
@@ -63,6 +67,26 @@ namespace WOC
             account = data.info;
             session.HandleAccountInfo -= OnAccountInfo;
             ConnectCompleted?.Invoke(account);
+        }
+
+        public void SendChatMessage(string message)
+        {
+            StartCoroutine(SendChatMessageRoutine(message));
+        }
+
+        IEnumerator SendChatMessageRoutine(string msg)
+        {
+            PD_Chat packet = new PD_Chat()
+            {
+                senderName = account.name,
+                message = msg
+            };
+            string message = PacketData.ToJson(packet);
+            var write = WriteAsync(message);
+            while (!write.IsCompleted)
+            {
+                yield return null;
+            }
         }
 
         IEnumerator RequestInfoRoutine(string type)

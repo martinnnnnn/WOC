@@ -23,6 +23,12 @@ namespace WOC_Network
         public T info;
     }
 
+    public class PD_Chat : IPacketData
+    {
+        public string senderName;
+        public string message;
+    }
+
     public class PD_Create<T> : IPacketData
     {
         public T toCreate;
@@ -38,8 +44,9 @@ namespace WOC_Network
         public string name;
     }
 
-    public class PD_AccountList : IPacketData
+    public class AccountList
     {
+        public List<string> names;
     }
 
     public class PacketData
@@ -64,7 +71,7 @@ namespace WOC_Network
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                data = new PD_AccountList();
+                data = new PD_Info<int>();
             }
             return data;
         }

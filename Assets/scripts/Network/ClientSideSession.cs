@@ -18,6 +18,8 @@ namespace WOC
 
         public Action<PD_Validate> HandleValidate;
         public Action<PD_Info<Account>> HandleAccountInfo;
+        public Action<PD_Info<AccountList>> HandleAccountList;
+        public Action<PD_Chat> HandleChatMessage;
 
         void hello(PD_Validate val)
         {
@@ -40,7 +42,14 @@ namespace WOC
                         case PD_Info<Account> data:
                             HandleAccountInfo?.Invoke(data);
                             break;
-
+                        case PD_Info<AccountList> data:
+                            Debug.Log("received account list");
+                            HandleAccountList?.Invoke(data);
+                            break;
+                        case PD_Chat data:
+                            Debug.Log("received chat message");
+                            HandleChatMessage?.Invoke(data);
+                            break;
                     }
                 }
                 else
