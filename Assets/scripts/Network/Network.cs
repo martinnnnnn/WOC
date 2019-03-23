@@ -20,6 +20,7 @@ namespace WOC
         ClientSideSession session;
         TcpClient tcpClient;
 
+        public Action<Account> ConnectCompleted;
         
         protected void Start()
         {
@@ -61,6 +62,7 @@ namespace WOC
         {
             account = data.info;
             session.HandleAccountInfo -= OnAccountInfo;
+            ConnectCompleted?.Invoke(account);
         }
 
         IEnumerator RequestInfoRoutine(string type)
