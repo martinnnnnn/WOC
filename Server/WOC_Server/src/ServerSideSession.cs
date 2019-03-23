@@ -11,6 +11,7 @@ namespace WOC_Server
     public class ServerSideSession : Session
     {
         public Server server;
+        public Account account;
 
         public ServerSideSession(TcpClient tcpClient, Server tcpServer) : base(tcpClient)
         {
@@ -21,7 +22,6 @@ namespace WOC_Server
         {
             var tasks = server.sessions.Select(session => session.SendAsync(message));
             await Task.WhenAll(tasks);
-
         }
 
         protected override void HandleIncoming(string message)
@@ -37,6 +37,9 @@ namespace WOC_Server
                     {
                         case PD_AccountCreate data:
                             AccountCreate(data);
+                            break;
+                        case PD_InfoRequest data:
+                            HandleInfoRequest(data);
                             break;
                         case PD_AccountConnect data:
                             AccountConnect(data);
@@ -60,6 +63,15 @@ namespace WOC_Server
             catch (Exception)
             {
                 Console.WriteLine("Error while parsing JSON message : " + message);
+            }
+        }
+
+        void HandleInfoRequest(PD_InfoRequest data)
+        {
+            switch(data.infoType)
+            {
+                case "Account":
+                    break;
             }
         }
 

@@ -9,9 +9,9 @@ using WOC_Network;
 
 namespace WOC
 {
-    public class Client
+    public class NetworkClient
     {
-        Session session;
+        ClientSideSession session;
 
         public async Task StartListener()
         {
@@ -39,21 +39,28 @@ namespace WOC
             }
         }
 
-
         public async Task WriteAsync(string message)
         {
             try
             {
-                message = PacketData.ToJson(new PD_AccountCreate()
-                {
-                    name = "martin"
-                });
                 await session.SendAsync(message);
             }
             catch (Exception e)
             {
                 Console.WriteLine("Failed to AsyncWrite : {0}", e.Message);
             }
+        }
+
+        public async Task<Guid> AccountCreate(string accname)
+        {
+            PD_AccountCreate packet = new PD_AccountCreate()
+            {
+                name = accname
+            };
+            string message = PacketData.ToJson(packet);
+
+            await WriteAsync(message);
+            return packet.id;
         }
     }
 }

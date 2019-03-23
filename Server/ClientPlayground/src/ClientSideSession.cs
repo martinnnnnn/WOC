@@ -14,6 +14,7 @@ namespace WOC
         {
         }
 
+
         protected override void HandleIncoming(string message)
         {
             Console.WriteLine("I'm handling {0}", message);
@@ -25,7 +26,8 @@ namespace WOC
                 {
                     switch (packet)
                     {
-                        
+                        case PD_Validate data:
+                            break;
                     }
                 }
                 else
@@ -38,5 +40,10 @@ namespace WOC
                 Console.WriteLine("Error while parsing JSON message : " + message);
             }
         }
+
+        //public async Task<PD_Validate> GetValidationAsync()
+        //{
+        //    session
+        //}
     }
 }

@@ -9,24 +9,49 @@ namespace WOC_Network
 {
     public class Session
     {
-        public Connection connection = null;
-        public Account account = null;
+        public TcpClient client;
+        public NetworkStream netstream;
 
         public Session(TcpClient tcpClient)
         {
-            connection = new Connection(tcpClient);
-            connection.HandleIncomingMessage = HandleIncoming;
+            client = tcpClient;
+            netstream = client.GetStream();
         }
 
         public async Task SendAsync(string message)
         {
-            await connection.Send(message);
+            try
+            {
+                var bytesMessage = Encoding.UTF8.GetBytes(message);
+                await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to Send message : {0}", e.Message);
+            }
         }
 
         public async Task StartAsync()
         {
             await Task.Yield();
-            await connection.HandleConnectionAsync();
+
+            var buffer = new byte[4096];
+            Console.WriteLine("[Server] Reading from client");
+            while (true)
+            {
+                try
+                {
+                    var byteCount = await netstream.ReadAsync(buffer, 0, buffer.Length);
+                    var request = Encoding.UTF8.GetString(buffer, 0, byteCount);
+
+                    HandleIncoming(request);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to AsyncRead : {0}", ex.Message);
+                    break;
+                }
+            }
         }
 
         protected virtual void HandleIncoming(string message)

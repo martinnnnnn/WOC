@@ -3,6 +3,59 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using WOC_Network;
+
+namespace WOC_Server
+{
+    class AccountsManager
+    {
+        List<Account> liveAccounts = new List<Account>();
+        List<Account> allAccounts = new List<Account>();
+
+        Account Create(string newName, bool autoConnect = true)
+        {
+            Account newAccount = null;
+
+            if (allAccounts.Find(acc => acc.name == newName) == null)
+            {
+                newAccount = new Account() { name = newName };
+                allAccounts.Add(newAccount);
+                if (autoConnect)
+                {
+                    liveAccounts.Add(newAccount);
+                }
+            }
+            
+            return newAccount;
+        }
+
+        void Connect(string name)
+        {
+            Account account = allAccounts.Find(acc => acc.name == name);
+            if (account != null)
+            {
+                liveAccounts.Add(account);
+            }
+        }
+
+        void Disconnect(string name)
+        {
+            liveAccounts.RemoveAll(acc => acc.name == name);
+        }
+
+
+        void Load(string jaccounts)
+        {
+
+        }
+
+        void Save(string path)
+        {
+
+        }
+    }
+}
+
 
 //namespace WOC_Server
 //{

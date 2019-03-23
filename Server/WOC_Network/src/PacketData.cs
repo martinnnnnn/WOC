@@ -4,7 +4,19 @@ using System.Collections.Generic;
 
 namespace WOC_Network
 {
-    public interface IPacketData { }
+    public abstract class IPacketData { public Guid id = Guid.NewGuid(); }
+
+    public class PD_Validate : IPacketData
+    {
+        public Guid validationId;
+        public bool isValid;
+        public string errorMessage;
+    }
+
+    public class PD_InfoRequest : IPacketData
+    {
+        public string infoType;
+    }
 
     public class PD_AccountCreate : IPacketData
     {
@@ -41,25 +53,7 @@ namespace WOC_Network
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     public class PacketData
     {
         static JsonSerializerSettings settings = new JsonSerializerSettings
