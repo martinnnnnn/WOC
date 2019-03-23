@@ -9,17 +9,14 @@ namespace WOC
     [RequireComponent(typeof(CameraTransform))]
     public class BasePlayer : MonoBehaviour
     {
-        public CameraTransform cameraTransform;
-
-        private void Start()
-        {
-            cameraTransform = GetComponent<CameraTransform>();
-        }
+        [HideInInspector] public CameraTransform cameraTransform;
+        [HideInInspector] public Character character;
 
 
         public virtual void BattleInit()
         {
-
+            cameraTransform = GetComponent<CameraTransform>();
+            character = GetComponentInChildren<Character>();
         }
 
         public virtual void BattleEnd()
@@ -42,9 +39,10 @@ namespace WOC
 
         }
 
-        public virtual void OnAggroChange()
+        public virtual void OnAggroChange(Character newBiggestAggro)
         {
+
         }
-        
+
     }
 }

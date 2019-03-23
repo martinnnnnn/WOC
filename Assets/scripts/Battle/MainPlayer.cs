@@ -8,15 +8,16 @@ namespace WOC
     [RequireComponent(typeof(Aggro), typeof(Mana))]
     public class MainPlayer : BasePlayer
     {
+        public Deck drawPile;
+        public Deck discardPile;
+        public Hand hand;
 
         Aggro aggro;
         Battle battle;
         Mana mana;
 
-        Deck drawPile;
-        Deck discardPile;
-        Hand hand;
-        [HideInInspector] public Character character;
+
+        Card selectedCard;
 
         private void Start()
         {
@@ -27,7 +28,7 @@ namespace WOC
 
         public override void BattleInit()
         {
-            character = GetComponentInChildren<Character>();
+            base.BattleInit();
             drawPile.Init();
             drawPile.Shuffle();
             aggro.Reset();
@@ -36,17 +37,57 @@ namespace WOC
 
         public override void StartTurn()
         {
+            base.BattleInit();
             mana.Reset();
             aggro.StartTurn();
+            DrawCards(hand.startingCount);
         }
 
         public override void PlayTurn()
         {
+            base.BattleInit();
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit))
+                {
+                    if (selectedCard) selectedCard.IsSelected = false;
+                    Card card = hit.transform.GetComponent<Card>();
+                    if (card && hand.cards.Contains(card))
+                    {
+                        selectedCard = card;
+                        selectedCard.IsSelected = true;
+                    }
+                    else
+                    {
+                        if (selectedCard && selectedCard.owner == this)
+                        {
+                            PlayInfo info = new PlayInfo()
+                            {
+                                owner = this,
+                                target = hit.transform.GetComponent<Character>()
+                            };
+                            if (info.target) Debug.Log("clicked on " + info.target.name);
+                            if (selectedCard.Play(info))
+                            {
+                                selectedCard.IsSelected = false;
+                                mana.Consume(selectedCard.descc.manaCost);
+                                hand.RemoveCard(selectedCard);
+                                discardPile.AddCard(selectedCard);
+                                selectedCard = null;
 
+                                aggro.Increment();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public override void EndTurn()
         {
+            base.BattleInit();
             discardPile.AddCards(hand.Flush());
         }
 
@@ -80,6 +121,21 @@ namespace WOC
         {
             drawPile.AddCards(discardPile.Flush());
             drawPile.Shuffle();
+        }
+
+        public void DiscardRandomCards(int count, Card caller = null)
+        {
+            while (hand.cards.Count > 0 && count > 0)
+            {
+                Card card = hand.DiscardRandom(caller);
+                if (card)
+                {
+                    discardPile.AddCard(card);
+                    aggro.Increment();
+                }
+                --count;
+            }
+            discardPile.ReplaceCards();
         }
     }
 }

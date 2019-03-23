@@ -11,14 +11,14 @@ namespace WOC
 
     public struct PlayInfo
     {
-        public Player owner;
+        public MainPlayer owner;
         public Character target;
     }
 
     public class Card : MonoBehaviour
     {
         private bool isSelected = false;
-        public Player owner;
+        public MainPlayer owner;
         Sequence sequence;
 
         public CardDescc descc;

@@ -8,8 +8,8 @@ namespace WOC
 {
     public class Aggro : MonoBehaviour
     {
-        public readonly float max;
-        public readonly float incrementRatio;
+        [SerializeField] private float max;
+        [SerializeField] private float incrementRatio;
         public StatusBar aggroBar;
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace WOC
         }
 
 
-        public void IncrementAggro()
+        public void Increment()
         {
             total = Math.Min(total + current, max);
             aggroBar.Set(total / max);

@@ -21,13 +21,13 @@ namespace WOC
 
         public void Consume(int amount)
         {
-            value = Math.Min(value - amount, 0);
+            value = Math.Max(value - amount, 0);
             statusBar.Set((float)value / (float)max);
         }
 
         public void Fill(int amount)
         {
-            value = Math.Max(value + amount, max);
+            value = Math.Min(value + amount, max);
             statusBar.Set((float)value / (float)max);
         }
 

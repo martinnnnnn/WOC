@@ -12,7 +12,7 @@ namespace WOC
     public class Deck : MonoBehaviour
     {
         public List<Card> cards = new List<Card>();
-        public Player player;
+        public MainPlayer player;
         public float cardPlacementTime;
 
         public int Count => cards.Count;
@@ -93,7 +93,7 @@ namespace WOC
         {
             for (int i = 0; i < cards.Count; ++i)
             {
-                Vector3 newPosition = transform.position + (player.cameraTransform.forward * (cardOffsetPosition * i));
+                Vector3 newPosition = transform.position + (player.cameraTransform.cameraTransform.forward * (cardOffsetPosition * i));
                 newPosition.y = transform.position.y;
                 cards[i].Move(newPosition, transform.rotation, cardPlacementTime);
             }

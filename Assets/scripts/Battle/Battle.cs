@@ -7,15 +7,13 @@ namespace WOC
 {
     public class Battle : MonoBehaviour
     {
-        public Fighter[] players;
+        public BasePlayer[] players;
         public int playerStartIndex = 0;
         private int currentPlayer;
         CardList cardList;
 
         private void Start()
         {
-            Network.Init();
-
             cardList = GetComponent<CardList>();
             //cardList.ReadFile(Application.dataPath + "/data/cards.xml");
             cardList.ReadJson(Application.dataPath + "/data/cards.json");
@@ -28,9 +26,27 @@ namespace WOC
             players[currentPlayer].StartTurn();
         }
 
+        bool isInit = false;
         private void Update()
         {
+            //if (Input.GetKeyDown(KeyCode.H) && !isInit)
+            //{
+            //    isInit = true;
+            //    cardList = GetComponent<CardList>();
+            //    //cardList.ReadFile(Application.dataPath + "/data/cards.xml");
+            //    cardList.ReadJson(Application.dataPath + "/data/cards.json");
+
+            //    currentPlayer = playerStartIndex;
+            //    foreach (var p in players)
+            //    {
+            //        p.BattleInit();
+            //    }
+            //    players[currentPlayer].StartTurn();
+            //}
+            //if (isInit)
+            //{
             players[currentPlayer].PlayTurn();
+            //}
         }
 
         public void OnEndButton()
@@ -42,25 +58,29 @@ namespace WOC
 
         public void OnAggroChange()
         {
-            Player biggestAggro = GetBiggestAggro();
+            BasePlayer biggestAggro = GetBiggestAggro();
             foreach(var fighter in players)
             {
                 fighter.OnAggroChange(biggestAggro.character);
             }
         }
 
-        public Player GetBiggestAggro()
+        public BasePlayer GetBiggestAggro()
         {
-            int biggestAggroIndex = -1;
+            int biggestAggro = -1;
+            BasePlayer biggest = null;
             for (int i = 0; i < players.Length; ++i)
             {
-                Player p = players[i] as Player;
-                if (biggestAggroIndex == -1 || (p != null && p.aggro > (players[biggestAggroIndex] as Player).aggro))
+                Aggro aggro = players[i].GetComponent<Aggro>();
+                if (aggro != null)
                 {
-                    biggestAggroIndex = i;
+                    if (aggro.Value > biggestAggro)
+                    {
+                        biggest = players[i];
+                    }
                 }
             }
-            return players[biggestAggroIndex] as Player;
+            return biggest;
         }
     }
 }
