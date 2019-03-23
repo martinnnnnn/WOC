@@ -71,7 +71,7 @@ namespace WOC_Network
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                data = new PD_Info<int>();
+                data = null;
             }
             return data;
         }

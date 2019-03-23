@@ -126,20 +126,20 @@ namespace WOC_Server
                     SendAsync(message).Wait();
 
                     // temp
-                    Console.WriteLine("sending account list");
-                    List<string> accNames = new List<string>();
-                    server.sessions.ForEach(session => accNames.Add(session.account.name));
-                    PD_Info<AccountList> packet2 = new PD_Info<AccountList>()
-                    {
-                        info = new AccountList()
-                        {
-                            names = accNames
-                        }
-                    };
-                    string message2 = PacketData.ToJson(packet2);
+                    //Console.WriteLine("sending account list");
+                    //List<string> accNames = new List<string>();
+                    //server.sessions.ForEach(session => accNames.Add(session.account.name));
+                    //PD_Info<AccountList> packet2 = new PD_Info<AccountList>()
+                    //{
+                    //    info = new AccountList()
+                    //    {
+                    //        names = accNames
+                    //    }
+                    //};
+                    //string message2 = PacketData.ToJson(packet2);
 
-                    SendAsync(message2).Wait();
-                        break;
+                    //SendAsync(message2).Wait();
+                    break;
                 }
                 case "account_list":
                 {

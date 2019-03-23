@@ -2,6 +2,7 @@
 using DG.Tweening;
 using UnityEngine.UI;
 using WOC_Network;
+using System.Collections.Generic;
 
 namespace WOC
 {
@@ -27,6 +28,7 @@ namespace WOC
             menuConnect.SetActive(true);
             menuHome.SetActive(false);
             chatMessagesList.text = "";
+            onlinePlayersList.text = "";
         }
 
         private void Update()
@@ -41,10 +43,10 @@ namespace WOC
 
         public void OnConnectButton()
         {
-            Network.Instance.ConnectCompleted += OnConnectCompleted;
-            Network.Instance.ChatMessageReceived += OnChatMessage;
-            Network.Instance.AccountListUpdated += OnAccountList; 
             Network.Instance.TryConnect(accountName.text, accountPassword.text);
+            Network.Instance.OnAccountInfo += OnConnectCompleted;
+            Network.Instance.OnChatMessageReceived += OnChatMessage;
+            Network.Instance.OnAccountsListUpdated += OnAccountList;
         }
 
         public void OnConnectCompleted(Account account)
@@ -60,15 +62,15 @@ namespace WOC
         }
 
 
-        public void OnChatMessage(PD_Chat data)
+        public void OnChatMessage(string sender, string message)
         {
-            chatMessagesList.text += "\n" + data.senderName + " : " + data.message;
+            chatMessagesList.text += "\n" + sender + " : " + message;
         }
 
-        public void OnAccountList(PD_Info<AccountList> data)
+        public void OnAccountList(List<string> accountsName)
         {
             onlinePlayersList.text = "";
-            data.info.names.ForEach(name => onlinePlayersList.text += name + "\n");
+            accountsName.ForEach(name => onlinePlayersList.text += name + "\n");
         }
     }
 }

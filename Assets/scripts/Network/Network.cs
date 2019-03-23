@@ -9,25 +9,31 @@ using System.Net.Sockets;
 namespace WOC
 {
 
-    class Network : Singleton<Network>
+    public class ValidationCallback
+    {
+        public Guid toValidate;
+        public delegate bool ValidationDelegate(Guid id, PD_Validate validation);
+        public ValidationDelegate Validation;
+    }
+
+
+    public class Network : Singleton<Network>
     {
         public string ip = "127.0.0.1";
         public int port = 8000;
 
         Account account = new Account();
 
-        //NetworkClient network;
         ClientSideSession session;
-        TcpClient tcpClient;
 
-        public Action<Account> ConnectCompleted;
-        public Action<PD_Chat> ChatMessageReceived;
-        public Action<PD_Info<AccountList>> AccountListUpdated;
+        public Action<Account> OnAccountInfo;
+        public Action<string, string> OnChatMessageReceived;
+        public Action<List<string>> OnAccountsListUpdated;
+
+        Action<PD_Validate> OnHandleValidate;
 
         protected void Start()
         {
-            //network = new NetworkClient();
-            tcpClient = new TcpClient();
             Run();
         }
 
@@ -43,31 +49,92 @@ namespace WOC
 
         }
 
+        public void HandleIncoming(string jmessage)
+        {
+            try
+            {
+                IPacketData packet = PacketData.FromJson(jmessage);
+
+                if (packet != null)
+                {
+                    switch (packet)
+                    {
+                        case PD_Validate data:
+                            HandleValidate(data);
+                            break;
+                        case PD_Info<Account> data:
+                            HandleAccountInfo(data);
+                            break;
+                        case PD_Info<AccountList> data:
+                            HandleAccountList(data);
+                            break;
+                        case PD_Chat data:
+                            HandleChatMessage(data);
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Unknow JSON message : " + jmessage);
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error while parsing JSON message : " + jmessage);
+            }
+        }
+
+        List<ValidationCallback> validationCallbaks = new List<ValidationCallback>();
+
+        private void HandleValidate(PD_Validate data)
+        {
+            validationCallbaks.RemoveAll(callback => callback.Validation(callback.toValidate, data));
+        }
+
+        private void HandleAccountInfo(PD_Info<Account> data)
+        {
+            account = data.info;
+            OnAccountInfo?.Invoke(account);
+        }
+
+        private void HandleAccountList(PD_Info<AccountList> data)
+        {
+            OnAccountsListUpdated?.Invoke(data.info.names);
+        }
+
+        private void HandleChatMessage(PD_Chat data)
+        {
+            OnChatMessageReceived?.Invoke(data.senderName, data.message);
+        }
+
+
+
+
         public void TryConnect(string accountname, string password)
         {
             StartCoroutine(TryConnectRoutine(accountname, password));
         }
 
-        public void OnValidation(PD_Validate validation)
+        public bool OnConnectionValidation(Guid toValidate, PD_Validate validation)
         {
-            if (connectid == validation.validationId)
+            if (toValidate == validation.validationId)
             {
                 if (validation.isValid)
                 {
-                    session.HandleValidate -= OnValidation;
-                    session.HandleChatMessage += ChatMessageReceived;
-                    session.HandleAccountList += AccountListUpdated;
+                    //OnHandleValidate -= OnValidation;
                     StartCoroutine(RequestInfoRoutine("account"));
+                    StartCoroutine(RequestInfoRoutine("account_list"));
                 }
+                return true;
             }
+            return false;
         }
 
-        public void OnAccountInfo(PD_Info<Account> data)
-        {
-            account = data.info;
-            session.HandleAccountInfo -= OnAccountInfo;
-            ConnectCompleted?.Invoke(account);
-        }
+        //public void OnAccountInfo(PD_Info<Account> data)
+        //{
+        //    account = data.info;
+        //    OnAccountInfo?.Invoke(account);
+        //}
 
         public void SendChatMessage(string message)
         {
@@ -96,7 +163,6 @@ namespace WOC
                 infoType = type
             };
             string message = PacketData.ToJson(packet);
-            session.HandleAccountInfo += OnAccountInfo;
             var write = WriteAsync(message);
             while (!write.IsCompleted)
             {
@@ -104,16 +170,23 @@ namespace WOC
             }
         }
 
-        Guid connectid;
+        //Guid connectid;
         IEnumerator TryConnectRoutine(string accountname, string password)
         {
             PD_AccountConnect packet = new PD_AccountConnect()
             {
                 name = accountname
             };
-            connectid = packet.id;
+            //connectid = packet.id;
             string message = PacketData.ToJson(packet);
-            session.HandleValidate += OnValidation;
+
+            //OnHandleValidate += OnValidation;
+            validationCallbaks.Add(new ValidationCallback()
+            {
+                toValidate = packet.id,
+                Validation = OnConnectionValidation
+            });
+
             var write = WriteAsync(message);
             while (!write.IsCompleted)
             {
@@ -135,9 +208,15 @@ namespace WOC
 
         private async Task StartListenerAsync()
         {
+            TcpClient tcpClient = new TcpClient();
             await tcpClient.ConnectAsync(ip, port);
-            session = new ClientSideSession(tcpClient);
+
+            session = new ClientSideSession(tcpClient, this);
             var sessionTask = session.StartAsync();
+
+            //session.HandleAccountInfo += OnAccountInfo;
+            //session.HandleChatMessage += ChatMessageReceived;
+            //session.HandleAccountList += AccountListUpdated;
 
             try
             {
@@ -148,32 +227,6 @@ namespace WOC
                 Console.WriteLine(ex.ToString());
             }
         }
-
-        //    public async Task StartListener()
-        //    {
-        //        string host = "127.0.0.1";
-        //        int port = 8000;
-
-        //        TcpClient tcpClient = new TcpClient();
-
-        //        await tcpClient.ConnectAsync(host, port);
-        //        await StartHandleConnectionAsync(tcpClient);
-        //    }
-
-        //    private async Task StartHandleConnectionAsync(TcpClient tcpClient)
-        //    {
-        //        session = new ClientSideSession(tcpClient);
-        //        var sessionTask = session.StartAsync();
-
-        //        try
-        //        {
-        //            await sessionTask;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Console.WriteLine(ex.ToString());
-        //        }
-        //    }
     }
 }
 

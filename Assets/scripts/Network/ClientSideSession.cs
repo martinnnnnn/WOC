@@ -12,14 +12,16 @@ namespace WOC
 {
     public class ClientSideSession : Session
     {
-        public ClientSideSession(TcpClient tcpClient) : base(tcpClient)
+        public ClientSideSession(TcpClient tcpClient, Network net) : base(tcpClient)
         {
+            network = net;
         }
 
-        public Action<PD_Validate> HandleValidate;
-        public Action<PD_Info<Account>> HandleAccountInfo;
-        public Action<PD_Info<AccountList>> HandleAccountList;
-        public Action<PD_Chat> HandleChatMessage;
+        public Network network;
+        //public Action<PD_Validate> HandleValidate;
+        //public Action<PD_Info<Account>> HandleAccountInfo;
+        //public Action<PD_Info<AccountList>> HandleAccountList;
+        //public Action<PD_Chat> HandleChatMessage;
 
         void hello(PD_Validate val)
         {
@@ -28,39 +30,40 @@ namespace WOC
 
         protected override void HandleIncoming(string message)
         {
-            try
-            {
-                IPacketData packet = PacketData.FromJson(message);
+            network.HandleIncoming(message);
+            //try
+            //{
+            //    IPacketData packet = PacketData.FromJson(message);
 
-                if (packet != null)
-                {
-                    switch (packet)
-                    {
-                        case PD_Validate data:
-                            HandleValidate?.Invoke(data);
-                            break;
-                        case PD_Info<Account> data:
-                            HandleAccountInfo?.Invoke(data);
-                            break;
-                        case PD_Info<AccountList> data:
-                            Debug.Log("received account list");
-                            HandleAccountList?.Invoke(data);
-                            break;
-                        case PD_Chat data:
-                            Debug.Log("received chat message");
-                            HandleChatMessage?.Invoke(data);
-                            break;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Unknow JSON message : " + message);
-                }
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Error while parsing JSON message : " + message);
-            }
+            //    if (packet != null)
+            //    {
+            //        switch (packet)
+            //        {
+            //            case PD_Validate data:
+            //                HandleValidate?.Invoke(data);
+            //                break;
+            //            case PD_Info<Account> data:
+            //                HandleAccountInfo?.Invoke(data);
+            //                break;
+            //            case PD_Info<AccountList> data:
+            //                Debug.Log("received account list" + HandleAccountList != null);
+            //                HandleAccountList(data);
+            //                break;
+            //            case PD_Chat data:
+            //                Debug.Log("received chat message");
+            //                HandleChatMessage?.Invoke(data);
+            //                break;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("Unknow JSON message : " + message);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    Console.WriteLine("Error while parsing JSON message : " + message);
+            //}
         }
     }
 }

@@ -18,7 +18,7 @@ namespace WOC_Network
             netstream = client.GetStream();
         }
 
-    public async Task SendAsync(string message)
+        public async Task SendAsync(string message)
         {
             try
             {                
