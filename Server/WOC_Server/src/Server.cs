@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,6 +18,24 @@ namespace WOC_Server
 
         public List<ServerSideSession> sessions = new List<ServerSideSession>();
         TcpListener listener;
+        public MySqlConnection connection;
+
+        public void SqlConnection()
+        {
+            string connectionString = "Data Source=localhost;Initial Catalog=woc;User ID=martin;Password=Jenesaispas:1204";
+            connection = new MySqlConnection(connectionString);
+            connection.Open();
+            MySqlCommand sqlcmd = connection.CreateCommand();
+            sqlcmd.CommandText = "INSERT INTO decks (name, account_id) SELECT @deck_name, id FROM accounts WHERE name = @account_name";
+            sqlcmd.Parameters.AddWithValue("@account_name", "martin");
+            sqlcmd.Parameters.AddWithValue("@deck_name", "my_healer");
+            sqlcmd.ExecuteNonQuery();
+        }
+
+        public void TryConnect()
+        {
+
+        }
 
         public async Task StartListenerAsync()
         {
@@ -37,6 +56,7 @@ namespace WOC_Server
         public void Close()
         {
             listener.Stop();
+            connection.Close();
         }
 
         private async Task StartHandleConnectionAsync(TcpClient tcpClient)

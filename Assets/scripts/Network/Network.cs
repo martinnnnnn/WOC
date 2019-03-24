@@ -35,6 +35,8 @@ namespace WOC
         protected void Start()
         {
             Run();
+
+
         }
 
         Task listenerTask;
@@ -130,12 +132,6 @@ namespace WOC
             return false;
         }
 
-        //public void OnAccountInfo(PD_Info<Account> data)
-        //{
-        //    account = data.info;
-        //    OnAccountInfo?.Invoke(account);
-        //}
-
         public void SendChatMessage(string message)
         {
             StartCoroutine(SendChatMessageRoutine(message));
@@ -170,17 +166,14 @@ namespace WOC
             }
         }
 
-        //Guid connectid;
         IEnumerator TryConnectRoutine(string accountname, string password)
         {
             PD_AccountConnect packet = new PD_AccountConnect()
             {
                 name = accountname
             };
-            //connectid = packet.id;
             string message = PacketData.ToJson(packet);
 
-            //OnHandleValidate += OnValidation;
             validationCallbaks.Add(new ValidationCallback()
             {
                 toValidate = packet.id,
@@ -214,10 +207,6 @@ namespace WOC
             session = new ClientSideSession(tcpClient, this);
             var sessionTask = session.StartAsync();
 
-            //session.HandleAccountInfo += OnAccountInfo;
-            //session.HandleChatMessage += ChatMessageReceived;
-            //session.HandleAccountList += AccountListUpdated;
-
             try
             {
                 await sessionTask;
@@ -229,6 +218,3 @@ namespace WOC
         }
     }
 }
-
-
-//network.InfoRequest("account").Wait();

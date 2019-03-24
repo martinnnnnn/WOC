@@ -74,12 +74,12 @@ namespace WOC_Server
             await Task.WhenAll(tasks);
         }
 
-        protected override void HandleIncoming(string message)
+        protected override void HandleIncoming(string jmessage)
         {
-            Console.WriteLine("I'm handling {0}", message);
+            Console.WriteLine("I'm handling {0}", jmessage);
             try
             {
-                IPacketData packet = PacketData.FromJson(message);
+                IPacketData packet = PacketData.FromJson(jmessage);
 
                 if (packet != null)
                 {
@@ -101,12 +101,12 @@ namespace WOC_Server
                 }
                 else
                 {
-                    Console.WriteLine("Unknow JSON message : " + message);
+                    Console.WriteLine("Unknow JSON message : " + jmessage);
                 }
             }
             catch (Exception)
             {
-                Console.WriteLine("Error while parsing JSON message : " + message);
+                Console.WriteLine("Error while parsing JSON message : " + jmessage);
             }
         }
 
@@ -124,21 +124,6 @@ namespace WOC_Server
                     string message = PacketData.ToJson(packet);
 
                     SendAsync(message).Wait();
-
-                    // temp
-                    //Console.WriteLine("sending account list");
-                    //List<string> accNames = new List<string>();
-                    //server.sessions.ForEach(session => accNames.Add(session.account.name));
-                    //PD_Info<AccountList> packet2 = new PD_Info<AccountList>()
-                    //{
-                    //    info = new AccountList()
-                    //    {
-                    //        names = accNames
-                    //    }
-                    //};
-                    //string message2 = PacketData.ToJson(packet2);
-
-                    //SendAsync(message2).Wait();
                     break;
                 }
                 case "account_list":
@@ -168,7 +153,6 @@ namespace WOC_Server
             {
                 validationId = data.id,
                 isValid = true
-                //isValid = data.name == account.name
             };
             Console.WriteLine("sending validation message");
             string message = PacketData.ToJson(packet);

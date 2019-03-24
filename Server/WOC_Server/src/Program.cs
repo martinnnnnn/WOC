@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
+            using MySql.Data.MySqlClient;
+
 
 namespace WOC_Server
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             Console.WriteLine(">> WOC Server");
