@@ -113,7 +113,6 @@ namespace WOC_Server
                         var bytesMessage = Encoding.UTF8.GetBytes(Utils.ToJson(account));
                         stream.WriteAsync(bytesMessage, 0, bytesMessage.Length).Wait();
                     }
-                    //File.WriteAllText(filePath, Utils.ToJson(account));
                 }
                 catch(Exception e)
                 {
