@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -16,63 +17,9 @@ namespace WOC_Server
         public ServerSideSession(TcpClient tcpClient, Server tcpServer) : base(tcpClient)
         {
             server = tcpServer;
-            account = new Account()
-            {
-                name = "martin",
-                characters = new List<Character>()
-                {
-                    new Character() { name = "myhunter", type = "hunter" },
-                    new Character() { name = "mychaman", type = "chaman" },
-                    new Character() { name = "mysorceress", type = "sorceress" },
-                    new Character() { name = "mybarbarian", type = "barbarian"}
-                },
-                decks = new List<Deck>()
-                {
-                    new Deck()
-                    {
-                        name = "tankdeck",
-                        cards = new List<Card>()
-                        {
-                            new Card() { name = "attak" },
-                            new Card() { name = "attack" },
-                            new Card() { name = "attack" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "aggro" },
-                            new Card() { name = "aggro" },
-                            new Card() { name = "aggro" },
-                            new Card() { name = "aggro" }
-                        }
-                    },
-                    new Deck()
-                    {
-                        name = "heal",
-                        cards = new List<Card>()
-                        {
-                            new Card() { name = "attak" },
-                            new Card() { name = "attack" },
-                            new Card() { name = "attack" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "proteck" },
-                            new Card() { name = "heal" },
-                            new Card() { name = "heal" },
-                            new Card() { name = "heal" },
-                            new Card() { name = "heal" }
-                        }
-                    }
-                }
-            };
         }
 
-        public async Task Broadcast(string message)
-        {
-            var tasks = server.sessions.Select(session => session.SendAsync(message));
-            await Task.WhenAll(tasks);
-        }
+
 
         protected override void HandleIncoming(string jmessage)
         {
@@ -89,13 +36,16 @@ namespace WOC_Server
                             HandleInfoRequest(data);
                             break;
                         case PD_AccountConnect data:
-                            AccountConnect(data);
+                            HandleAccountConnect(data);
                             break;
                         case PD_AccountDisconnect data:
-                            AccountDisconnect(data);
+                            HandleAccountDisconnect(data);
                             break;
-                        case PD_Chat data:
-                            Broadcast(PacketData.ToJson(data)).Wait();
+                        case PD_Create<Account> data:
+                            AccountCreate(data);
+                            break;
+                        default:
+                            server.HandleIncoming(this, packet);
                             break;
                     }
                 }
@@ -146,27 +96,81 @@ namespace WOC_Server
             }
         }
 
-        void AccountConnect(PD_AccountConnect data)
+
+        void AccountCreate(PD_Create<Account> data)
         {
-            account.name = data.name;
-            PD_Validate packet = new PD_Validate()
+            string errMessage = string.Empty;
+
+            string filePath = string.Format("{0}\\{1}\\{2}.json", Utils.DataPath, "accounts", data.toCreate.name);
+            if (!File.Exists(filePath) && account == null)
             {
-                validationId = data.id,
-                isValid = true
-            };
-            Console.WriteLine("sending validation message");
-            string message = PacketData.ToJson(packet);
-            SendAsync(message).Wait();
-            // load info from db
+                try
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    using (FileStream stream = File.Create(filePath))
+                    {
+                        account = data.toCreate;
+                        var bytesMessage = Encoding.UTF8.GetBytes(Utils.ToJson(account));
+                        stream.WriteAsync(bytesMessage, 0, bytesMessage.Length).Wait();
+                    }
+                    //File.WriteAllText(filePath, Utils.ToJson(account));
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("Coudln't write new account : " + e.Message);
+                    errMessage = "database_connection_problem";
+                }
+            }
+            else
+            {
+                errMessage = "account_already_exists";
+            }
+
+            SendValidation(data.id, errMessage).Wait();
         }
 
-        void AccountDisconnect(PD_AccountDisconnect data)
+        void HandleAccountConnect(PD_AccountConnect data)
         {
+            string errMessage = string.Empty;
+
+            string filePath = string.Format("{0}/{1}/{2}.json", Utils.DataPath, "accounts", data.name);
+            if (File.Exists(filePath))
+            {
+                string jaccount = File.ReadAllText(filePath);
+                account = Utils.FromJson<Account>(jaccount);
+
+                if (account.password != data.password)
+                {
+                    errMessage = "wrong_password";
+                }
+            }
+            else
+            {
+                errMessage = "account_not_found";
+            }
+
+            SendValidation(data.id, errMessage).Wait();
+        }
+
+        void HandleAccountDisconnect(PD_AccountDisconnect data)
+        {
+            string errorMessage = string.Empty;
+
             if (account != null)
             {
-                // save info to db
+                string filePath = string.Format("{0}/{1}/{2}.json", Utils.DataPath, "accounts", data.name);
+
+                string jaccount = Utils.ToJson(account);
+                File.WriteAllText(filePath, jaccount);
+
                 account = null;
             }
+            else
+            {
+                errorMessage = "no_account_connected";
+            }
+
+            SendValidation(data.id, errorMessage).Wait();
         }
     }
 }

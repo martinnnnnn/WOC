@@ -8,11 +8,12 @@ namespace WOC
 {
     public class ConnectionMenu : MonoBehaviour
     {
-        public TMPro.TMP_InputField accountName;
-        public TMPro.TMP_InputField accountPassword;
 
         public GameObject menuConnect;
         public GameObject menuHome;
+
+        public TMPro.TMP_InputField accountName;
+        public TMPro.TMP_InputField accountPassword;
 
         public TMPro.TextMeshProUGUI charactersList;
         public TMPro.TextMeshProUGUI decksList;
@@ -48,6 +49,15 @@ namespace WOC
             Network.Instance.OnChatMessageReceived += OnChatMessage;
             Network.Instance.OnAccountsListUpdated += OnAccountList;
         }
+
+        public void OnCreateButton()
+        {
+            Network.Instance.TryCreate(accountName.text, accountPassword.text);
+            Network.Instance.OnAccountInfo += OnConnectCompleted;
+            Network.Instance.OnChatMessageReceived += OnChatMessage;
+            Network.Instance.OnAccountsListUpdated += OnAccountList;
+        }
+
 
         public void OnConnectCompleted(Account account)
         {

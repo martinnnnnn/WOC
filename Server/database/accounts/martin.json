@@ -1,0 +1,1 @@
+{"$type":"WOC_Network.Account, WOC_Network","name":"martin","password":"azer","characters":{"$type":"System.Collections.Generic.List`1[[WOC_Network.Character, WOC_Network]], mscorlib","$values":[]},"decks":{"$type":"System.Collections.Generic.List`1[[WOC_Network.Deck, WOC_Network]], mscorlib","$values":[]}}

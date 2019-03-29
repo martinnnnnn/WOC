@@ -11,6 +11,23 @@ namespace WOC_Network
         public Guid validationId;
         public bool isValid;
         public string errorMessage;
+
+        public PD_Validate()
+        {
+        }
+
+        public PD_Validate(Guid valId, string message = "")
+        {
+            validationId = valId;
+            isValid = string.IsNullOrEmpty(message);
+            errorMessage = message;
+        }
+
+        public PD_Validate(Guid valId, bool valid, string message = "")
+        {
+            isValid = valid;
+            errorMessage = message;
+        }
     }
 
     public class PD_InfoRequest : IPacketData
@@ -37,17 +54,43 @@ namespace WOC_Network
     public class PD_AccountConnect : IPacketData
     {
         public string name;
+        public string password;
     }
 
     public class PD_AccountDisconnect : IPacketData
     {
         public string name;
     }
-
-    public class AccountList
+    public class PD_BattleAction : IPacketData
     {
-        public List<string> names;
+        public string battleName;
     }
+
+    public class PD_BattleCardPlayed : PD_BattleAction
+    {
+        public string cardName;
+        public string owner;
+        public string target;
+    }
+
+    public class PD_BattleMonsterAction : PD_BattleAction
+    {
+        public string monsterName;
+        public string actionName;
+        public string target;
+    }
+
+    public class PD_BattleStart : PD_BattleAction {}
+    
+    public class PD_BattleRegister : PD_BattleAction
+    {
+        public string accountName;
+    }
+    public class PD_BattleDisconnect : PD_BattleAction
+    {
+        public string accountName;
+    }
+
 
     public class PacketData
     {

@@ -5,6 +5,7 @@ using WOC_Network;
 using UnityEngine;
 using System.Collections;
 using System.Net.Sockets;
+using Newtonsoft.Json;
 
 namespace WOC
 {
@@ -36,7 +37,6 @@ namespace WOC
         {
             Run();
 
-
         }
 
         Task listenerTask;
@@ -51,8 +51,35 @@ namespace WOC
 
         }
 
+        //static JsonSerializerSettings settings = new JsonSerializerSettings
+        //{
+        //    TypeNameHandling = TypeNameHandling.All
+        //};
+
+        //public static string ToJson(IPacketData packet, bool indent = false)
+        //{
+        //    return JsonConvert.SerializeObject(packet, settings);
+        //}
+
+        //public static IPacketData FromJson(string jpackage)
+        //{
+        //    IPacketData data;
+        //    try
+        //    {
+        //        data = JsonConvert.DeserializeObject<IPacketData>(jpackage, settings);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Debug.Log(e.Message);
+        //        data = null;
+        //    }
+        //    return data;
+        //}
+
+
         public void HandleIncoming(string jmessage)
         {
+            Console.WriteLine("hello");
             try
             {
                 IPacketData packet = PacketData.FromJson(jmessage);
@@ -77,12 +104,12 @@ namespace WOC
                 }
                 else
                 {
-                    Console.WriteLine("Unknow JSON message : " + jmessage);
+                    Debug.Log("Unknow JSON message : " + jmessage);
                 }
             }
             catch (Exception)
             {
-                Console.WriteLine("Error while parsing JSON message : " + jmessage);
+                Debug.Log("Error while parsing JSON message : " + jmessage);
             }
         }
 
@@ -109,7 +136,10 @@ namespace WOC
             OnChatMessageReceived?.Invoke(data.senderName, data.message);
         }
 
-
+        public void TryCreate(string accountname, string password)
+        {
+            StartCoroutine(TryCreateRoutine(accountname, password));
+        }
 
 
         public void TryConnect(string accountname, string password)
@@ -123,9 +153,31 @@ namespace WOC
             {
                 if (validation.isValid)
                 {
-                    //OnHandleValidate -= OnValidation;
                     StartCoroutine(RequestInfoRoutine("account"));
                     StartCoroutine(RequestInfoRoutine("account_list"));
+                }
+                else
+                {
+                    Debug.Log("Connection error : " + validation.errorMessage);
+                }
+                return true;
+            }
+            return false;
+        }
+
+
+        public bool OnCreationValidation(Guid toValidate, PD_Validate validation)
+        {
+            if (toValidate == validation.validationId)
+            {
+                if (validation.isValid)
+                {
+                    StartCoroutine(RequestInfoRoutine("account"));
+                    StartCoroutine(RequestInfoRoutine("account_list"));
+                }
+                else
+                {
+                    Debug.Log("Creation error : " + validation.errorMessage);
                 }
                 return true;
             }
@@ -139,7 +191,7 @@ namespace WOC
 
         IEnumerator SendChatMessageRoutine(string msg)
         {
-            PD_Chat packet = new PD_Chat()
+            PD_Chat packet = new PD_Chat
             {
                 senderName = account.name,
                 message = msg
@@ -154,7 +206,7 @@ namespace WOC
 
         IEnumerator RequestInfoRoutine(string type)
         {
-            PD_InfoRequest packet = new PD_InfoRequest()
+            PD_InfoRequest packet = new PD_InfoRequest
             {
                 infoType = type
             };
@@ -166,18 +218,44 @@ namespace WOC
             }
         }
 
-        IEnumerator TryConnectRoutine(string accountname, string password)
+        IEnumerator TryConnectRoutine(string accountname, string pw)
         {
-            PD_AccountConnect packet = new PD_AccountConnect()
+            PD_AccountConnect packet = new PD_AccountConnect
             {
-                name = accountname
+                name = accountname,
+                password = pw
             };
             string message = PacketData.ToJson(packet);
 
-            validationCallbaks.Add(new ValidationCallback()
+            validationCallbaks.Add(new ValidationCallback
             {
                 toValidate = packet.id,
                 Validation = OnConnectionValidation
+            });
+
+            var write = WriteAsync(message);
+            while (!write.IsCompleted)
+            {
+                yield return null;
+            }
+        }
+
+        IEnumerator TryCreateRoutine(string accountname, string pw)
+        {
+            PD_Create<Account> packet = new PD_Create<Account>
+            {
+                toCreate = new Account
+                {
+                    name = accountname,
+                    password = pw
+                }
+            };
+            string message = PacketData.ToJson(packet);
+
+            validationCallbaks.Add(new ValidationCallback
+            {
+                toValidate = packet.id,
+                Validation = OnCreationValidation
             });
 
             var write = WriteAsync(message);
@@ -195,7 +273,7 @@ namespace WOC
             }
             catch (Exception e)
             {
-                Console.WriteLine("Failed to AsyncWrite : {0}", e.Message);
+                Debug.Log("Failed to AsyncWrite : " + e.Message);
             }
         }
 
@@ -213,7 +291,7 @@ namespace WOC
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Debug.Log(ex.ToString());
             }
         }
     }

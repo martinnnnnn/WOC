@@ -35,7 +35,6 @@ namespace WOC_Network
             }
         }
 
-
         public async Task StartAsync()
         {
             await Task.Yield();
@@ -62,6 +61,11 @@ namespace WOC_Network
         protected virtual void HandleIncoming(string message)
         {
             Console.WriteLine("I'm don't know how to handle {0}", message);
+        }
+
+        public async Task SendValidation(Guid toValidate, string errMessage = "")
+        {
+            await SendAsync(PacketData.ToJson(new PD_Validate(toValidate, errMessage)));
         }
     }
 
