@@ -58,6 +58,13 @@ namespace WOC
             Network.Instance.OnAccountsListUpdated += OnAccountList;
         }
 
+        public void OnDisconnectButton()
+        {
+            Network.Instance.Disconnect();
+            menuConnect.SetActive(true);
+            menuHome.SetActive(false);
+        }
+
 
         public void OnConnectCompleted(Account account)
         {

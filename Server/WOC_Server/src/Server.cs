@@ -145,8 +145,8 @@ namespace WOC_Server
         private async Task StartHandleConnectionAsync(TcpClient tcpClient)
         {
             ServerSideSession session = new ServerSideSession(tcpClient, this);
-            var sessionTask = session.StartAsync();
-
+            var sessionTask = Task.Run(() => session.StartAsync());
+            //var sessionTask = session.StartAsync();
             lock (threadLock)
             {
                 connections.Add(sessionTask);

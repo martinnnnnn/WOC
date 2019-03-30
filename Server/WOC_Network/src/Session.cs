@@ -37,8 +37,6 @@ namespace WOC_Network
 
         public async Task StartAsync()
         {
-            await Task.Yield();
-
             var buffer = new byte[4096];
             Console.WriteLine("[Server] Reading from client");
             while (true)

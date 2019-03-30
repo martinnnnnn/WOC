@@ -36,20 +36,41 @@ namespace WOC
         protected void Start()
         {
             Run();
-
         }
 
         Task listenerTask;
         public void Run()
         {
             listenerTask = StartListenerAsync();
-
         }
 
-        public void Shutdown()
+        public void Disconnect()
         {
+            Debug.Log("Closing stream");
 
+            if (session != null)
+            {
+                PD_Shutdown packet = new PD_Shutdown();
+                string message = PacketData.ToJson(packet);
+                WriteAsync(message);
+            }
+
+            session?.netstream?.Close();
+            session?.client?.Close();
         }
+
+        //public void OnDisconnected()
+        //{
+        //    if (session != null)
+        //    {
+        //        PD_Shutdown packet = new PD_Shutdown();
+        //        string message = PacketData.ToJson(packet);
+        //        WriteAsync(message);
+        //    }
+
+        //    session?.netstream?.Close();
+        //    session?.client?.Close();
+        //}
 
         //static JsonSerializerSettings settings = new JsonSerializerSettings
         //{
@@ -79,7 +100,6 @@ namespace WOC
 
         public void HandleIncoming(string jmessage)
         {
-            Console.WriteLine("hello");
             try
             {
                 IPacketData packet = PacketData.FromJson(jmessage);
@@ -144,6 +164,7 @@ namespace WOC
 
         public void TryConnect(string accountname, string password)
         {
+            listenerTask = StartListenerAsync();
             StartCoroutine(TryConnectRoutine(accountname, password));
         }
 
@@ -277,6 +298,11 @@ namespace WOC
             }
         }
 
+        private void OnApplicationQuit()
+        {
+            Disconnect();
+        }
+
         private async Task StartListenerAsync()
         {
             TcpClient tcpClient = new TcpClient();
@@ -292,6 +318,10 @@ namespace WOC
             catch (Exception ex)
             {
                 Debug.Log(ex.ToString());
+            }
+            finally
+            {
+                Disconnect();
             }
         }
     }

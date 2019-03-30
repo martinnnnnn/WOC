@@ -62,7 +62,7 @@ namespace WOC_Server
             var listener = server.StartListenerAsync();
 
             string[] cmd = null;
-            while(cmd == null || cmd[0] != "quit")
+            while (cmd == null || cmd[0] != "quit")
             {
                 cmd = Console.ReadLine().Split(' ');
                 Console.WriteLine("omg i'm such an CLI, i'm doing so much work here");

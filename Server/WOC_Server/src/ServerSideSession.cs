@@ -44,6 +44,10 @@ namespace WOC_Server
                         case PD_Create<Account> data:
                             AccountCreate(data);
                             break;
+                        case PD_Shutdown data:
+                            netstream.Close();
+                            client.Close();
+                            break;
                         default:
                             server.HandleIncoming(this, packet);
                             break;

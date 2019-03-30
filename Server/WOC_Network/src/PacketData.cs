@@ -30,6 +30,8 @@ namespace WOC_Network
         }
     }
 
+    public class PD_Shutdown : IPacketData {}
+
     public class PD_InfoRequest : IPacketData
     {
         public string infoType;
