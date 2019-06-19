@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2046
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Battle", "WOC_Battle.csproj", "{FA5B2EA8-1E76-4F8D-827A-E6601E589B0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattlePlayground", "..\BattlePlayground\BattlePlayground.csproj", "{A5A62BB5-D8C1-4875-9503-181D212AACBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FA5B2EA8-1E76-4F8D-827A-E6601E589B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA5B2EA8-1E76-4F8D-827A-E6601E589B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA5B2EA8-1E76-4F8D-827A-E6601E589B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA5B2EA8-1E76-4F8D-827A-E6601E589B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5A62BB5-D8C1-4875-9503-181D212AACBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A62BB5-D8C1-4875-9503-181D212AACBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A62BB5-D8C1-4875-9503-181D212AACBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A62BB5-D8C1-4875-9503-181D212AACBE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {58176BCE-8E10-42AC-B6A6-BECD5FE96F78}
+	EndGlobalSection
+EndGlobal
