@@ -33,8 +33,14 @@ namespace WOC
 
         Action<PD_Validate> OnHandleValidate;
 
+
+
+        CoroutineQueue coroutineQueue;
+
+
         protected void Start()
         {
+            coroutineQueue = new CoroutineQueue(this);
             Run();
         }
 
@@ -58,45 +64,6 @@ namespace WOC
             session?.netstream?.Close();
             session?.client?.Close();
         }
-
-        //public void OnDisconnected()
-        //{
-        //    if (session != null)
-        //    {
-        //        PD_Shutdown packet = new PD_Shutdown();
-        //        string message = PacketData.ToJson(packet);
-        //        WriteAsync(message);
-        //    }
-
-        //    session?.netstream?.Close();
-        //    session?.client?.Close();
-        //}
-
-        //static JsonSerializerSettings settings = new JsonSerializerSettings
-        //{
-        //    TypeNameHandling = TypeNameHandling.All
-        //};
-
-        //public static string ToJson(IPacketData packet, bool indent = false)
-        //{
-        //    return JsonConvert.SerializeObject(packet, settings);
-        //}
-
-        //public static IPacketData FromJson(string jpackage)
-        //{
-        //    IPacketData data;
-        //    try
-        //    {
-        //        data = JsonConvert.DeserializeObject<IPacketData>(jpackage, settings);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.Log(e.Message);
-        //        data = null;
-        //    }
-        //    return data;
-        //}
-
 
         public void HandleIncoming(string jmessage)
         {
@@ -127,9 +94,11 @@ namespace WOC
                     Debug.Log("Unknow JSON message : " + jmessage);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Debug.Log("Error while parsing JSON message : " + jmessage);
+                Debug.Log("Error while parsing JSON message : " + jmessage
+                    + "\n" + e.Message
+                    + "\n" + e.StackTrace);
             }
         }
 
@@ -148,7 +117,14 @@ namespace WOC
 
         private void HandleAccountList(PD_Info<AccountList> data)
         {
-            OnAccountsListUpdated?.Invoke(data.info.names);
+            try
+            {
+                OnAccountsListUpdated?.Invoke(data.info.names);
+            }
+            catch(Exception e)
+            {
+                Debug.Log("Failed on OnAccountsListUpdated");
+            }
         }
 
         private void HandleChatMessage(PD_Chat data)
@@ -164,7 +140,7 @@ namespace WOC
 
         public void TryConnect(string accountname, string password)
         {
-            listenerTask = StartListenerAsync();
+            //listenerTask = StartListenerAsync();
             StartCoroutine(TryConnectRoutine(accountname, password));
         }
 
@@ -309,6 +285,7 @@ namespace WOC
             await tcpClient.ConnectAsync(ip, port);
 
             session = new ClientSideSession(tcpClient, this);
+
             var sessionTask = session.StartAsync();
 
             try

@@ -78,8 +78,7 @@ namespace WOC
 
         Color FromHtmlString(string str = "white")
         {
-            Color c;
-            return ColorUtility.TryParseHtmlString(str, out c) ? c : Color.gray;
+            return ColorUtility.TryParseHtmlString(str, out Color c) ? c : Color.gray;
         }
 
         public void ReadJson(JToken jcard)

@@ -11,41 +11,7 @@ using System.Threading;
 
 namespace WOC_Server
 {
-    public static class Utils
-    {
 
-        public static string DataPath = ".";
-
-        public static T FromJson<T>(string jobj) where T : class
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            };
-
-            T obj;
-            try
-            {
-                obj = JsonConvert.DeserializeObject<T>(jobj, settings);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                obj = null;
-            }
-            return obj;
-        }
-
-        public static string ToJson<T>(T obj, bool indent = false)
-        {
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.All
-            };
-            return JsonConvert.SerializeObject(obj, settings);
-        }
-
-    }
 
     class Program
     {
@@ -55,7 +21,7 @@ namespace WOC_Server
             if (Debugger.IsAttached)
                 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
-            Utils.DataPath = args[0];
+            WOC_Network.Utils.DataPath = args[0];
 
             Console.WriteLine(">> WOC Server");
             Server server = new Server();

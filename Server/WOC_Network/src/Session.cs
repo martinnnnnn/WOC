@@ -14,8 +14,6 @@ namespace WOC_Network
 
         // db port 3306 33060
 
-
-
         public Session(TcpClient tcpClient)
         {
             client = tcpClient;
@@ -56,14 +54,11 @@ namespace WOC_Network
             }
         }
 
-        protected virtual void HandleIncoming(string message)
-        {
-            Console.WriteLine("I'm don't know how to handle {0}", message);
-        }
+        protected virtual void HandleIncoming(string message) {}
 
         public async Task SendValidation(Guid toValidate, string errMessage = "")
         {
-            await SendAsync(PacketData.ToJson(new PD_Validate(toValidate, errMessage)));
+            await SendAsync(Utils.ToJson(new PD_Validate(toValidate, errMessage)));
         }
     }
 

@@ -87,7 +87,7 @@ namespace WOC
         public void OnAccountList(List<string> accountsName)
         {
             onlinePlayersList.text = "";
-            accountsName.ForEach(name => onlinePlayersList.text += name + "\n");
+            //accountsName.ForEach(name => onlinePlayersList.text += name + "\n");
         }
     }
 }
