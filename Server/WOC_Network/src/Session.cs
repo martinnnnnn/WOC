@@ -60,6 +60,11 @@ namespace WOC_Network
         {
             await SendAsync(Utils.ToJson(new PD_Validate(toValidate, errMessage)));
         }
+
+        public async Task SendValidation(Guid toValidate, string errMessage = "")
+        {
+            await SendAsync(PacketData.ToJson(new PD_Validate(toValidate, errMessage)));
+        }
     }
 
 

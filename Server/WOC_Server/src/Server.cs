@@ -75,6 +75,7 @@ namespace WOC_Server
                     break;
             }
 
+            sender.SendValidation(data.id, errMessage).Wait();
         }
 
         void CreateBattle(Session sender, PD_Create<BattleInfo> data)

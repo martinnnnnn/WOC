@@ -10,7 +10,6 @@ namespace WOC_Network
     public class Card
     {
         public string name;
-    }
 
     public class Deck
     {
@@ -18,10 +17,17 @@ namespace WOC_Network
         public List<Card> cards = new List<Card>();
     }
 
+    public class Power
+    {
+        public string name;
+        public string effect;
+    }
+
     public class Character
     {
         public string name;
         public string type;
+        public Power power;
     }
 
     public class Account
@@ -36,22 +42,9 @@ namespace WOC_Network
         public List<string> names;
     }
 
-    public class Monster
-    {
-        public string name;
-    }
 
-    public class Player
-    {
-        public int life;
-        public int mana;
-        public int aggro;
-        public int initiative;
-        public List<Card> deck = new List<Card>();
-        public List<Card> drawPile = new List<Card>();
-        public List<Card> discardPile = new List<Card>();
-        public List<Card> hand = new List<Card>();
-    }
+
+
 
     public class BattleInfo
     {
