@@ -8,9 +8,12 @@ namespace WOC_Battle
 {
     public class PNJActor : Actor
     {
+
         public PNJActor(
+            Battle battle,
+            int life,
             int initialInitiative,
-            int maxInitiative)
+            int maxInitiative) : base(battle, life)
         {
             initiative.Set(initialInitiative, maxInitiative);
         }

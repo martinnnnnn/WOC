@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,22 +12,19 @@ namespace WOC_Battle
         public Aggro aggro = new Aggro();
         public Mana mana = new Mana();
         public List<Card> deck = new List<Card>();
-        public Character character = new Character();
         public CardPile drawPile = new CardPile();
         public CardPile discardPile = new CardPile();
         public Hand hand = new Hand();
-        Battle battle;
 
+        [JsonConstructor]
         public PlayerActor(
             Battle battle,
             List<string> cardsNames,
             int aggroIncrement,
             int manaMax,
             int maxInitiative,
-            int life) 
+            int life) : base(battle, life)
         {
-            this.battle = battle;
-
             foreach (string cardName in cardsNames)
             {
                 deck.Add(battle.GetCard(cardName));

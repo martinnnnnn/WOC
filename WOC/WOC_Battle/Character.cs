@@ -12,14 +12,14 @@ namespace WOC_Battle
         public float MaxLife;
         public Actor Owner;
 
-        public Action OnDeath;
+        public Action<Character> OnDeath;
 
         public void ChangeLife(float value)
         {
             Life += value;
             if (Life <= 0)
             {
-                OnDeath();
+                OnDeath(this);
             }
         }
     }

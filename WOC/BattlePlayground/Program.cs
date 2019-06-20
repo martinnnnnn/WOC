@@ -31,23 +31,27 @@ namespace BattlePlayground
                 new CardEffectHeal(3),
                 new CardEffectDamage(3),
             }));
-
-
-            string jcards = WOC_Core.Serialization.ToJson(cardsMap, true);
-            Console.WriteLine(jcards);
-            Dictionary<string, Card> cardsMap2 = WOC_Core.Serialization.FromJson<Dictionary<string, Card>>(jcards);
+            cardsMap.ToList().ForEach(pair => battle.Add(pair.Value));
 
             /*
-             * PLAYERS
+             * PLAYERS && PNJS
              */
-            Actor a1 = new PlayerActor(battle, new List<string> { "card1", "card1",}, 1, 1, 1, 1);
+            List<Actor> actors = new List<Actor>()
+            {
+                new PlayerActor(battle, new List<string> { "card1", "card1", }, 1, 1, 1, 1),
+                new PlayerActor(battle, new List<string> { "card2", "card2", }, 2, 2, 2, 2),
+                new PNJActor(1, 2),
+                new PNJActor(3, 4)
+            };
 
+            actors.ForEach(a => battle.Add(a));
 
             /*
              * BATTLE
              */
+            battle.Init();
 
-            cardsMap.ToList().ForEach(pair => battle.Add(pair.Value));
+
         }
     }
 }
