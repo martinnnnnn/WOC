@@ -36,15 +36,15 @@ namespace BattlePlayground
             /*
              * PLAYERS && PNJS
              */
-            List<Actor> actors = new List<Actor>()
-            {
-                new PlayerActor(battle, new List<string> { "card1", "card1", }, 1, 1, 1, 1),
-                new PlayerActor(battle, new List<string> { "card2", "card2", }, 2, 2, 2, 2),
-                new PNJActor(1, 2),
-                new PNJActor(3, 4)
-            };
+            //List<Actor> actors = new List<Actor>()
+            //{
+            //    new PlayerActor(battle, new List<string> { "card1", "card1", }, 1, 1, 1, 1),
+            //    new PlayerActor(battle, new List<string> { "card2", "card2", }, 2, 2, 2, 2),
+            //    new PNJActor(1, 2),
+            //    new PNJActor(3, 4)
+            //};
 
-            actors.ForEach(a => battle.Add(a));
+            //actors.ForEach(a => battle.Add(a));
 
             /*
              * BATTLE

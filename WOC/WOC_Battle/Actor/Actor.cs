@@ -18,6 +18,7 @@ namespace WOC_Battle
             this.battle = battle;
             this.character = character;
             this.character.Life = life;
+            this.character.MaxLife = life;
             this.character.OnDeath += battle.OnCharacterDeath;
         }
 
@@ -27,7 +28,6 @@ namespace WOC_Battle
 
         public virtual void BattleEnd()
         {
-
         }
 
         public virtual void StartTurn()

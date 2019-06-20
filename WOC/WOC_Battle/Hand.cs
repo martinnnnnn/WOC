@@ -6,7 +6,7 @@ namespace WOC_Battle
 {
     public class Hand
     {
-        public List<Card> cards = new List<Card>();
+        List<Card> cards = new List<Card>();
         public int maxCount;
         public int startingCount;
 
@@ -30,6 +30,11 @@ namespace WOC_Battle
             {
                 cards.AddRange(newCards);
             }
+        }
+
+        public bool Contains(Card card)
+        {
+            return cards.Find(c => c.name == card.name) != null;
         }
 
         public void Remove(Card toRemove)

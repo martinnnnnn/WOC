@@ -19,11 +19,12 @@ namespace WOC_Battle
         [JsonConstructor]
         public PlayerActor(
             Battle battle,
+            Character character,
             List<string> cardsNames,
             int aggroIncrement,
             int manaMax,
             int maxInitiative,
-            int life) : base(battle, life)
+            int life) : base(battle, character, life)
         {
             foreach (string cardName in cardsNames)
             {
@@ -33,8 +34,6 @@ namespace WOC_Battle
             aggro.IncrementRatio = 0;
             mana.Max = manaMax;
             initiative.Set(deck.Count, maxInitiative);
-            character.Life = life;
-            character.MaxLife = life;
         }
 
         public override void BattleInit()
@@ -79,19 +78,16 @@ namespace WOC_Battle
 
         public bool PlayCard(Card card, Character target)
         {
-            PlayInfo info = new PlayInfo()
+            if (hand.Contains(card))
             {
-                Owner = this,
-                Target = target
-            };
-
-            if (card.Play(info))
-            {
-                mana.Consume(card.manaCost);
-                hand.Remove(card);
-                discardPile.Push(card);
-                aggro.Increment();
-                return true;
+                if (card.Play(new PlayInfo(){Owner = this, Target = target}))
+                {
+                    mana.Consume(card.manaCost);
+                    hand.Remove(card);
+                    discardPile.Push(card);
+                    aggro.Increment();
+                    return true;
+                }
             }
             return false;
         }
@@ -138,7 +134,7 @@ namespace WOC_Battle
 
         public void DiscardRandomCards(int count, Card caller = null)
         {
-            while (hand.cards.Count > 0 && count > 0)
+            while (hand.Count > 0 && count > 0)
             {
                 Card card = hand.DiscardRandom(caller);
                 if (card != null)
