@@ -50,7 +50,6 @@ namespace BattlePlayground
             };
             actors.ForEach(a => battle.Add(a));
 
-
             RunBattle();
         }
 

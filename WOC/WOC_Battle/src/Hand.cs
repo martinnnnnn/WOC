@@ -60,7 +60,7 @@ namespace WOC_Battle
 
         public Card Remove(int index)
         {
-            if (index > 0 && index < Count)
+            if (index >= 0 && index < Count)
             {
                 return cards[index];
             }
