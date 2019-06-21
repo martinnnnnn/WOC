@@ -24,8 +24,7 @@ namespace WOC_Battle
             string name,
             List<string> cardsNames,
             int aggroIncrement,
-            int manaMax,
-            int maxInitiative) : base(battle, character, name)
+            int manaMax) : base(battle, character, name)
         {
             foreach (string cardName in cardsNames)
             {
@@ -35,7 +34,6 @@ namespace WOC_Battle
             this.hand = hand;
             aggro.IncrementRatio = 0;
             mana.Max = manaMax;
-            initiative.Set(deck.Count, maxInitiative);
         }
 
         public override void BattleInit()
@@ -146,6 +144,11 @@ namespace WOC_Battle
                 }
                 --count;
             }
+        }
+
+        public override void UpdateInitiative()
+        {
+            initiative.Set(deck.Count);
         }
     }
 }

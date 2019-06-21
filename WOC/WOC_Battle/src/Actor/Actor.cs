@@ -22,6 +22,10 @@ namespace WOC_Battle
             Name = name;
         }
 
+        public virtual void UpdateInitiative()
+        {
+        }
+
         public virtual void BattleInit()
         {
         }

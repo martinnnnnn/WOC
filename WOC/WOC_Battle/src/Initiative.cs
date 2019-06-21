@@ -7,17 +7,16 @@ namespace WOC_Battle
     public class Initiative
     {
         public int Value;
-        int max;
+        public static int Max = 50;
 
         /// <summary>
         /// Initiative's value is set in regards to the number of cards a players has
         /// and an arbitrary maximum possible value of initiative
         /// </summary>
         /// <param name="cardCount"></param>
-        public void Set(int cardCount, int maxInitiative)
+        public void Set(int value)
         {
-            max = maxInitiative;
-            Value = (int)(1.0f / (float)cardCount * max);
+            Value = (int)((1.0f / (float)value) * Max);
         }
     }
 }

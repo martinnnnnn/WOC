@@ -34,6 +34,7 @@ namespace WOC_Battle
 
         public void UpdateInitiatives()
         {
+            Actors.ForEach(a => a.UpdateInitiative());
             Actors.Sort((a1, a2) => a1.initiative.Value.CompareTo(a2.initiative.Value));
         }
 

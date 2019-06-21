@@ -13,10 +13,9 @@ namespace WOC_Battle
             Battle battle,
             Character character,
             string name,
-            int initialInitiative,
-            int maxInitiative) : base(battle, character, name)
+            int initialInitiative) : base(battle, character, name)
         {
-            initiative.Set(initialInitiative, maxInitiative);
+            initiative.Set(initialInitiative);
         }
 
         public override void BattleInit()
@@ -37,6 +36,10 @@ namespace WOC_Battle
         public override void EndTurn()
         {
             base.EndTurn();
+        }
+        public override void UpdateInitiative()
+        {
+            //initiative.FromCardCount(initialInitiative);
         }
     }
 }

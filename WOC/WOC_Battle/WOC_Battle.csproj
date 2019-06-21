@@ -44,23 +44,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actor\Actor.cs" />
-    <Compile Include="Aggro.cs" />
-    <Compile Include="Battle.cs" />
-    <Compile Include="CardPile.cs" />
-    <Compile Include="Card\Card.cs" />
-    <Compile Include="Card\CardEffect.cs" />
-    <Compile Include="Card\Effect\CardEffectDamage.cs" />
-    <Compile Include="Card\Effect\CardEffectDiscard.cs" />
-    <Compile Include="Card\Effect\CardEffectDraw.cs" />
-    <Compile Include="Card\Effect\CardEffectHeal.cs" />
-    <Compile Include="Character.cs" />
-    <Compile Include="Hand.cs" />
-    <Compile Include="Initiative.cs" />
-    <Compile Include="Mana.cs" />
-    <Compile Include="Actor\PlayerActor.cs" />
-    <Compile Include="Actor\PNJActor.cs" />
+    <Compile Include="src\Actor\Actor.cs" />
+    <Compile Include="src\Aggro.cs" />
+    <Compile Include="src\Battle.cs" />
+    <Compile Include="src\CardPile.cs" />
+    <Compile Include="src\Card\Card.cs" />
+    <Compile Include="src\Card\CardEffect.cs" />
+    <Compile Include="src\Card\Effect\CardEffectDamage.cs" />
+    <Compile Include="src\Card\Effect\CardEffectDiscard.cs" />
+    <Compile Include="src\Card\Effect\CardEffectDraw.cs" />
+    <Compile Include="src\Card\Effect\CardEffectHeal.cs" />
+    <Compile Include="src\Character.cs" />
+    <Compile Include="src\Hand.cs" />
+    <Compile Include="src\Initiative.cs" />
+    <Compile Include="src\Mana.cs" />
+    <Compile Include="src\Actor\PlayerActor.cs" />
+    <Compile Include="src\Actor\PNJActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Race.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

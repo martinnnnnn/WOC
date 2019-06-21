@@ -8,49 +8,54 @@ namespace BattlePlayground
 {
     class Program
     {
+        static Battle battle;
+
         static void Main(string[] args)
         {
-            Battle battle = new Battle();
+            battle = new Battle();
 
-            /*
-             * CARDS
-             */
-            Dictionary<string, Card> cardsMap = new Dictionary<string, Card>();
-            cardsMap.Add("card1", new Card("card1", 1, false, new List<CardEffect>
-            {
-                new CardEffectHeal(1),
-                new CardEffectDamage(1)
-            }));
-            cardsMap.Add("card2", new Card("card2", 2, false, new List<CardEffect>
-            {
-                new CardEffectHeal(2),
-                new CardEffectDamage(2)
-            }));
-            cardsMap.Add("card3", new Card("card3", 3, false, new List<CardEffect>
-            {
-                new CardEffectHeal(3),
-                new CardEffectDamage(3)
-            }));
-            cardsMap.ToList().ForEach(pair => battle.Add(pair.Value));
+            // INIT
+            Initiative.Max = 50;
 
-            /*
-             * PLAYERS && PNJS
-             */
+            // CARDS
+            List<Card> cardsMap = new List<Card>()
+            {
+                // name | mana cost | exhaust | effects list
+                new Card("smol_dmg", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(1)
+                }),
+                new Card("hek", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(4)
+                })
+            };
+            cardsMap.ForEach(c => battle.Add(c));
+
+            //PLAYERS && PNJS
             List<Actor> actors = new List<Actor>()
             {
-                new PlayerActor(battle, new Character("grrr", 12, 12), new Hand(2, 3), "player1", new List<string> { "card1", "card2", "card1", "card2" }, 2, 30, 4),
-                new PlayerActor(battle, new Character("gromelo", 12, 12), new Hand(2, 3), "player2", new List<string> { "card2", "card3", "card2", "card3" }, 3, 30, 6),
-                new PlayerActor(battle, new Character("branigan", 12, 12), new Hand(2, 3), "player3", new List<string> { "card1", "card3", "card1", "card3" }, 4, 30, 1),
-                new PNJActor(battle, new Character("bouboubou1", 50, 50), "monstre1", 5, 5),
-                new PNJActor(battle, new Character("bouboubou2", 50, 50), "monstre2",5, 5),
-                new PNJActor(battle, new Character("bouboubou3", 50, 50), "monstre3", 5, 5)
+                // battle | character(race, category, life, name) | hand | name | deck | aggroIncrement | max mana
+                new PlayerActor(battle, new Character(Character.Race.ELFE, Character.Category.DRUID, 12, "grrr"), new Hand(2, 3), "player1", new List<string> { "smol_dmg", "smol_dmg", "smol_dmg", "smol_dmg" }, 2, 30),
+                new PlayerActor(battle, new Character(Character.Race.HUMAN, Character.Category.PALADIN, 12, "gromelo"), new Hand(2, 3), "player2", new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek" }, 3, 30),
+                new PlayerActor(battle, new Character(Character.Race.ELFE, Character.Category.SORCERER, 12, "branigan"), new Hand(2, 3), "player3", new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg" }, 4, 30),
+                // battle | character | name | first init
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre1", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre2", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 50), "monstre3", 5)
             };
-
             actors.ForEach(a => battle.Add(a));
 
-            /*
-             * BATTLE
-             */
+
+            RunBattle();
+        }
+
+        static void RunBattle()
+        {
             battle.Init();
             battle.OnBattleEnd += BattleOver;
 
@@ -58,7 +63,7 @@ namespace BattlePlayground
             while (!isOver)
             {
                 Actor current = battle.NextActor();
-                switch(current)
+                switch (current)
                 {
                     case PlayerActor player:
                         PlayerTurn(player, battle);
@@ -67,20 +72,17 @@ namespace BattlePlayground
                         Console.WriteLine("> {0} playing !", pnj.Name);
                         break;
                 }
-
-
             }
         }
 
         static void PlayerTurn(PlayerActor player, Battle battle)
         {
             player.StartTurn();
-            player.DrawCards(2);
             Card card;
             int index = -1;
             do
             {
-                Console.Write("> {0}'s turn. Hand : {1}\nWhat's your move (-1 to end turn)? ", player.Name, string.Join(",", player.hand.AsArray().Select(c => c.name).ToArray()));
+                Console.Write("> {0}'s turn. Hand : {1}\n> What's your move (-1 to end turn)? ", player.Name, string.Join(",", player.hand.AsArray().Select(c => c.name).ToArray()));
                 index = int.Parse(Console.ReadLine());
                 card = player.hand.Remove(index);
                 if (card == null && index != -1)
