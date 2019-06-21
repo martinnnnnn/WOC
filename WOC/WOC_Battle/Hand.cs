@@ -7,10 +7,19 @@ namespace WOC_Battle
     public class Hand
     {
         List<Card> cards = new List<Card>();
-        public int maxCount;
-        public int startingCount;
+        int maxCount;
+        int startingCount;
+
+
+        public Hand(int startingCount, int maxCount)
+        {
+            this.startingCount = startingCount;
+            this.maxCount = maxCount;
+        }
 
         public int Count => cards.Count;
+        public int StartingCount => startingCount;
+        public bool IsFull => cards.Count == maxCount;
 
         public void Add(Card newCard)
         {

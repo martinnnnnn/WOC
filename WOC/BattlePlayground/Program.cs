@@ -38,9 +38,9 @@ namespace BattlePlayground
              */
             List<Actor> actors = new List<Actor>()
             {
-                new PlayerActor(battle, new Character("grrr", 12, 12), "player1", new List<string> { "card1", "card1", }, 2, 30, 4),
-                new PlayerActor(battle, new Character("gromelo", 12, 12), "player2", new List<string> { "card2", "card3", }, 3, 30, 6),
-                new PlayerActor(battle, new Character("branigan", 12, 12), "player3", new List<string> { "card1", "card3", }, 4, 30, 1),
+                new PlayerActor(battle, new Character("grrr", 12, 12), new Hand(2, 3), "player1", new List<string> { "card1", "card2", "card1", "card2" }, 2, 30, 4),
+                new PlayerActor(battle, new Character("gromelo", 12, 12), new Hand(2, 3), "player2", new List<string> { "card2", "card3", "card2", "card3" }, 3, 30, 6),
+                new PlayerActor(battle, new Character("branigan", 12, 12), new Hand(2, 3), "player3", new List<string> { "card1", "card3", "card1", "card3" }, 4, 30, 1),
                 new PNJActor(battle, new Character("bouboubou1", 50, 50), "monstre1", 5, 5),
                 new PNJActor(battle, new Character("bouboubou2", 50, 50), "monstre2",5, 5),
                 new PNJActor(battle, new Character("bouboubou3", 50, 50), "monstre3", 5, 5)

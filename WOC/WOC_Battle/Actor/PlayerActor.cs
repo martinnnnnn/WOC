@@ -14,12 +14,13 @@ namespace WOC_Battle
         public List<Card> deck = new List<Card>();
         public CardPile drawPile = new CardPile();
         public CardPile discardPile = new CardPile();
-        public Hand hand = new Hand();
+        public Hand hand;
 
         [JsonConstructor]
         public PlayerActor(
             Battle battle,
             Character character,
+            Hand hand,
             string name,
             List<string> cardsNames,
             int aggroIncrement,
@@ -31,6 +32,7 @@ namespace WOC_Battle
                 deck.Add(battle.GetCard(cardName));
             }
 
+            this.hand = hand;
             aggro.IncrementRatio = 0;
             mana.Max = manaMax;
             initiative.Set(deck.Count, maxInitiative);
@@ -73,7 +75,7 @@ namespace WOC_Battle
 
             mana.Reset();
             aggro.StartTurn();
-            DrawCards(hand.startingCount);
+            DrawCards(hand.StartingCount);
         }
 
         public bool PlayCard(Card card, Character target)
@@ -108,7 +110,7 @@ namespace WOC_Battle
                     MoveDiscardToDraw();
                 }
 
-                if (hand.maxCount == hand.Count)
+                if (hand.IsFull)
                 {
                     if (discardIfMaxReach)
                     {
