@@ -17,10 +17,10 @@ namespace WOC_Battle
     {
         Dictionary<string, Card> cardsMap = new Dictionary<string, Card>();
         List<Actor> Cemetery = new List<Actor>();
-        List<Actor> Actors = new List<Actor>();
+        public List<Actor> Actors = new List<Actor>();
         Actor current;
 
-        Action OnBattleEnd;
+        public Action OnBattleEnd;
 
         public void Init()
         {

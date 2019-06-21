@@ -49,6 +49,15 @@ namespace WOC_Battle
             }
         }
 
+        public Card Remove(int index)
+        {
+            if (index > 0 && index < Count)
+            {
+                return cards[index];
+            }
+            return null;
+        }
+
         public Card DiscardRandom(Card ignore = null)
         {
             Random random = new Random();
@@ -73,6 +82,12 @@ namespace WOC_Battle
         {
             Card[] result = cards.ToArray();
             cards.Clear();
+            return result;
+        }
+
+        public Card[] AsArray()
+        {
+            Card[] result = cards.ToArray();
             return result;
         }
     }

@@ -20,11 +20,11 @@ namespace WOC_Battle
         public PlayerActor(
             Battle battle,
             Character character,
+            string name,
             List<string> cardsNames,
             int aggroIncrement,
             int manaMax,
-            int maxInitiative,
-            int life) : base(battle, character, life)
+            int maxInitiative) : base(battle, character, name)
         {
             foreach (string cardName in cardsNames)
             {
