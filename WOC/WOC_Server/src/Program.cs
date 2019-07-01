@@ -72,12 +72,7 @@ namespace WOC_Server
                     {
                         var tcpClientTask = _listener.AcceptTcpClientAsync();
                         var result = await tcpClientTask;
-
-                        var stream = result.GetStream();
-
-                        HandleClient(stream);
-
-                        //OnDataReceived?.Invoke(this, new DataRecievedArgs(result.GetStream()));
+                        HandleClient(result);
                     }, _token);
                 }
             }
@@ -88,21 +83,32 @@ namespace WOC_Server
             }
         }
 
-        private async void HandleClient(NetworkStream stream)
+        private async void HandleClient(TcpClient client)
         {
-            bool exit = false;
-            while (!exit)
-            {
-                byte[] byteArray = new byte[1024];
-                var byteCount = await stream.ReadAsync(byteArray, 0, byteArray.Length);
-                var request = Encoding.UTF8.GetString(byteArray, 0, byteCount);
-                Console.Write("Server : (received) " + request + "\n");
-                
-                var response = Encoding.UTF8.GetBytes("Who's there?");
-                await stream.WriteAsync(response, 0, response.Length);
+            var stream = client.GetStream();
 
-                exit = request == "exit";
+            bool exit = false;
+            try
+            {
+                while (!exit)
+                {
+                    byte[] byteArray = new byte[1024];
+                    var byteCount = await stream.ReadAsync(byteArray, 0, byteArray.Length);
+                    var request = Encoding.UTF8.GetString(byteArray, 0, byteCount);
+                    Console.Write("Server : (received) " + request + "\n");
+
+                    var response = Encoding.UTF8.GetBytes("Who's there?");
+                    await stream.WriteAsync(response, 0, response.Length);
+
+                    exit = request == "exit";
+                }
             }
+            finally
+            {
+                Console.WriteLine("Closing client");
+                client.Close();
+            }
+            
         }
 
         public void Stop()
