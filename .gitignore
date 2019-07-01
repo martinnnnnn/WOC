@@ -5,6 +5,7 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 
+
 # Visual Studio cache directory
 .vs/
 
@@ -36,4 +37,4 @@ sysinfo.txt
 *.unitypackage
 
 # Generated DLLs
-Assets/WOC_Network.dll
+Assets/*.dll
