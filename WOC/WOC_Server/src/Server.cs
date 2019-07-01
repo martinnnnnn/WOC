@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using WOC_Network;
+using WOC_Core;
 
 namespace WOC_Server
 {

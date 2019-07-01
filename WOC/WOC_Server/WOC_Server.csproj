@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WOC_Network\WOC_Network.csproj" />
+    <ProjectReference Include="..\WOC_Core\WOC_Core.csproj" />
   </ItemGroup>
 
 </Project>

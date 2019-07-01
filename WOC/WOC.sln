@@ -5,13 +5,11 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Battle", "WOC_Battle\WOC_Battle.csproj", "{DCD25D42-5F17-44E7-8BE3-8F3DD6E30D6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Network", "WOC_Network\WOC_Network.csproj", "{DBA95368-F631-4F4F-8814-21278A8178EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WOC_Server", "WOC_Server\WOC_Server.csproj", "{DE298BDE-BE8F-43B8-8624-0A92B32C7068}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Server", "WOC_Server\WOC_Server.csproj", "{DE298BDE-BE8F-43B8-8624-0A92B32C7068}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BattlePlayground", "BattlePlayground\BattlePlayground.csproj", "{A036C314-A6A6-41A6-8B1B-B92620663CD2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattlePlayground", "BattlePlayground\BattlePlayground.csproj", "{A036C314-A6A6-41A6-8B1B-B92620663CD2}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkClientPlayground", "NetworkClientPlayground\NetworkClientPlayground.csproj", "{7B1F2F47-FCB0-4829-9D57-FE60BD819BA6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkClientPlayground", "NetworkClientPlayground\NetworkClientPlayground.csproj", "{7B1F2F47-FCB0-4829-9D57-FE60BD819BA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Core", "WOC_Core\WOC_Core.csproj", "{0C336064-8B9C-4289-B08A-1911317EF02E}"
 EndProject
@@ -25,10 +23,6 @@ Global
 		{DCD25D42-5F17-44E7-8BE3-8F3DD6E30D6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCD25D42-5F17-44E7-8BE3-8F3DD6E30D6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCD25D42-5F17-44E7-8BE3-8F3DD6E30D6C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DBA95368-F631-4F4F-8814-21278A8178EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBA95368-F631-4F4F-8814-21278A8178EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBA95368-F631-4F4F-8814-21278A8178EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBA95368-F631-4F4F-8814-21278A8178EB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DE298BDE-BE8F-43B8-8624-0A92B32C7068}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE298BDE-BE8F-43B8-8624-0A92B32C7068}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE298BDE-BE8F-43B8-8624-0A92B32C7068}.Release|Any CPU.ActiveCfg = Release|Any CPU

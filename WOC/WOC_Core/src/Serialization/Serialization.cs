@@ -5,17 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WOC_Network
+namespace WOC_Core
 {
-    public static class Utils
+    public static class Serialization
     {
-        public static string DataPath;
-
         public static T FromJson<T>(string jobj) where T : class
         {
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.All,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
 
             T obj;
@@ -35,9 +34,10 @@ namespace WOC_Network
         {
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.All,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             };
-            return JsonConvert.SerializeObject(obj, settings);
+            return JsonConvert.SerializeObject(obj, settings : settings, formatting: indent?Formatting.Indented:Formatting.None);
         }
     }
 }

@@ -21,8 +21,6 @@ namespace WOC_Server
             if (Debugger.IsAttached)
                 CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
-            WOC_Network.Utils.DataPath = args[0];
-
             Console.WriteLine(">> WOC Server");
             Server server = new Server();
             var listener = server.StartListenerAsync();

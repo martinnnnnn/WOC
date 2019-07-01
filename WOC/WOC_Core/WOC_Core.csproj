@@ -44,11 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\Serialization.cs" />
+    <Compile Include="src\Network\Account.cs" />
+    <Compile Include="src\Network\PacketData.cs" />
+    <Compile Include="src\Network\Session.cs" />
+    <Compile Include="src\Serialization\Serialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

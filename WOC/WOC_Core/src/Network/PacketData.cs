@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace WOC_Network
+namespace WOC_Core
 {
     public abstract class IPacketData { public Guid id = Guid.NewGuid(); }
 

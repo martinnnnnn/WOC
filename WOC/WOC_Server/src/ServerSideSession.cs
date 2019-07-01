@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using WOC_Network;
+using WOC_Core;
 
 namespace WOC_Server
 {
@@ -105,7 +105,7 @@ namespace WOC_Server
         {
             string errMessage = string.Empty;
 
-            string filePath = string.Format("{0}\\{1}\\{2}.json", Utils.DataPath, "accounts", data.toCreate.name);
+            string filePath = string.Format("{0}\\{1}\\{2}.json", "", "accounts", data.toCreate.name);
             if (!File.Exists(filePath) && account == null)
             {
                 try
@@ -114,7 +114,7 @@ namespace WOC_Server
                     using (FileStream stream = File.Create(filePath))
                     {
                         account = data.toCreate;
-                        var bytesMessage = Encoding.UTF8.GetBytes(Utils.ToJson(account));
+                        var bytesMessage = Encoding.UTF8.GetBytes(Serialization.ToJson(account));
                         stream.WriteAsync(bytesMessage, 0, bytesMessage.Length).Wait();
                     }
                 }
@@ -136,11 +136,11 @@ namespace WOC_Server
         {
             string errMessage = string.Empty;
 
-            string filePath = string.Format("{0}/{1}/{2}.json", Utils.DataPath, "accounts", data.name);
+            string filePath = string.Format("{0}/{1}/{2}.json", "", "accounts", data.name);
             if (File.Exists(filePath))
             {
                 string jaccount = File.ReadAllText(filePath);
-                account = Utils.FromJson<Account>(jaccount);
+                account = Serialization.FromJson<Account>(jaccount);
 
                 if (account.password != data.password)
                 {
@@ -161,9 +161,9 @@ namespace WOC_Server
 
             if (account != null)
             {
-                string filePath = string.Format("{0}/{1}/{2}.json", Utils.DataPath, "accounts", data.name);
+                string filePath = string.Format("{0}/{1}/{2}.json", "", "accounts", data.name);
 
-                string jaccount = Utils.ToJson(account);
+                string jaccount = Serialization.ToJson(account);
                 File.WriteAllText(filePath, jaccount);
 
                 account = null;

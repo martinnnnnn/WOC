@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WOC_Network
+namespace WOC_Core
 {
     public class Card
     {

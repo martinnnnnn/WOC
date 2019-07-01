@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WOC_Network
+namespace WOC_Core
 {
     public class Session
     {
