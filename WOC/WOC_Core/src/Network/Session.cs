@@ -15,7 +15,7 @@ namespace WOC_Core
         // db port 3306 33060
 
         public Session(TcpClient tcpClient)
-        {
+        { 
             client = tcpClient;
             netstream = client.GetStream();
         }

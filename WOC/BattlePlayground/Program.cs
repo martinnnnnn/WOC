@@ -103,7 +103,7 @@ namespace BattlePlayground
                 {
                     cardPlayed = player.PlayCard(card, battle.Actors[index].character);
                 }
-            } 
+            }
 
             Console.WriteLine("> Ending turn !");
             player.EndTurn();
