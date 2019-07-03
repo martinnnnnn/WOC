@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using WOC_Core;
 
 namespace WOC_Server
 {
@@ -21,10 +22,30 @@ namespace WOC_Server
         private bool listening;
         private CancellationToken token;
 
-        private SynchronizedCollection<TcpClient> clients = new SynchronizedCollection<TcpClient>();
+        private SynchronizedCollection<Session> sessions = new SynchronizedCollection<Session>();
+        //private SynchronizedCollection<TcpClient> clients = new SynchronizedCollection<TcpClient>();
         public TcpServer(IPAddress address, int port)
         {
             listener = new TcpListener(address, port);
+        }
+
+        void IncomingHandling(string msg)
+        {
+            Console.Write("[SERVER] received : " + msg + "\n");
+
+            var tasks = new List<Task>();
+            try
+            {
+                foreach (Session s in sessions)
+                {
+                    tasks.Add(Task.Run(async () => { await s.SendAsync(msg); }));
+                }
+                Task.WaitAll(tasks.ToArray(), 10000);
+            }
+            catch (Exception)
+            {
+                LOG.Print("[SERVER] Failed to broadcast message");
+            }
         }
 
         public async Task StartAsync()
@@ -41,75 +62,87 @@ namespace WOC_Server
                     await Task.Run(async () =>
                     {
                         var tcpClientTask = listener.AcceptTcpClientAsync();
-                        var result = await tcpClientTask;
-                        HandleClient(result);
+                        TcpClient client = await tcpClientTask;
+
+                        Session session = new Session();
+                        session.Connect(client);
+                        sessions.Add(session);
+                        LOG.Print("[SERVER] Client connected. {0} clients connected", sessions.Count);
+                        session.OnMessageReceived += IncomingHandling;
+                        session.OnDisconnect += () =>
+                        {
+                            sessions.Remove(session);
+                            LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
+
+                        };
+                        //HandleClient(client);
                     }, token);
                 }
             }
             finally
             {
-                Console.WriteLine("[SERVER] Closing server.");
+                LOG.Print("[SERVER] Closing server.");
                 listener.Stop();
                 listening = false;
-                Console.WriteLine("[SERVER] Server closed.");
+                LOG.Print("[SERVER] Server closed.");
             }
         }
 
-        private async void HandleClient(TcpClient client)
-        {
-            var stream = client.GetStream();
-            clients.Add(client);
+        //private async void HandleClient(TcpClient client)
+        //{
+        //    var stream = client.GetStream();
+        //    sessions.Add(client);
 
-            Console.WriteLine("[SERVER] Client connected. {0} clients connected", clients.Count);
+        //    LOG.Print("[SERVER] Client connected. {0} clients connected", sessions.Count);
 
-            bool exit = false;
-            try
-            {
-                while (!exit)
-                {
-                    byte[] byteArray = new byte[1024];
-                    var byteCount = await stream.ReadAsync(byteArray, 0, byteArray.Length);
-                    var request = Encoding.UTF8.GetString(byteArray, 0, byteCount);
-                    Console.Write("[SERVER] received : " + request + "\n");
-                    var tasks = new List<Task>();
-                    foreach (TcpClient c in clients)
-                    {
-                        tasks.Add(Task.Run(() =>
-                        {
-                            if (c != client)
-                            {
-                                c.GetStream().WriteAsync(byteArray, 0, byteCount);
-                            }
-                            else
-                            {
-                                byte[] echo = Encoding.UTF8.GetBytes("Message Received!");
-                                c.GetStream().WriteAsync(echo, 0, echo.Length);
-                            }
-                        }));
-                    }
-                    Task.WaitAll(tasks.ToArray(), 10000);
-                    exit = request == "exit";
-                }
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("[SERVER] Client disconnecting.");
-            }
-            finally
-            {
-                Console.WriteLine("[SERVER] Closing client.");
-                clients.Remove(client);
-                client.Close();
-                Console.WriteLine("[SERVER] Client Closed. {0} clients still connected", clients.Count);
-            }
+        //    bool exit = false;
+        //    try
+        //    {
+        //        while (!exit)
+        //        {
+        //            byte[] byteArray = new byte[1024];
+        //            var byteCount = await stream.ReadAsync(byteArray, 0, byteArray.Length);
+        //            var request = Encoding.UTF8.GetString(byteArray, 0, byteCount);
+        //            Console.Write("[SERVER] received : " + request + "\n");
+        //            var tasks = new List<Task>();
+        //            foreach (TcpClient c in sessions)
+        //            {
+        //                tasks.Add(Task.Run(() =>
+        //                {
+        //                    if (c != client)
+        //                    {
+        //                        c.GetStream().WriteAsync(byteArray, 0, byteCount);
+        //                    }
+        //                    else
+        //                    {
+        //                        byte[] echo = Encoding.UTF8.GetBytes("Message Received!");
+        //                        c.GetStream().WriteAsync(echo, 0, echo.Length);
+        //                    }
+        //                }));
+        //            }
+        //            Task.WaitAll(tasks.ToArray(), 10000);
+        //            exit = request == "exit";
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        LOG.Print("[SERVER] Client disconnecting.");
+        //    }
+        //    finally
+        //    {
+        //        LOG.Print("[SERVER] Closing client.");
+        //        sessions.Remove(client);
+        //        client.Close();
+        //        LOG.Print("[SERVER] Client Closed. {0} clients still connected", sessions.Count);
+        //    }
 
-        }
+        //}
 
         public void Stop()
         {
             if (listening)
             {
-                Console.WriteLine("Closing server");
+                LOG.Print("Closing server");
                 tokenSource?.Cancel();
                 using (var closer = new TcpClient())
                 {
@@ -119,7 +152,7 @@ namespace WOC_Server
             }
             else
             {
-                Console.WriteLine("Server already closed");
+                LOG.Print("Server already closed");
             }
         }
     }
@@ -146,7 +179,7 @@ namespace WOC_Server
                         server.Stop();
                         break;
                     case "open":
-                        Console.WriteLine("Starting server...");
+                        LOG.Print("Starting server...");
                         server = new TcpServer(IPAddress.Any, 54001);
                         serverTask = server.StartAsync();
                         break;
@@ -160,10 +193,10 @@ namespace WOC_Server
 
             server?.Stop();
             serverTask?.Wait();
-            Console.WriteLine("Server closed, any input will end the program");
+            LOG.Print("Server closed, any input will end the program");
             Console.ReadLine();
 
-            //Console.WriteLine(">> WOC Server");
+            //LOG.Print(">> WOC Server");
             //Server server = new Server();
             //var listener = server.StartListenerAsync();
 
@@ -171,9 +204,9 @@ namespace WOC_Server
             //while (cmd == null || cmd[0] != "quit")
             //{
             //    cmd = Console.ReadLine().Split(' ');
-            //    Console.WriteLine("omg i'm such an CLI, i'm doing so much work here");
+            //    LOG.Print("omg i'm such an CLI, i'm doing so much work here");
             //}
-            //Console.WriteLine(">> quit CLI, waiting for connections to close");
+            //LOG.Print(">> quit CLI, waiting for connections to close");
             //server.Close();
             //try
             //{

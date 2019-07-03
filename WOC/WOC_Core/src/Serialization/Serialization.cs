@@ -24,7 +24,7 @@ namespace WOC_Core
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                LOG.Print(e.Message);
                 obj = null;
             }
             return obj;

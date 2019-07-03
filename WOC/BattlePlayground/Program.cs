@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using WOC_Battle;
+using WOC_Core;
 
 namespace BattlePlayground
 {
@@ -58,7 +59,7 @@ namespace BattlePlayground
             battle.Init();
             battle.OnBattleEnd += BattleOver;
 
-            Console.WriteLine("> Battle starting !");
+            LOG.Print("> Battle starting !");
             while (!isOver)
             {
                 Actor current = battle.NextActor();
@@ -68,7 +69,7 @@ namespace BattlePlayground
                         PlayerTurn(player, battle);
                         break;
                     case PNJActor pnj:
-                        Console.WriteLine("> {0} playing !", pnj.Name);
+                        LOG.Print("> {0} playing !", pnj.Name);
                         break;
                 }
             }
@@ -86,7 +87,7 @@ namespace BattlePlayground
                 card = player.hand.Remove(index);
                 if (card == null && index != -1)
                 {
-                    Console.WriteLine("You need to give me a valid index !");
+                    LOG.Print("You need to give me a valid index !");
                 }
             } while (card == null && index != -1);
 
@@ -97,7 +98,7 @@ namespace BattlePlayground
                 index = int.Parse(Console.ReadLine());
                 if ((index < 0 || index >= battle.Actors.Count) && index != -1)
                 {
-                    Console.WriteLine("You need to give me a valid index !");
+                    LOG.Print("You need to give me a valid index !");
                 }
                 else if (index != -1)
                 {
@@ -105,7 +106,7 @@ namespace BattlePlayground
                 }
             }
 
-            Console.WriteLine("> Ending turn !");
+            LOG.Print("> Ending turn !");
             player.EndTurn();
         }
 

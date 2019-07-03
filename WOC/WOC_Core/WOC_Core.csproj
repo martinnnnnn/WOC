@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Debug.cs" />
     <Compile Include="src\Network\Account.cs" />
     <Compile Include="src\Network\PacketData.cs" />
     <Compile Include="src\Network\Session.cs" />
