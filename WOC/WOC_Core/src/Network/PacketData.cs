@@ -75,22 +75,9 @@ namespace WOC_Core
         public string target;
     }
 
-    public class PD_BattleMonsterAction : PD_BattleAction
+    public class PD_Battle : PD_BattleAction
     {
-        public string monsterName;
-        public string actionName;
-        public string target;
-    }
 
-    public class PD_BattleStart : PD_BattleAction {}
-    
-    public class PD_BattleRegister : PD_BattleAction
-    {
-        public string accountName;
-    }
-    public class PD_BattleDisconnect : PD_BattleAction
-    {
-        public string accountName;
     }
 
 

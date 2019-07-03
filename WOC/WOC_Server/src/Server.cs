@@ -1,12 +1,135 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Linq;
-//using System.Net.Sockets;
-//using System.Reflection;
-//using System.Text;
-//using System.Threading.Tasks;
-//using WOC_Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using WOC_Core;
+
+
+namespace WOC_Server
+{
+    public class WOCServer
+    {
+        public IPAddress IP;
+        public int Port;
+
+        private TcpListener listener;
+        private CancellationTokenSource tokenSource;
+        private bool listening;
+
+        private CancellationToken token;
+        private SynchronizedCollection<Session> sessions = new SynchronizedCollection<Session>();
+
+        public async Task StartAsync(IPAddress ip, int port)
+        {
+            if (listening)
+            {
+                Close();
+            }
+
+            IP = ip;
+            Port = port;
+            listener = new TcpListener(IP, Port);
+            tokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
+            token = tokenSource.Token;
+            listener.Start();
+            listening = true;
+
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    await Task.Run(async () =>
+                    {
+                        var tcpClientTask = listener.AcceptTcpClientAsync();
+                        TcpClient client = await tcpClientTask;
+
+                        Session session = new Session();
+                        session.Connect(client);
+                        sessions.Add(session);
+                        LOG.Print("[SERVER] Client connected. {0} clients connected", sessions.Count);
+                        session.OnMessageReceived += IncomingHandling;
+                        session.OnDisconnect += () =>
+                        {
+                            sessions.Remove(session);
+                            LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
+
+                        };
+                    }, token);
+                }
+            }
+            finally
+            {
+                LOG.Print("[SERVER] Closing server.");
+                listener.Stop();
+                foreach (Session s in sessions)
+                {
+                    s.Close();
+                }
+                listening = false;
+                LOG.Print("[SERVER] Server closed.");
+            }
+        }
+
+        public void Close()
+        {
+            if (listening)
+            {
+                LOG.Print("Closing server");
+                tokenSource?.Cancel();
+                //listener.Stop();
+                Session closer = new Session();
+                closer.Connect("127.0.0.1", 54001);
+                
+            }
+            else
+            {
+                LOG.Print("[SERVER] already closed.");
+            }
+        }
+        void IncomingHandling(IPacketData data)
+        {
+            LOG.Print("[SERVER] received a packet.");
+
+            switch (data)
+            {
+                case PD_Chat chat:
+                    var tasks = new List<Task>();
+                    try
+                    {
+                        foreach (Session s in sessions)
+                        {
+                            tasks.Add(Task.Run(async () => { await s.SendAsync(chat); }));
+                        }
+                        Task.WaitAll(tasks.ToArray(), 10000);
+                    }
+                    catch (Exception)
+                    {
+                        LOG.Print("[SERVER] Failed to broadcast message.");
+                    }
+                    break;
+
+            }
+        }
+        public async Task Broadcast(string msg)
+        {
+            var tasks = sessions.Select(session => session.SendAsync(msg));
+            await Task.WhenAll(tasks);
+        }
+        public async Task Broadcast(IPacketData data)
+        {
+            var tasks = sessions.Select(session => session.SendAsync(data));
+            await Task.WhenAll(tasks);
+        }
+
+    }
+}
+
+
+
+
 
 //namespace WOC_Server
 //{
@@ -25,11 +148,7 @@
 
 //        }
 
-//        public async Task Broadcast(string message)
-//        {
-//            var tasks = sessions.Select(session => session.SendAsync(message));
-//            await Task.WhenAll(tasks);
-//        }
+
 
 //        public async Task Broadcast(List<Session> sessions, string message)
 //        {

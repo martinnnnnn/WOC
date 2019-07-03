@@ -9,8 +9,8 @@
 //{
 //    class BattleInstance
 //    {
-//        public Server server;
-//        public List<ServerSideSession> sessions = new List<ServerSideSession>();
+//        public WOCServer server;
+//        public List<Session> sessions = new List<Session>();
 //        //public Monster monster;
 //        public BattleInfo info;
 //        private bool hasStarted = false;
@@ -47,7 +47,7 @@
 //            {
 //                sender.SendValidation(data.id, "account_not_connected").Wait();
 //            }
-            
+
 //        }
 
 //        private void HandleRegistration(Session sender, PD_BattleRegister data)

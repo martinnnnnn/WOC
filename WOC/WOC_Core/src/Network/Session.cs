@@ -115,6 +115,7 @@ namespace WOC_Core
             tokenSource.Cancel();
             SendAsync(new PD_Shutdown()).Wait();
             OnDisconnect?.Invoke();
+            client.Close();
         }
 
         public async Task SendAsync(string message)
