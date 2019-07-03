@@ -15,9 +15,14 @@ namespace Playground
     class NetworkClientPlayground
     {
 
-        static void Hello(string msg)
+        static void Hello(IPacketData data)
         {
-            LOG.Print("WE ARE IN THE HELLO");
+            switch (data)
+            {
+                case PD_Chat chat:
+                    LOG.Print(chat.senderName + " : " + chat.message);
+                    break;
+            }
         }
 
         static void Main(string[] args)
@@ -26,6 +31,7 @@ namespace Playground
 
             Session session = new Session();
             session.OnMessageReceived += Hello;
+            string name = "anon";
 
             bool exit = false;
             while (!exit)
@@ -44,7 +50,18 @@ namespace Playground
                         exit = true;
                         break;
                     default:
-                        session.SendAsync(input).Wait();
+                        if (input.StartsWith("name"))
+                        {
+                            name = input.Split('=')[1];
+                        }
+                        else
+                        {
+                            session.SendAsync(new PD_Chat
+                            {
+                                senderName = name,
+                                message = input
+                            }).Wait();
+                        }
                         break;
                 }
             }

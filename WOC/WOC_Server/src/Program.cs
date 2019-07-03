@@ -29,23 +29,29 @@ namespace WOC_Server
             listener = new TcpListener(address, port);
         }
 
-        void IncomingHandling(string msg)
+        void IncomingHandling(IPacketData data)
         {
-            Console.Write("[SERVER] received : " + msg + "\n");
+            LOG.Print("[SERVER] received a packet");
 
-            var tasks = new List<Task>();
-            try
+            switch (data)
             {
-                foreach (Session s in sessions)
-                {
-                    tasks.Add(Task.Run(async () => { await s.SendAsync(msg); }));
-                }
-                Task.WaitAll(tasks.ToArray(), 10000);
+                case PD_Chat chat:
+                    var tasks = new List<Task>();
+                    try
+                    {
+                        foreach (Session s in sessions)
+                        {
+                            tasks.Add(Task.Run(async () => { await s.SendAsync(chat); }));
+                        }
+                        Task.WaitAll(tasks.ToArray(), 10000);
+                    }
+                    catch (Exception)
+                    {
+                        LOG.Print("[SERVER] Failed to broadcast message.");
+                    }
+                    break;
             }
-            catch (Exception)
-            {
-                LOG.Print("[SERVER] Failed to broadcast message");
-            }
+            
         }
 
         public async Task StartAsync()

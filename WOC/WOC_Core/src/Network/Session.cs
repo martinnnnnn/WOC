@@ -12,7 +12,7 @@ namespace WOC_Core
     {
         public string IP;
         public int Port;
-        public Action<string> OnMessageReceived;
+        public Action<IPacketData> OnMessageReceived;
         public Action OnDisconnect;
 
         private TcpClient client = new TcpClient();
@@ -84,12 +84,16 @@ namespace WOC_Core
                     var byteCount = await netstream.ReadAsync(byteArray, 0, byteArray.Length, token);
                     var msg = Encoding.UTF8.GetString(byteArray, 0, byteCount);
 
-                    LOG.Print("[NETWORK] received from server: " + msg);
-                    OnMessageReceived?.Invoke(msg);
+                    IPacketData data = Serialization.FromJson<IPacketData>(msg);
 
-                    if (msg == "closing")
+                    LOG.Print("[NETWORK] received from server:\n" + msg);
+                    OnMessageReceived?.Invoke(data);
+
+                    switch (data)
                     {
-                        Close();
+                        case PD_Shutdown sd:
+                            Close();
+                            break;
                     }
                 }
             }
@@ -109,7 +113,7 @@ namespace WOC_Core
         {
             LOG.Print("[NETWORK] Closing socket.");
             tokenSource.Cancel();
-            SendAsync("closing").Wait();
+            SendAsync(new PD_Shutdown()).Wait();
             OnDisconnect?.Invoke();
         }
 
@@ -125,6 +129,20 @@ namespace WOC_Core
                 LOG.Print("Failed to Send message : {0}", e.Message);
             }
         }
+
+        public async Task SendAsync(IPacketData data)
+        {
+            try
+            {
+                var bytesMessage = Encoding.UTF8.GetBytes(Serialization.ToJson(data));
+                await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
+            }
+            catch (Exception e)
+            {
+                LOG.Print("Failed to Send message : {0}", e.Message);
+            }
+        }
+        
 
         public async Task SendValidation(Guid toValidate, string errMessage = "")
         {
