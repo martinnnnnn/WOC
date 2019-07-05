@@ -10,8 +10,8 @@ namespace WOC_Core
 {
     public class Session
     {
-        public string IP;
-        public int Port;
+        public string ServerIP;
+        public int ServerPort;
         public Action<IPacketData> OnMessageReceived;
         public Action OnDisconnect;
 
@@ -49,12 +49,15 @@ namespace WOC_Core
             LOG.Print("[NETWORK] Trying to connect to {0}:{1}", ip, port);
             if (listening)
             {
-                LOG.Print("[NETWORK] Socket already open, closing it.");
-                Close();
+                if (ip != ServerIP || port != ServerPort)
+                {
+                    LOG.Print("[NETWORK] Socket already open, closing it.");
+                    Close();
+                }
             }
 
-            IP = ip;
-            Port = port;
+            ServerIP = ip;
+            ServerPort = port;
             LOG.Print("[NETWORK] Connecting...");
             client = new TcpClient();
             try
@@ -109,11 +112,16 @@ namespace WOC_Core
             }
         }
 
+        public async Task SendClose()
+        {
+            LOG.Print("[NETWORK] Sending shutdown message socket.");
+            await SendAsync(new PD_Shutdown());
+        }
+
         public void Close()
         {
             LOG.Print("[NETWORK] Closing socket.");
             tokenSource.Cancel();
-            SendAsync(new PD_Shutdown()).Wait();
             OnDisconnect?.Invoke();
             client.Close();
         }

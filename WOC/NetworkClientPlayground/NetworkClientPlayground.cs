@@ -41,6 +41,7 @@ namespace Playground
                 switch (input)
                 {
                     case "close":
+                        session.SendClose().Wait();
                         session.Close();
                         break;
                     case "connect":
