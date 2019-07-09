@@ -10,7 +10,7 @@ using WOC_Core;
 
 namespace WOC_Server
 {
-    public class WOCServer
+    public class TCPServer
     {
         public IPAddress IP;
         public int Port;
@@ -20,7 +20,7 @@ namespace WOC_Server
         private bool listening;
 
         private CancellationToken token;
-        private SynchronizedCollection<Session> sessions = new SynchronizedCollection<Session>();
+        private SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
 
         public async Task StartAsync(IPAddress ip, int port)
         {
@@ -46,12 +46,10 @@ namespace WOC_Server
                         var tcpClientTask = listener.AcceptTcpClientAsync();
                         TcpClient client = await tcpClientTask;
 
-                        Session session = new Session();
+                        ServerSession session = new ServerSession(this);
                         session.Connect(client);
-                        session.OnMessageReceived += IncomingHandling;
                         session.OnDisconnect += () =>
                         {
-                            session.OnMessageReceived -= IncomingHandling;
                             sessions.Remove(session);
                             LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
                         };
@@ -86,30 +84,7 @@ namespace WOC_Server
             }
         }
 
-        void IncomingHandling(IPacketData data)
-        {
-            LOG.Print("[SERVER] received a packet. {0}", data);
-
-            switch (data)
-            {
-                case PD_Chat chat:
-                    var tasks = new List<Task>();
-                    try
-                    {
-                        foreach (Session s in sessions)
-                        {
-                            tasks.Add(Task.Run(async () => { await s.SendAsync(chat); }));
-                        }
-                        Task.WaitAll(tasks.ToArray(), 10000);
-                    }
-                    catch (Exception)
-                    {
-                        LOG.Print("[SERVER] Failed to broadcast message.");
-                    }
-                    break;
-
-            }
-        }
+        
         public async Task Broadcast(string msg)
         {
             var tasks = sessions.Select(session => session.SendAsync(msg));

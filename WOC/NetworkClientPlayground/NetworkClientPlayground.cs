@@ -12,11 +12,13 @@ using WOC_Core;
 namespace Playground
 {
 
-    class NetworkClientPlayground
+    public class ClientSession : Session
     {
-
-        static void Hello(IPacketData data)
+        public override void HandleIncomingMessage(IPacketData data)
         {
+            LOG.Print("[SERVER] received a packet. {0}", data);
+            base.HandleIncomingMessage(data);
+
             switch (data)
             {
                 case PD_Chat chat:
@@ -24,13 +26,15 @@ namespace Playground
                     break;
             }
         }
+    }
 
+    class NetworkClientPlayground
+    {
         static void Main(string[] args)
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
-            Session session = new Session();
-            session.OnMessageReceived += Hello;
+            ClientSession session = new ClientSession();
             string name = "anon";
 
             bool exit = false;

@@ -19,7 +19,7 @@ namespace WOC_Server
     class Server
     {
         Battle battle;
-        WOCServer server;
+        TCPServer server;
     }
 
 
@@ -30,7 +30,7 @@ namespace WOC_Server
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
-            WOCServer server = new WOCServer();
+            TCPServer server = new TCPServer();
             Task serverTask = null;
 
             bool exit = false;

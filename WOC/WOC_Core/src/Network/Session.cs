@@ -12,7 +12,7 @@ namespace WOC_Core
     {
         public string ServerIP;
         public int ServerPort;
-        public Action<IPacketData> OnMessageReceived;
+        //public Action<IPacketData> OnMessageReceived;
         public Action OnDisconnect;
 
         private TcpClient client = new TcpClient();
@@ -88,18 +88,9 @@ namespace WOC_Core
 
                     IPacketData data = Serialization.FromJson<IPacketData>(msg);
 
-                    LOG.Print("[NETWORK] received from server:\n" + msg);
+                    LOG.Print("[NETWORK] received from server:\n" + data);
 
-                    switch (data)
-                    {
-                        case PD_Shutdown sd:
-                            Close();
-                            break;
-                    }
-                    if (!(data is PD_Shutdown))
-                    {
-                        OnMessageReceived?.Invoke(data);
-                    }
+                    HandleIncomingMessage(data);
                 }
             }
             catch (Exception e)
@@ -114,6 +105,16 @@ namespace WOC_Core
             }
         }
 
+        public virtual void HandleIncomingMessage(IPacketData data)
+        {
+            switch (data)
+            {
+                case PD_Shutdown sd:
+                    Close();
+                    break;
+            }
+        }
+
         public async Task SendClose()
         {
             LOG.Print("[NETWORK] Sending shutdown message socket.");
@@ -125,6 +126,7 @@ namespace WOC_Core
             LOG.Print("[NETWORK] Closing socket.");
             tokenSource.Cancel();
             OnDisconnect?.Invoke();
+            netstream.Close();
             client.Close();
         }
 
@@ -140,24 +142,15 @@ namespace WOC_Core
             catch (Exception e)
             {
                 LOG.Print("Failed to Send message : {0}", e.Message);
+                Close();
             }
         }
 
         public async Task SendAsync(IPacketData data)
         {
-            LOG.Print("[SESSION] sending packet : {0}", data);
-            try
-            {
-                var bytesMessage = Encoding.UTF8.GetBytes(Serialization.ToJson(data));
-                await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
-            }
-            catch (Exception e)
-            {
-                LOG.Print("Failed to Send message : {0}", e.Message);
-            }
+            await SendAsync(Serialization.ToJson(data));
         }
         
-
         public async Task SendValidation(Guid toValidate, string errMessage = "")
         {
             await SendAsync(Serialization.ToJson(new PD_Validate(toValidate, errMessage)));
