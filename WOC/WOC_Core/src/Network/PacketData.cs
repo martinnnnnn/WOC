@@ -32,8 +32,6 @@ namespace WOC_Core
 
     public class PD_Shutdown : IPacketData {}
 
-    public class PD_Dummy : IPacketData { }
-
     public class PD_InfoRequest : IPacketData
     {
         public string infoType;

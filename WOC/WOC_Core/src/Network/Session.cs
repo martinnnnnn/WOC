@@ -49,11 +49,10 @@ namespace WOC_Core
             LOG.Print("[NETWORK] Trying to connect to {0}:{1}", ip, port);
             if (listening)
             {
-                if (ip != ServerIP || port != ServerPort)
-                {
-                    LOG.Print("[NETWORK] Socket already open, closing it.");
-                    Close();
-                }
+                SendClose().Wait();
+                Close();
+                listening = false;
+                Thread.Sleep(500);
             }
 
             ServerIP = ip;
@@ -90,13 +89,16 @@ namespace WOC_Core
                     IPacketData data = Serialization.FromJson<IPacketData>(msg);
 
                     LOG.Print("[NETWORK] received from server:\n" + msg);
-                    OnMessageReceived?.Invoke(data);
 
                     switch (data)
                     {
                         case PD_Shutdown sd:
                             Close();
                             break;
+                    }
+                    if (!(data is PD_Shutdown))
+                    {
+                        OnMessageReceived?.Invoke(data);
                     }
                 }
             }
@@ -128,6 +130,8 @@ namespace WOC_Core
 
         public async Task SendAsync(string message)
         {
+            LOG.Print("[SESSION] sending message : {0}", message);
+
             try
             {
                 var bytesMessage = Encoding.UTF8.GetBytes(message);
@@ -141,6 +145,7 @@ namespace WOC_Core
 
         public async Task SendAsync(IPacketData data)
         {
+            LOG.Print("[SESSION] sending packet : {0}", data);
             try
             {
                 var bytesMessage = Encoding.UTF8.GetBytes(Serialization.ToJson(data));

@@ -48,28 +48,21 @@ namespace WOC_Server
 
                         Session session = new Session();
                         session.Connect(client);
-                        sessions.Add(session);
-                        LOG.Print("[SERVER] Client connected. {0} clients connected", sessions.Count);
                         session.OnMessageReceived += IncomingHandling;
                         session.OnDisconnect += () =>
                         {
+                            session.OnMessageReceived -= IncomingHandling;
                             sessions.Remove(session);
                             LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
-
                         };
+                        sessions.Add(session);
+                        LOG.Print("[SERVER] Client connected. {0} clients connected", sessions.Count);
                     }, token);
                 }
             }
             finally
             {
-                LOG.Print("[SERVER] Closing server.");
-                listener.Stop();
-                foreach (Session s in sessions)
-                {
-                    s.Close();
-                }
-                listening = false;
-                LOG.Print("[SERVER] Server closed.");
+                Close();
             }
         }
 
@@ -77,21 +70,25 @@ namespace WOC_Server
         {
             if (listening)
             {
-                LOG.Print("Closing server");
-                tokenSource?.Cancel();
-                //listener.Stop();
-                Session closer = new Session();
-                closer.Connect("127.0.0.1", 54001);
-                
+                LOG.Print("[SERVER] Closing server.");
+                listener.Stop();
+                foreach (Session s in sessions)
+                {
+                    s?.Close();
+                }
+                sessions.Clear();
+                listening = false;
+                LOG.Print("[SERVER] Server closed.");
             }
             else
             {
                 LOG.Print("[SERVER] already closed.");
             }
         }
+
         void IncomingHandling(IPacketData data)
         {
-            LOG.Print("[SERVER] received a packet.");
+            LOG.Print("[SERVER] received a packet. {0}", data);
 
             switch (data)
             {
