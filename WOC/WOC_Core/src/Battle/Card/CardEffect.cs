@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Xml.Linq;
 
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class CardEffect
     {

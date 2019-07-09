@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using WOC_Battle;
+using WOC_Core;
 using WOC_Core;
 
 namespace BattlePlayground
@@ -79,30 +79,31 @@ namespace BattlePlayground
         {
             player.StartTurn();
             Card card;
-            int index = -1;
+            int cardIndex = -1;
             do
             {
                 Console.Write("> {0}'s turn. Hand : {1}\n> What's your move (-1 to end turn)? ", player.Name, string.Join(",", player.hand.AsArray().Select(c => c.name).ToArray()));
-                index = int.Parse(Console.ReadLine());
-                card = player.hand.Remove(index);
-                if (card == null && index != -1)
+                cardIndex = int.Parse(Console.ReadLine());
+                card = player.hand.Get(cardIndex);
+                if (card == null && cardIndex != -1)
                 {
                     LOG.Print("You need to give me a valid index !");
                 }
-            } while (card == null && index != -1);
+            } while (card == null && cardIndex != -1);
 
             bool cardPlayed = false;
-            while (!cardPlayed && index != -1)
+            int targetIndex = -1;
+            while (!cardPlayed && targetIndex != -1)
             {
                 Console.Write("> Potential targets : {0}\nWho is your target ?", string.Join(",", battle.Actors.Select(a => a.character.Name).ToArray()));
-                index = int.Parse(Console.ReadLine());
-                if ((index < 0 || index >= battle.Actors.Count) && index != -1)
+                targetIndex = int.Parse(Console.ReadLine());
+                if ((targetIndex < 0 || targetIndex >= battle.Actors.Count) && targetIndex != -1)
                 {
                     LOG.Print("You need to give me a valid index !");
                 }
-                else if (index != -1)
+                else if (targetIndex != -1)
                 {
-                    cardPlayed = player.PlayCard(card, battle.Actors[index].character);
+                    cardPlayed = player.PlayCard(card, battle.Actors[targetIndex].character);
                 }
             }
 

@@ -22,6 +22,8 @@ namespace WOC_Server
         private CancellationToken token;
         private SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
 
+        public  Battle battle;
+
         public async Task StartAsync(IPAddress ip, int port)
         {
             if (listening)
@@ -46,7 +48,7 @@ namespace WOC_Server
                         var tcpClientTask = listener.AcceptTcpClientAsync();
                         TcpClient client = await tcpClientTask;
 
-                        ServerSession session = new ServerSession(this);
+                        ServerSession session = new ServerSession(this, battle);
                         session.Connect(client);
                         session.OnDisconnect += () =>
                         {
@@ -84,173 +86,86 @@ namespace WOC_Server
             }
         }
 
-        
-        public async Task Broadcast(string msg)
+
+        public async Task Broadcast(string msg, Session toIgnore = null)
         {
-            var tasks = sessions.Select(session => session.SendAsync(msg));
+            List<Task> tasks = new List<Task>();
+
+            foreach (Session session in sessions)
+            {
+                if (toIgnore != null && session != toIgnore)
+                {
+                    tasks.Add(session.SendAsync(msg));
+                }
+            }
             await Task.WhenAll(tasks);
         }
-        public async Task Broadcast(IPacketData data)
+        public async Task Broadcast(IPacketData data, Session toIgnore = null)
         {
-            var tasks = sessions.Select(session => session.SendAsync(data));
-            await Task.WhenAll(tasks);
+            await Broadcast(Serialization.ToJson(data), toIgnore);
+        }
+
+        public void Init()
+        {
+            LOG.Print("[SERVER] Battle initialization...");
+            battle = new Battle();
+
+            Initiative.Max = 50;
+
+            // CARDS
+            List<Card> cardsMap = new List<Card>()
+            {
+                // name | mana cost | exhaust | effects list
+                new Card("smol_dmg", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(1)
+                }),
+                new Card("hek", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(4)
+                })
+            };
+            LOG.Print("[SERVER] Adding card");
+            cardsMap.ForEach(c => battle.Add(c));
+        }
+
+        public void RunBattle()
+        {
+            battle.Init();
+            battle.OnBattleEnd += BattleOver;
+
+            LOG.Print("> Battle starting !");
+            while (!isOver)
+            {
+                Actor current = battle.NextActor();
+                switch (current)
+                {
+                    case PlayerActor player:
+                        ServerSession session = sessions.First(p => p.actor == player);
+                        StartTurn(session);
+                        break;
+                    case PNJActor pnj:
+                        LOG.Print("> {0} playing !", pnj.Name);
+                        break;
+                }
+            }
+        }
+
+        void StartTurn(ServerSession playerSession)
+        {
+            playerSession.actor.StartTurn();
+        }
+
+
+        bool isOver = false;
+        void BattleOver()
+        {
+            isOver = true;
         }
 
     }
 }
-
-
-
-
-
-//namespace WOC_Server
-//{
-
-//    public class Server
-//    {
-//        object threadLock = new object();
-//        List<Task> connections = new List<Task>();
-//        List<BattleInstance> battles = new List<BattleInstance>();
-
-//        public List<ServerSideSession> sessions = new List<ServerSideSession>();
-//        TcpListener listener;
-
-//        public void TryConnect()
-//        {
-
-//        }
-
-
-
-//        public async Task Broadcast(List<Session> sessions, string message)
-//        {
-//            var tasks = sessions.Select(session => session.SendAsync(message));
-//            await Task.WhenAll(tasks);
-//        }
-
-
-//        public void HandleIncoming(Session sender, IPacketData packet)
-//        {
-//            string errMessage = "";
-//            switch(packet)
-//            {
-//                case PD_Chat data:
-//                    Broadcast(PacketData.ToJson(data)).Wait();
-//                    break;
-//                case PD_Create<PD_BattleAction> data:
-//                    CreateBattle(sender, data);
-//                    break;
-//                case PD_BattleAction data:
-//                    var battle = battles.FirstOrDefault(b => b.info.name == data.battleName);
-//                    if (battle != null)
-//                    {
-//                        battles.Find(b => b.info.name == data.battleName)?.HandleIncoming(sender, data);
-//                    }
-//                    else
-//                    {
-//                        sender.SendValidation(data.id, "battle_name_not_found").Wait();
-//                    }
-//                    break;
-//            }
-
-//            sender.SendValidation(packet.id, errMessage).Wait();
-//        }
-
-//        void CreateBattle(Session sender, PD_Create<PD_BattleAction> data)
-//        {
-//            string errMessage = string.Empty;
-//            if (battles.Find(b => b.info.name == data.toCreate.battleName) != null)
-//            {
-//                errMessage = "battle_name_already_used";
-//            }
-//            else
-//            {
-//                battles.Add(new BattleInstance());
-//            }
-
-//            sender.SendValidation(data.id, errMessage).Wait();
-//        }
-
-//        public async Task StartListenerAsync()
-//        {
-//            listener = TcpListener.Create(8000);
-//            listener.Start();
-//            while (true)
-//            {
-//                var tcpClient = await listener.AcceptTcpClientAsync();
-//                Console.WriteLine("[Server] Client has connected");
-//                var task = StartHandleConnectionAsync(tcpClient);
-//                if (task.IsFaulted)
-//                {
-//                    task.Wait();
-//                }
-//            }
-//        }
-        
-//        public bool FindSession(Account account, out Session session)
-//        {
-//            foreach (var sess in sessions)
-//            {
-//                if (sess.account == account)
-//                {
-//                    session = sess;
-//                    return true;
-//                }
-//            }
-//            session = null;
-//            return false;
-//        }
-
-//        public bool FindSession(string accountName, out Session session)
-//        {
-//            foreach (var sess in sessions)
-//            {
-//                if (sess.account.name == accountName)
-//                {
-//                    session = sess;
-//                    return true;
-//                }
-//            }
-//            session = null;
-//            return false;
-//        }
-
-//        public void Close()
-//        {
-//            listener.Stop();
-//            //connection.Close();
-//        }
-
-//        private async Task StartHandleConnectionAsync(TcpClient tcpClient)
-//        {
-//            ServerSideSession session = new ServerSideSession(tcpClient, this);
-//            var sessionTask = Task.Run(() => session.ListenAsync());
-//            //var sessionTask = session.StartAsync();
-//            lock (threadLock)
-//            {
-//                connections.Add(sessionTask);
-//                sessions.Add(session);
-//            }
-
-//            Console.WriteLine("Connect : currently {0} users connected on {1} tasks", sessions.Count, connections.Count);
-
-//            try
-//            {
-//                await sessionTask;
-//            }
-//            catch (Exception ex)
-//            {
-//                Console.WriteLine(ex.ToString());
-//            }
-//            finally
-//            {
-//                lock (threadLock)
-//                {
-//                    connections.Remove(sessionTask);
-//                    sessions.Remove(session);
-//                }
-//                Console.WriteLine("Disconnect : currently {0} users connected on {1} tasks", sessions.Count, connections.Count);
-//            }
-//        }
-//    }
-//}

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using WOC_Battle;
+using WOC_Core;
 
 namespace WOC_Core
 {
@@ -41,6 +41,23 @@ namespace WOC_Core
 
     public class PD_PlayerAdd : IPacketData
     {
-        
+        public string name;
+        public Character.Race charaRace;
+        public Character.Category charaCategory;
+        public int charaLife;
+        public string charaName;
+        public int handStartCount;
+        public int handMaxCount;
+        public List<string> cardsName;
+        public int aggroIncrement;
+        public int manaMax;
+    }
+
+    public class PD_CardPlayed : IPacketData
+    {
+        public string ownerName;
+        public string targetName;
+        public int cardIndex;
+        public string cardName;
     }
 }

@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System.Xml.Linq;
 using System;
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class CardEffectDamage : CardEffect
     {

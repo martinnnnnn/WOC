@@ -12,25 +12,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using WOC_Core;
-using WOC_Battle;
+using WOC_Core;
 
 namespace WOC_Server
 {
-    class Server
-    {
-        Battle battle;
-        TCPServer server;
-    }
-
-
-
     class Program
     {
+
         static void Main(string[] args)
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
             TCPServer server = new TCPServer();
+
             Task serverTask = null;
 
             bool exit = false;
@@ -40,12 +34,17 @@ namespace WOC_Server
 
                 switch (input)
                 {
-                    case "close":
-                        server.Close();
+                    case "init":
+                        server.Init();
                         break;
                     case "open":
                         LOG.Print("Starting server...");
                         serverTask = server.StartAsync(IPAddress.Any, 54001);
+                        break;
+                    case "start_battle":
+                        break;
+                    case "close":
+                        server.Close();
                         break;
                     case "exit":
                         exit = true;

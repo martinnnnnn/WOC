@@ -5,12 +5,14 @@ using System.Security.Cryptography;
 using System.Xml.Linq;
 
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class CardPile
     {
         public Queue<Card> cards = new Queue<Card>();
         public int Count => cards.Count;
+
+        Random random = new Random(Battle.RandomSeed);
 
         public Card[] Pop(int count)
         {
@@ -27,8 +29,6 @@ namespace WOC_Battle
 
         public void Shuffle()
         {
-            Random random = new Random();
-
             Card[] tmp = cards.ToArray();
             cards.Clear();
 

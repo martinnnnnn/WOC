@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class PlayerActor : Actor
     {
@@ -78,6 +78,12 @@ namespace WOC_Battle
 
         public bool PlayCard(Card card, Character target)
         {
+            if (turnState == TurnState.NOT_MINE)
+            {
+                LOG.Print("[BATTLE] {0} cannot play : not his turn.", Name);
+                return false;
+            }
+
             if (hand.Contains(card))
             {
                 if (card.Play(new PlayInfo(){Owner = this, Target = target}))
@@ -86,6 +92,7 @@ namespace WOC_Battle
                     hand.Remove(card);
                     discardPile.Push(card);
                     aggro.Increment();
+                    LOG.Print("[BATTLE] {0} played {1}", Name, card.name);
                     return true;
                 }
             }

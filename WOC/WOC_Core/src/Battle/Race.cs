@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     
 }

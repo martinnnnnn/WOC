@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public struct PlayInfo
     {
@@ -22,7 +22,7 @@ namespace WOC_Battle
         public string name = "";
         public int manaCost = 0;
         public bool exhaust = false;
-
+    
         //public Card()
         //{
 

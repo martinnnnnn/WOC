@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class Hand
     {
@@ -10,6 +10,7 @@ namespace WOC_Battle
         int maxCount;
         int startingCount;
 
+        Random random = new Random(Battle.RandomSeed);
 
         public Hand(int startingCount, int maxCount)
         {
@@ -58,7 +59,15 @@ namespace WOC_Battle
             }
         }
 
-        public Card Remove(int index)
+        public void Remove(int index)
+        {
+            if (index >= 0 && index < Count)
+            {
+                Remove(cards[index]);
+            }
+        }
+
+        public Card Get(int index)
         {
             if (index >= 0 && index < Count)
             {
@@ -69,7 +78,6 @@ namespace WOC_Battle
 
         public Card DiscardRandom(Card ignore = null)
         {
-            Random random = new Random();
             Card result = null;
             if (cards.Count == 1)
             {

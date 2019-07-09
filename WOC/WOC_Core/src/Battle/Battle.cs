@@ -11,10 +11,19 @@ using Newtonsoft.Json.Linq;
 
 
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class Battle
     {
+        private static int randomSeed = 0;
+        public static int RandomSeed
+        {
+            get
+            {
+                return ++randomSeed;
+            }
+        }
+
         Dictionary<string, Card> cardsMap = new Dictionary<string, Card>();
         List<Actor> Cemetery = new List<Actor>();
         public List<Actor> Actors = new List<Actor>();
@@ -76,9 +85,15 @@ namespace WOC_Battle
             return true;
         }
 
-        public void Add(Actor actor)
+        public bool Add(Actor actor)
         {
-            Actors.Add(actor);
+            if (Actors.Find(a => a.Name == actor.Name) != null)
+            {
+                Actors.Add(actor);
+                LOG.Print("[BATTLE] Actor {0} added.", actor.Name);
+                return true;
+            }
+            return false;
         }
 
         public void Update()

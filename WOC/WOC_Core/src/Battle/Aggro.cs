@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace WOC_Battle
+namespace WOC_Core
 {
     public class Aggro
     {
