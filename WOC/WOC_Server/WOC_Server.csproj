@@ -51,17 +51,13 @@
     <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\Server.cs" />
-    <Compile Include="src\ServerSideSession.cs" />
+    <Compile Include="src\ServerSession.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WOC_Battle\WOC_Battle.csproj">
-      <Project>{dcd25d42-5f17-44e7-8be3-8f3dd6e30d6c}</Project>
-      <Name>WOC_Battle</Name>
-    </ProjectReference>
     <ProjectReference Include="..\WOC_Core\WOC_Core.csproj">
       <Project>{0c336064-8b9c-4289-b08a-1911317ef02e}</Project>
       <Name>WOC_Core</Name>

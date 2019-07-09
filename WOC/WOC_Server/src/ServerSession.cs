@@ -25,7 +25,6 @@ namespace WOC_Server
             switch (data)
             {
                 case PD_Chat chat:
-                    var tasks = new List<Task>();
                     try
                     {
                         server.Broadcast(chat).Wait();
@@ -34,6 +33,9 @@ namespace WOC_Server
                     {
                         LOG.Print("[SERVER] Failed to broadcast message.");
                     }
+                    break;
+                case PD_PlayerAdd add:
+
                     break;
             }
         }
