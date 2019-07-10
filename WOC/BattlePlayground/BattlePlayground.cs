@@ -55,7 +55,7 @@ namespace BattlePlayground
 
         static void RunBattle()
         {
-            battle.Init();
+            battle.Start();
             battle.OnBattleEnd += BattleOver;
 
             LOG.Print("> Battle starting !");

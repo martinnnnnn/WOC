@@ -33,14 +33,43 @@ namespace WOC_Core
 
     public class PD_SessionShutdown : IPacketData { }
 
+    public class PD_NameModify : IPacketData
+    {
+        public string name;
+    }
     public class PD_Chat : IPacketData
     {
         public string senderName;
         public string message;
     }
 
+    public class PD_BattleCreate : IPacketData
+    {
+        public string name;
+    }
+    public class PD_BattleEnter : IPacketData
+    {
+        public string name;
+    }
+    public class PD_BattleLeave : IPacketData {}
     public class PD_BattleStart : IPacketData {}
 
+    public class PD_BattleList : IPacketData
+    {
+        public List<string> rooms;
+    }
+    
+    public class PD_PlayerList : IPacketData
+    {
+        public enum Location
+        {
+            SERVER,
+            ROOM,
+            BOTH
+        }
+        public Location location;
+        public List<string> players;
+    }
     public class PD_TurnEnd : IPacketData { }
 
     public class PD_PlayerAdd : IPacketData

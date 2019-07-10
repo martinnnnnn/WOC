@@ -36,6 +36,7 @@ namespace Playground
                         break;
                     case "name":
                         name = input[1];
+                        session.SendAsync(new PD_NameModify { name = input[1] }).Wait();
                         break;
                     case "connect":
                         session.Connect("127.0.0.1", 54001);
@@ -44,8 +45,23 @@ namespace Playground
                         session.SendClose().Wait();
                         session.Close();
                         break;
+                    case "battle_create":
+                        session.SendAsync(new PD_BattleCreate { name = input[1] }).Wait();
+                        break;
+                    case "battle_enter":
+                        session.SendAsync(new PD_BattleEnter { name = input[1] }).Wait();
+                        break;
+                    case "battle_leave":
+                        session.SendAsync(new PD_BattleLeave { }).Wait();
+                        break;
+                    case "battle_list":
+                        session.SendAsync(new PD_BattleList { }).Wait();
+                        break;
+                    case "player_list":
+                        session.SendAsync(new PD_PlayerList { location = (input[1] == "room") ? PD_PlayerList.Location.ROOM : PD_PlayerList.Location.SERVER }).Wait();
+                        break;
                     case "battle_start":
-                        if (session.battle.Init())
+                        if (session.battle.Start())
                         {
                             session.SendAsync(new PD_BattleStart()).Wait();
                         }
@@ -64,13 +80,13 @@ namespace Playground
                             session.SendAsync(new PD_TurnEnd()).Wait();
                         }
                         break;
-                    case "add_player_1":
+                    case "add_1":
                         session.AddActor_1();
                         break;
-                    case "add_player_2":
+                    case "add_2":
                         session.AddActor_2();
                         break;
-                    case "add_player_3":
+                    case "add_3":
                         session.AddActor_3();
                         break;
                     case "exit":
@@ -90,10 +106,15 @@ namespace Playground
         static void Help()
         {
             LOG.Print("> help" + "\n" +
-                    "> name" + "\n" +
+                    "> name=" + "\n" +
                     "> connect" + "\n" +
                     "> close" + "\n" +
                     "> battle_start" + "\n" +
+                    "> battle_create=" + "\n" +
+                    "> battle_enter=" + "\n" +
+                    "> battle_leave" + "\n" +
+                    "> battle_list" + "\n" +
+                    "> player_list=" + "\n" +
                     "> playcard" + "\n" +
                     "> endturn" + "\n" +
                     "> add_player_1" + "\n" +
@@ -101,6 +122,8 @@ namespace Playground
                     "> add_player_3" + "\n" +
                     "> exit" + "\n");
         }
+
+
 
         static void PlayCard()
         {

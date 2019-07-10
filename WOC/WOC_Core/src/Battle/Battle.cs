@@ -32,7 +32,7 @@ namespace WOC_Core
         public Action OnBattleEnd;
         public bool HasStarted = false;
 
-        public bool Init()
+        public bool Start()
         {
             if (!HasStarted)
             {

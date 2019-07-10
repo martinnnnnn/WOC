@@ -54,9 +54,14 @@ namespace Playground
                         LOG.Print("[PLAYGROUND] It's my turn !");
                     }
                     break;
-
                 case PD_BattleStart battleStart:
-                    battle.Init();
+                    battle.Start();
+                    break;
+                case PD_BattleList battleList:
+                    LOG.Print("[CLIENT] Received battle room list :\n{0}", string.Join(",", battleList.rooms));
+                    break;
+                case PD_PlayerList playerList:
+                    LOG.Print("[CLIENT] Received players list ({0}) in {1} :\n{2}", playerList.players.Count, (playerList.location == PD_PlayerList.Location.ROOM) ? "room" : "server", string.Join(",", playerList.players));
                     break;
             }
         }

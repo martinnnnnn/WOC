@@ -23,7 +23,6 @@ namespace WOC_Server
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
             TCPServer server = new TCPServer();
-            server.Init();
             Task serverTask = server.StartAsync(IPAddress.Any, 54001);
 
             bool exit = false;
