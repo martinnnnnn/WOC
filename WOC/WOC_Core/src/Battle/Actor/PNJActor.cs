@@ -28,14 +28,24 @@ namespace WOC_Core
             base.BattleEnd();
         }
 
-        public override void StartTurn()
+        public override bool StartTurn()
         {
-            base.StartTurn();
+            if (base.StartTurn())
+            {
+                LOG.Print("[PNJ] {0} plays his turn", Name);
+                return EndTurn();
+            }
+            return false;
         }
 
-        public override void EndTurn()
+        public override bool EndTurn()
         {
-            base.EndTurn();
+            if (base.EndTurn())
+            {
+                battle.NextActor().StartTurn();
+                return true;
+            }
+            return false;
         }
         public override void UpdateInitiative()
         {

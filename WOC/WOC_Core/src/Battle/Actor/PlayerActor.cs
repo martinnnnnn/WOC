@@ -67,13 +67,16 @@ namespace WOC_Core
 
         }
 
-        public override void StartTurn()
+        public override bool StartTurn()
         {
-            base.StartTurn();
-
-            mana.Reset();
-            aggro.StartTurn();
-            DrawCards(hand.StartingCount);
+            if (base.StartTurn())
+            {
+                mana.Reset();
+                aggro.StartTurn();
+                DrawCards(hand.StartingCount);
+                return true;
+            }
+            return false;
         }
 
         public bool PlayCard(Card card, Character target)
@@ -99,11 +102,14 @@ namespace WOC_Core
             return false;
         }
 
-        public override void EndTurn()
+        public override bool EndTurn()
         {
-            base.EndTurn();
-
-            discardPile.Push(hand.Flush());
+            if (base.EndTurn())
+            {
+                discardPile.Push(hand.Flush());
+                return true;
+            }
+            return false;
         }
 
         public void DrawCards(int count, bool discardIfMaxReach = true)

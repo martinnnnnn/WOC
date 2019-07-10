@@ -31,13 +31,17 @@ namespace WOC_Core
         }
     }
 
-    public class PD_Shutdown : IPacketData {}
+    public class PD_SessionShutdown : IPacketData { }
 
     public class PD_Chat : IPacketData
     {
         public string senderName;
         public string message;
     }
+
+    public class PD_BattleStart : IPacketData {}
+
+    public class PD_TurnEnd : IPacketData { }
 
     public class PD_PlayerAdd : IPacketData
     {

@@ -30,15 +30,25 @@ namespace WOC_Core
         Actor current;
 
         public Action OnBattleEnd;
+        public bool HasStarted = false;
 
-        public void Init()
+        public bool Init()
         {
-            foreach (Actor actor in Actors)
+            if (!HasStarted)
             {
-                actor.BattleInit();
-            }
+                LOG.Print("[BATTLE] Starting !");
+                foreach (Actor actor in Actors)
+                {
+                    actor.BattleInit();
+                }
 
-            UpdateInitiatives();
+                UpdateInitiatives();
+                NextActor().StartTurn();
+                HasStarted = true;
+                return true;
+            }
+            LOG.Print("[BATTLE] Already started !");
+            return false;
         }
 
         public void UpdateInitiatives()
@@ -104,6 +114,11 @@ namespace WOC_Core
         public void Shutdown()
         {
 
+        }
+
+        public Actor GetCurrentActor()
+        {
+            return Actors.Find(a => a.turnState == Actor.TurnState.MINE);
         }
     }
 }

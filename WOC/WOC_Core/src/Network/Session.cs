@@ -109,7 +109,7 @@ namespace WOC_Core
         {
             switch (data)
             {
-                case PD_Shutdown sd:
+                case PD_SessionShutdown sd:
                     Close();
                     break;
             }
@@ -118,7 +118,7 @@ namespace WOC_Core
         public async Task SendClose()
         {
             LOG.Print("[NETWORK] Sending shutdown message socket.");
-            await SendAsync(new PD_Shutdown());
+            await SendAsync(new PD_SessionShutdown());
         }
 
         public void Close()

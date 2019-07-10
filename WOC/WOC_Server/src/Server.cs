@@ -114,7 +114,7 @@ namespace WOC_Server
             LOG.Print("[SERVER] Welcome to the WOC Server ! ");
             LOG.Print("[SERVER] Battle initialization...");
             battle = new Battle();
-
+            //battle.OnBattleEnd += BattleOver;
             Initiative.Max = 50;
 
             // CARDS
@@ -134,43 +134,19 @@ namespace WOC_Server
                     new CardEffectDamage(4)
                 })
             };
-            LOG.Print("[SERVER] Adding card");
+            LOG.Print("[SERVER] Adding cards");
             cardsMap.ForEach(c => battle.Add(c));
-        }
 
-        public void RunBattle()
-        {
-            battle.Init();
-            battle.OnBattleEnd += BattleOver;
-
-            LOG.Print("> Battle starting !");
-            while (!isOver)
+            //PNJS
+            List<Actor> actors = new List<Actor>()
             {
-                Actor current = battle.NextActor();
-                switch (current)
-                {
-                    case PlayerActor player:
-                        ServerSession session = sessions.First(p => p.actor == player);
-                        StartTurn(session);
-                        break;
-                    case PNJActor pnj:
-                        LOG.Print("> {0} playing !", pnj.Name);
-                        break;
-                }
-            }
+                // battle | character | name | first init
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre1", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre2", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 50), "monstre3", 5)
+            };
+            LOG.Print("[SERVER] Adding PNJs");
+            actors.ForEach(a => battle.Add(a));
         }
-
-        void StartTurn(ServerSession playerSession)
-        {
-            playerSession.actor.StartTurn();
-        }
-
-
-        bool isOver = false;
-        void BattleOver()
-        {
-            isOver = true;
-        }
-
     }
 }

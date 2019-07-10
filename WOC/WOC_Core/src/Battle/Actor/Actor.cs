@@ -43,14 +43,26 @@ namespace WOC_Core
         {
         }
 
-        public virtual void StartTurn()
+        public virtual bool StartTurn()
         {
-            turnState = TurnState.MINE;
+            if (turnState == TurnState.NOT_MINE)
+            {
+                LOG.Print("[ACTOR] {0} turn starts", Name);
+                turnState = TurnState.MINE;
+                return true;
+            }
+            return false;
         }
 
-        public virtual void EndTurn()
+        public virtual bool EndTurn()
         {
-            turnState = TurnState.NOT_MINE;
+            if (turnState == TurnState.MINE)
+            {
+                LOG.Print("[ACTOR] {0} turn ends", Name);
+                turnState = TurnState.NOT_MINE;
+                return true;
+            }
+            return false;
         }
     }
 }

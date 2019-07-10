@@ -55,16 +55,32 @@ namespace WOC_Server
                     }
                     break;
 
-                case PD_CardPlayed card:
-                    Card c = actor.hand.Get(card.cardIndex);
-                    Character t = battle.Actors.Find(a => a.character.Name == card.targetName).character;
-
-                    LOG.Print("[SERVER] Found right card ? {0}", (c.name == card.cardName) ? "true" : "false");
-                    LOG.Print("[SERVER] Found right character ? {0}", (t != null) ? "true" : "false");
-
-                    if (actor.PlayCard(c, t))
+                case PD_BattleStart battleStart:
+                    if (battle.Init())
                     {
-                        server.Broadcast(card, this).Wait();
+                        server.Broadcast(battleStart, this).Wait();
+                    }
+                    break;
+
+                case PD_CardPlayed cardPlayed:
+                    Card card = actor.hand.Get(cardPlayed.cardIndex);
+                    Character character = battle.Actors.Find(a => a.character.Name == cardPlayed.targetName).character;
+
+                    LOG.Print("[SERVER] Found right card ? {0}", (card.name == cardPlayed.cardName) ? "true" : "false");
+                    LOG.Print("[SERVER] Found right character ? {0}", (character != null) ? "true" : "false");
+
+                    if (actor.PlayCard(card, character))
+                    {
+                        server.Broadcast(cardPlayed, this).Wait();
+                    }
+                    break;
+
+                case PD_TurnEnd turnEnd:
+                    if (battle.GetCurrentActor() == actor)
+                    {
+                        actor.EndTurn();
+                        battle.NextActor().StartTurn();
+                        server.Broadcast(turnEnd, this).Wait();
                     }
                     break;
             }
