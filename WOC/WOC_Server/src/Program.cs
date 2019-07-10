@@ -24,8 +24,8 @@ namespace WOC_Server
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
             TCPServer server = new TCPServer();
-
-            Task serverTask = null;
+            server.Init();
+            Task serverTask = server.StartAsync(IPAddress.Any, 54001);
 
             bool exit = false;
             while (!exit)
@@ -34,11 +34,7 @@ namespace WOC_Server
 
                 switch (input)
                 {
-                    case "init":
-                        server.Init();
-                        break;
                     case "open":
-                        LOG.Print("Starting server...");
                         serverTask = server.StartAsync(IPAddress.Any, 54001);
                         break;
                     case "start_battle":

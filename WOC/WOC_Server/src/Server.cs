@@ -26,8 +26,10 @@ namespace WOC_Server
 
         public async Task StartAsync(IPAddress ip, int port)
         {
+            LOG.Print("[SERVER] Starting to listen on {0}:{1}", ip, port);
             if (listening)
             {
+                LOG.Print("[SERVER] Already started, trying to close first...");
                 Close();
             }
 
@@ -38,6 +40,7 @@ namespace WOC_Server
             token = tokenSource.Token;
             listener.Start();
             listening = true;
+            LOG.Print("[SERVER] Server operational.");
 
             try
             {
@@ -89,7 +92,7 @@ namespace WOC_Server
 
         public async Task Broadcast(string msg, Session toIgnore = null)
         {
-            LOG.Print("broadcasting");
+            LOG.Print("Broadcasting {0}", msg);
             List<Task> tasks = new List<Task>();
 
             foreach (Session session in sessions)
@@ -108,6 +111,7 @@ namespace WOC_Server
 
         public void Init()
         {
+            LOG.Print("[SERVER] Welcome to the WOC Server ! ");
             LOG.Print("[SERVER] Battle initialization...");
             battle = new Battle();
 

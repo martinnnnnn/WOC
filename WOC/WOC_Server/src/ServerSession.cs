@@ -47,6 +47,8 @@ namespace WOC_Server
                         player.cardsName, 
                         player.aggroIncrement, 
                         player.manaMax);
+                    LOG.Print("[SERVER] Player created ? {0}", (actor != null) ? "true" : "false");
+
                     if (battle.Add(actor))
                     {
                         server.Broadcast(player, this).Wait();

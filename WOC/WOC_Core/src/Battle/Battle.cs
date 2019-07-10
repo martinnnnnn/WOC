@@ -87,7 +87,7 @@ namespace WOC_Core
 
         public bool Add(Actor actor)
         {
-            if (Actors.Find(a => a.Name == actor.Name) != null)
+            if (Actors.Find(a => a.Name == actor.Name) == null)
             {
                 Actors.Add(actor);
                 LOG.Print("[BATTLE] Actor {0} added.", actor.Name);
