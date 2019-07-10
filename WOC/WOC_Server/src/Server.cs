@@ -31,6 +31,8 @@ namespace WOC_Server
 
         public void ForEach(Action<ServerSession> p) => sessions.ToList().ForEach(p);
 
+        public List<string> PlayerList { get => sessions.Select(s => s.Name).ToList(); }
+
         public BattleRoom(string name, TCPServer server)
         {
             Name = name;
@@ -89,7 +91,24 @@ namespace WOC_Server
             server.battleRooms.Remove(this);
         }
 
-        public List<string> PlayerList { get => sessions.Select(s => s.Name).ToList(); }
+        public async Task Broadcast(string msg, Session toIgnore = null)
+        {
+            List<Task> tasks = new List<Task>();
+
+            foreach (Session session in sessions)
+            {
+                if (toIgnore == null || session != toIgnore)
+                {
+                    tasks.Add(session.SendAsync(msg));
+                }
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        public async Task Broadcast(IPacketData data, Session toIgnore = null)
+        {
+            await Broadcast(Serialization.ToJson(data), toIgnore);
+        }
     }
 
 
@@ -203,10 +222,15 @@ namespace WOC_Server
         }
 
 
-        public async Task Broadcast(string msg, Session toIgnore = null, bool toBattleRooms = false)
+        public async Task Broadcast(string msg, Session toIgnore = null)
         {
             LOG.Print("Broadcasting {0}", msg);
             List<Task> tasks = new List<Task>();
+
+            foreach (var room in battleRooms)
+            {
+                tasks.Add(room.Broadcast(msg));
+            }
 
             foreach (Session session in sessions)
             {
@@ -215,8 +239,10 @@ namespace WOC_Server
                     tasks.Add(session.SendAsync(msg));
                 }
             }
+
             await Task.WhenAll(tasks);
         }
+
         public async Task Broadcast(IPacketData data, Session toIgnore = null)
         {
             await Broadcast(Serialization.ToJson(data), toIgnore);

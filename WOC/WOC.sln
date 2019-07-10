@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Core", "WOC_Core\WOC_Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkClientPlayground", "NetworkClientPlayground\NetworkClientPlayground.csproj", "{131BB178-B0B2-4453-A8D8-00AA99751DD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattlePlayground", "BattlePlayground\BattlePlayground.csproj", "{407D3FEA-F535-479B-BA2C-5BFF3109751E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOC_Server", "WOC_Server\WOC_Server.csproj", "{9397293C-BB79-4756-9EB4-1AFA9F37371B}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{131BB178-B0B2-4453-A8D8-00AA99751DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{131BB178-B0B2-4453-A8D8-00AA99751DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{131BB178-B0B2-4453-A8D8-00AA99751DD7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{407D3FEA-F535-479B-BA2C-5BFF3109751E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{407D3FEA-F535-479B-BA2C-5BFF3109751E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{407D3FEA-F535-479B-BA2C-5BFF3109751E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{407D3FEA-F535-479B-BA2C-5BFF3109751E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9397293C-BB79-4756-9EB4-1AFA9F37371B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9397293C-BB79-4756-9EB4-1AFA9F37371B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9397293C-BB79-4756-9EB4-1AFA9F37371B}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -117,9 +117,9 @@ namespace Playground
                     "> player_list=" + "\n" +
                     "> playcard" + "\n" +
                     "> endturn" + "\n" +
-                    "> add_player_1" + "\n" +
-                    "> add_player_2" + "\n" +
-                    "> add_player_3" + "\n" +
+                    "> add_1" + "\n" +
+                    "> add_2" + "\n" +
+                    "> add_3" + "\n" +
                     "> exit" + "\n");
         }
 

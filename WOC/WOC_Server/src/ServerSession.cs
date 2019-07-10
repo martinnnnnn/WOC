@@ -56,7 +56,7 @@ namespace WOC_Server
 
                     if (room.battle.Add(actor))
                     {
-                        server.Broadcast(player, this).Wait();
+                        room.Broadcast(player, this).Wait();
                     }
                     break;
 
@@ -103,7 +103,7 @@ namespace WOC_Server
                 case PD_BattleStart battleStart:
                     if (room.Start())
                     {
-                        server.Broadcast(battleStart, this).Wait();
+                        room.Broadcast(battleStart, this).Wait();
                     }
                     break;
 
@@ -122,7 +122,7 @@ namespace WOC_Server
 
                     if (actor.PlayCard(card, character))
                     {
-                        server.Broadcast(cardPlayed, this).Wait();
+                        room.Broadcast(cardPlayed, this).Wait();
                     }
                     break;
 
@@ -131,7 +131,7 @@ namespace WOC_Server
                     {
                         actor.EndTurn();
                         room.battle.NextActor().StartTurn();
-                        server.Broadcast(turnEnd, this).Wait();
+                        room.Broadcast(turnEnd, this).Wait();
                     }
                     break;
             }
