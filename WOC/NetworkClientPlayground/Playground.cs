@@ -48,8 +48,8 @@ namespace Playground
                     case "battle_create":
                         session.SendAsync(new PD_BattleCreate { name = input[1] }).Wait();
                         break;
-                    case "battle_enter":
-                        session.SendAsync(new PD_BattleEnter { name = input[1] }).Wait();
+                    case "battle_join":
+                        session.SendAsync(new PD_BattleJoin { name = input[1] }).Wait();
                         break;
                     case "battle_leave":
                         session.SendAsync(new PD_BattleLeave { }).Wait();

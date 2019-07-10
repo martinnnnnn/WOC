@@ -47,7 +47,7 @@ namespace WOC_Core
     {
         public string name;
     }
-    public class PD_BattleEnter : IPacketData
+    public class PD_BattleJoin : IPacketData
     {
         public string name;
     }

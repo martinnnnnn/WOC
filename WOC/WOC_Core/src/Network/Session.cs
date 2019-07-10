@@ -132,8 +132,6 @@ namespace WOC_Core
 
         public async Task SendAsync(string message)
         {
-            //LOG.Print("[SESSION] sending message : {0}", message);
-
             try
             {
                 var bytesMessage = Encoding.UTF8.GetBytes(message);
@@ -156,7 +154,4 @@ namespace WOC_Core
             await SendAsync(Serialization.ToJson(new PD_Validate(toValidate, errMessage)));
         }
     }
-
-
-
 }

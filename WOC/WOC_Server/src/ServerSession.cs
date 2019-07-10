@@ -74,7 +74,7 @@ namespace WOC_Server
                     }
                     break;
 
-                case PD_BattleEnter battleEnter:
+                case PD_BattleJoin battleEnter:
                     if (!server.MoveToBattleRoom(battleEnter.name, this))
                     {
                         SendAsync(new PD_Validate(battleEnter.id, "[SERVER] Battle name does not exist")).Wait();
