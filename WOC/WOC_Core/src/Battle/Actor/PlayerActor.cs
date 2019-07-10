@@ -89,13 +89,31 @@ namespace WOC_Core
 
             if (hand.Contains(card))
             {
-                if (card.Play(new PlayInfo(){Owner = this, Target = target}))
+                if (card.Play(new PlayInfo{Owner = this, Target = target}))
                 {
                     mana.Consume(card.manaCost);
                     hand.Remove(card);
                     discardPile.Push(card);
                     aggro.Increment();
-                    LOG.Print("[BATTLE] {0} played {1}", Name, card.name);
+                    LOG.Print("[BATTLE] {0} played {1} on {2}", Name, card.name, target.Name);
+                    card.effects.ForEach(e =>
+                    {
+                        switch (e)
+                        {
+                            case CardEffectDamage dmg:
+                                LOG.Print("[CARDEFFECT] [DMG] {0} dmg to {1} who has {2} hp", dmg.value, target.Name, target.Life);
+                                break;
+                            case CardEffectHeal heal:
+                                LOG.Print("[CARDEFFECT] [HEAL] {0} heal to {1} who has {2} hp", heal.value, target.Name, target.Life);
+                                break;
+                            case CardEffectDraw draw:
+                                LOG.Print("[CARDEFFECT] [DRAW] {0} cards drawn by {1} who has {2} cards", draw.value, this.Name, hand.Count);
+                                break;
+                            case CardEffectDiscard disc:
+                                LOG.Print("[CARDEFFECT] [DISCARD] {0} cards discarded by {1} who has {2} cards", disc.value, this.Name, hand.Count);
+                                break;
+                        }
+                    });
                     return true;
                 }
             }

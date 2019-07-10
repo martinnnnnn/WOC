@@ -43,7 +43,6 @@ namespace Playground
                     LOG.Print("[CLIENT] Found Actor ? {0}", (cardPlayed.ownerName == actor.Name) ? "true" : "false");
                     LOG.Print("[CLIENT] Found Card ? {0}", (card.name == cardPlayed.cardName) ? "true" : "false");
                     LOG.Print("[CLIENT] Found Character ? {0}", (target != null) ? "true" : "false");
-
                     LOG.Print("[CLIENT] Card played ? {0}", (owner.PlayCard(card, target)) ? "true" : "false");
                     break;
 
@@ -167,7 +166,7 @@ namespace Playground
                 charaName = "gromelo",
                 handStartCount = 2,
                 handMaxCount = 3,
-                cardsName = new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek" },
+                cardsName = new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek", "hek" },
                 aggroIncrement = 3,
                 manaMax = 30
             }).Wait();
@@ -189,7 +188,7 @@ namespace Playground
                 charaName = "branigan",
                 handStartCount = 2,
                 handMaxCount = 3,
-                cardsName = new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg" },
+                cardsName = new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg", "hek" },
                 aggroIncrement = 4,
                 manaMax = 30
             }).Wait();

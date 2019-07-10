@@ -103,6 +103,7 @@ namespace WOC_Core
                 LOG.Print("[BATTLE] Actor {0} added.", actor.Name);
                 return true;
             }
+            LOG.Print("[BATTLE] Actor {0} already exists.", actor.Name);
             return false;
         }
 

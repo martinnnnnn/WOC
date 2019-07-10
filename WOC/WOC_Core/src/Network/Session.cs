@@ -132,7 +132,7 @@ namespace WOC_Core
 
         public async Task SendAsync(string message)
         {
-            LOG.Print("[SESSION] sending message : {0}", message);
+            //LOG.Print("[SESSION] sending message : {0}", message);
 
             try
             {
