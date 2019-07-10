@@ -114,7 +114,7 @@ namespace WOC_Server
             LOG.Print("[SERVER] Welcome to the WOC Server ! ");
             LOG.Print("[SERVER] Battle initialization...");
             battle = new Battle();
-            //battle.OnBattleEnd += BattleOver;
+            battle.OnBattleEnd += BattleOver;
             Initiative.Max = 50;
 
             // CARDS
@@ -131,7 +131,7 @@ namespace WOC_Server
                 }),
                 new Card("big_dmg", 3, false, new List<CardEffect>
                 {
-                    new CardEffectDamage(4)
+                    new CardEffectDamage(10)
                 })
             };
             LOG.Print("[SERVER] Adding cards");
@@ -141,12 +141,20 @@ namespace WOC_Server
             List<Actor> actors = new List<Actor>()
             {
                 // battle | character | name | first init
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre1", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre2", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 50), "monstre3", 5)
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
             LOG.Print("[SERVER] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
+        }
+
+        void BattleOver()
+        {
+            LOG.Print("Battle over !!! ");
+            LOG.Print("...");
+            LOG.Print("Resetting battle !");
+            Init();
         }
     }
 }

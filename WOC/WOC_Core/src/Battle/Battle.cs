@@ -74,10 +74,15 @@ namespace WOC_Core
 
         public void OnCharacterDeath(Character character)
         {
+            LOG.Print("{0} died !", character.Name);
             int index = Actors.FindIndex(a => a.Name == character.Owner.Name);
             Actor value = Actors[index];
             Actors.RemoveAt(index);
             Cemetery.Add(value);
+            if (Actors.Find(a => a is PNJActor) == null || Actors.Find(a => a is PlayerActor) == null)
+            {
+                OnBattleEnd();
+            }
         }
 
         public Card GetCard(string cardName)

@@ -11,7 +11,7 @@ using WOC_Core;
 
 namespace Playground
 {
-    class NetworkClientPlayground
+    class Playground
     {
         static ClientSession session = new ClientSession();
 
@@ -57,6 +57,10 @@ namespace Playground
                         if (session.actor.EndTurn())
                         {
                             session.battle.NextActor().StartTurn();
+                            if (session.battle.GetCurrentActor() == session.actor)
+                            {
+                                LOG.Print("[PLAYGROUND] It's my turn !");
+                            }
                             session.SendAsync(new PD_TurnEnd()).Wait();
                         }
                         break;
@@ -104,13 +108,20 @@ namespace Playground
             Card card;
             if (actor != session.battle.GetCurrentActor())
             {
+                LOG.Print("[BATTLE] It's not your turn !");
                 return;
             }
+            if (actor.hand.Count == 0)
+            {
+                LOG.Print("[BATTLE] No more cards left !");
+                return;
+            }
+
             int cardIndex = -1;
             do
             {
-                Console.Write("> Hand : {1}\n> What's your move (-1 to end turn)? ", actor.Name, string.Join(",", actor.hand.AsArray().Select(c => c.name).ToArray()));
-                cardIndex = int.Parse(Console.ReadLine());
+                Console.Write("> Hand : {1}\n> What's your move (-1 to cancel)? ", actor.Name, string.Join(",", actor.hand.AsArray().Select(c => c.name).ToArray()));
+                bool result = int.TryParse(Console.ReadLine(), out cardIndex);
                 card = actor.hand.Get(cardIndex);
                 if (card == null && cardIndex != -1)
                 {
@@ -122,8 +133,12 @@ namespace Playground
             int targetIndex = -1;
             while (!cardPlayed)
             {
-                Console.Write("> Potential targets : {0}\nWho is your target ?", string.Join(",", session.battle.Actors.Select(a => a.character.Name).ToArray()));
-                targetIndex = int.Parse(Console.ReadLine());
+                Console.Write("> Potential targets : {0}\nWho is your target (-1 to cancel)?", string.Join(",", session.battle.Actors.Select(a => a.character.Name).ToArray()));
+                bool result = int.TryParse(Console.ReadLine(), out targetIndex);
+                if (targetIndex == -1)
+                {
+                    break;
+                }
                 if ((targetIndex < 0 || targetIndex >= session.battle.Actors.Count) && targetIndex != -1)
                 {
                     LOG.Print("You need to give me a valid index !");

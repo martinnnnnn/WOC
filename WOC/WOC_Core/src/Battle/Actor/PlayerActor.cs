@@ -34,6 +34,7 @@ namespace WOC_Core
             this.hand = hand;
             aggro.IncrementRatio = 0;
             mana.Max = manaMax;
+            LOG.Print("[PLAYER] mana max : {0}", mana.Max);
         }
 
         public override void BattleInit()
@@ -41,7 +42,7 @@ namespace WOC_Core
             base.BattleInit();
 
             // init character
-            character.Life = character.MaxLife;
+            character.SetLife(character.MaxLife);
 
             // init drawpile
             drawPile.Flush();
@@ -74,6 +75,7 @@ namespace WOC_Core
                 mana.Reset();
                 aggro.StartTurn();
                 DrawCards(hand.StartingCount);
+                LOG.Print("{0}/{1} mana, {2} life", mana.Value, mana.Max, character.Life);
                 return true;
             }
             return false;
@@ -87,35 +89,44 @@ namespace WOC_Core
                 return false;
             }
 
-            if (hand.Contains(card))
+            if (!hand.Contains(card))
             {
-                if (card.Play(new PlayInfo{Owner = this, Target = target}))
+                LOG.Print("[BATTLE] {0} cannot play : he doesn't have this card.", Name);
+                return false;
+            }
+
+            if (mana.Value < card.manaCost)
+            {
+                LOG.Print("[BATTLE] {0} cannot play : not enough mana ({1} < {2}).", Name, mana.Value, card.manaCost);
+                return false;
+            }
+
+            if (card.Play(new PlayInfo { Owner = this, Target = target }))
+            {
+                mana.Consume(card.manaCost);
+                hand.Remove(card);
+                discardPile.Push(card);
+                aggro.Increment();
+                LOG.Print("[BATTLE] {0} played {1} on {2}", Name, card.name, target.Name);
+                card.effects.ForEach(e =>
                 {
-                    mana.Consume(card.manaCost);
-                    hand.Remove(card);
-                    discardPile.Push(card);
-                    aggro.Increment();
-                    LOG.Print("[BATTLE] {0} played {1} on {2}", Name, card.name, target.Name);
-                    card.effects.ForEach(e =>
+                    switch (e)
                     {
-                        switch (e)
-                        {
-                            case CardEffectDamage dmg:
-                                LOG.Print("[CARDEFFECT] [DMG] {0} dmg to {1} who has {2} hp", dmg.value, target.Name, target.Life);
-                                break;
-                            case CardEffectHeal heal:
-                                LOG.Print("[CARDEFFECT] [HEAL] {0} heal to {1} who has {2} hp", heal.value, target.Name, target.Life);
-                                break;
-                            case CardEffectDraw draw:
-                                LOG.Print("[CARDEFFECT] [DRAW] {0} cards drawn by {1} who has {2} cards", draw.value, this.Name, hand.Count);
-                                break;
-                            case CardEffectDiscard disc:
-                                LOG.Print("[CARDEFFECT] [DISCARD] {0} cards discarded by {1} who has {2} cards", disc.value, this.Name, hand.Count);
-                                break;
-                        }
-                    });
-                    return true;
-                }
+                        case CardEffectDamage dmg:
+                            LOG.Print("[CARDEFFECT] [DMG] {0} dmg to {1} who has {2} hp, {3} mana left", dmg.value, target.Name, target.Life, mana.Value);
+                            break;
+                        case CardEffectHeal heal:
+                            LOG.Print("[CARDEFFECT] [HEAL] {0} heal to {1} who has {2} hp, {3} mana left", heal.value, target.Name, target.Life, mana.Value);
+                            break;
+                        case CardEffectDraw draw:
+                            LOG.Print("[CARDEFFECT] [DRAW] {0} cards drawn by {1} who has {2} cards, {3} mana left", draw.value, this.Name, hand.Count, mana.Value);
+                            break;
+                        case CardEffectDiscard disc:
+                            LOG.Print("[CARDEFFECT] [DISCARD] {0} cards discarded by {1} who has {2} cards, {3} mana left", disc.value, this.Name, hand.Count, mana.Value);
+                            break;
+                    }
+                });
+                return true;
             }
             return false;
         }

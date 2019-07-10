@@ -1,34 +1,33 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace WOC_Core
 {
     public class Mana
     {
-        private int max;
+        public int Value;
 
-        int value;
-
-        public int Max { get => max; set => max = value; }
+        public int Max;
         
         public void Reset()
         {
-            value = max;
+            Value = Max;
         }
 
-        public bool Consume(int amount)
+        public void Consume(int amount)
         {
-            if (value >= amount)
+            Debug.Assert(Value >= amount, "You don't have the mana for this !");
+            if (Value >= amount)
             {
-                value -= amount;
+                Value -= amount;
             }
-            return false;
         }
 
         public void Fill(int amount)
         {
-            value = Math.Min(value + amount, max);
+            Value = Math.Min(Value + amount, Max);
         }
 
 

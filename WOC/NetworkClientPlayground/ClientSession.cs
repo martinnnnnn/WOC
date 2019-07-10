@@ -49,7 +49,10 @@ namespace Playground
                 case PD_TurnEnd turnEnd:
                     battle.GetCurrentActor().EndTurn();
                     battle.NextActor().StartTurn();
-                    //LOG.Print("[CLIENT] New turn starts for {0}.", battle.GetCurrentActor());
+                    if (battle.GetCurrentActor() == actor)
+                    {
+                        LOG.Print("[PLAYGROUND] It's my turn !");
+                    }
                     break;
 
                 case PD_BattleStart battleStart:
@@ -62,6 +65,7 @@ namespace Playground
         {
             LOG.Print("[CLIENT] Battle initialization...");
             battle = new Battle();
+            battle.OnBattleEnd += BattleOver;
 
             Initiative.Max = 50;
 
@@ -79,7 +83,7 @@ namespace Playground
                 }),
                 new Card("big_dmg", 3, false, new List<CardEffect>
                 {
-                    new CardEffectDamage(4)
+                    new CardEffectDamage(10)
                 })
             };
             LOG.Print("[CLIENT] Adding cards");
@@ -89,36 +93,23 @@ namespace Playground
             List<Actor> actors = new List<Actor>()
             {
                 // battle | character | name | first init
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre1", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 50), "monstre2", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 50), "monstre3", 5)
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
+                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
             LOG.Print("[CLIENT] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
         }
 
-        public void RunBattle()
-        {
-            LOG.Print("[CLIENT] Battle starting !");
-            while (!isOver)
-            {
-                Actor current = battle.NextActor();
-                switch (current)
-                {
-                    case PlayerActor player:
-                        player.StartTurn();
-                        break;
-                    case PNJActor pnj:
-                        LOG.Print("[SERVER] {0} playing !", pnj.Name);
-                        break;
-                }
-            }
-        }
-        
-        bool isOver = false;
         void BattleOver()
         {
-            isOver = true;
+            if (actor.character.Life > 0)
+            {
+                LOG.Print("You won !!! ");
+                LOG.Print("...");
+                LOG.Print("Resetting battle !");
+                Init();
+            }
         }
 
         public void AddActor_1()
@@ -154,7 +145,14 @@ namespace Playground
 
         public void AddActor_2()
         {
-            actor = new PlayerActor(battle, new Character(Character.Race.HUMAN, Character.Category.PALADIN, 12, "gromelo"), new Hand(2, 3), "player2", new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek" }, 3, 30);
+            actor = new PlayerActor(
+                battle, 
+                new Character(Character.Race.HUMAN, Character.Category.PALADIN, 12, "gromelo"),
+                new Hand(2, 3), 
+                "player2", 
+                new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek", "hek" },
+                3, 
+                30);
             battle.Add(actor);
 
             SendAsync(new PD_PlayerAdd
@@ -176,7 +174,14 @@ namespace Playground
 
         public void AddActor_3()
         {
-            actor = new PlayerActor(battle, new Character(Character.Race.ELFE, Character.Category.SORCERER, 12, "branigan"), new Hand(2, 3), "player3", new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg" }, 4, 30);
+            actor = new PlayerActor(
+                battle,
+                new Character(Character.Race.ELFE, Character.Category.SORCERER, 12, "branigan"),
+                new Hand(2, 3),
+                "player3", 
+                new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg", "hek" },
+                4, 
+                30);
             battle.Add(actor);
 
             SendAsync(new PD_PlayerAdd
