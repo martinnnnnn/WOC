@@ -44,13 +44,13 @@ namespace WOC_Core
         public string name;
         public Character.Race charaRace;
         public Character.Category charaCategory;
-        public int charaLife;
-        public string charaName;
-        public int handStartCount;
-        public int handMaxCount;
+        public int          charaLife;
+        public string       charaName;
+        public int          handStartCount;
+        public int          handMaxCount;
         public List<string> cardsName;
-        public int aggroIncrement;
-        public int manaMax;
+        public int          aggroIncrement;
+        public int          manaMax;
     }
 
     public class PD_CardPlayed : IPacketData

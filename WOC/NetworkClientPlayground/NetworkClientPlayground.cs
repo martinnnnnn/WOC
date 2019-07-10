@@ -96,30 +96,58 @@ namespace Playground
         {
             // battle | character(race, category, life, name) | hand | name | deck | aggroIncrement | max mana
             battle.Add(new PlayerActor(battle, new Character(Character.Race.ELFE, Character.Category.DRUID, 12, "grrr"), new Hand(2, 3), "player1", new List<string> { "smol_dmg", "smol_dmg", "smol_dmg", "smol_dmg" }, 2, 30));
-            //List<string> cardsName;
-            //int aggroIncrement;
-            //int manaMax;
+            
             SendAsync(new PD_PlayerAdd
             {
-                "player1",
-                Character.Race.ELFE,
-                Character.Category.DRUID,
-                12,
-                "grrr",
-                2, 3,
-                new List<string> { "smol_dmg", "smol_dmg", "smol_dmg", "smol_dmg" },
-                2, 30
+                name = "player1",
+                charaRace = Character.Race.ELFE,
+                charaCategory = Character.Category.DRUID,
+                charaLife = 12,
+                charaName = "grrr",
+                handStartCount = 2,
+                handMaxCount = 3,
+                cardsName = new List<string> { "smol_dmg", "smol_dmg", "smol_dmg", "smol_dmg" },
+                aggroIncrement =2,
+                manaMax = 30
             }).Wait();
         }
 
         public void AddActor_2()
         {
             battle.Add(new PlayerActor(battle, new Character(Character.Race.HUMAN, Character.Category.PALADIN, 12, "gromelo"), new Hand(2, 3), "player2", new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek" }, 3, 30));
+
+            SendAsync(new PD_PlayerAdd
+            {
+                name = "player2",
+                charaRace = Character.Race.HUMAN,
+                charaCategory = Character.Category.PALADIN,
+                charaLife = 12,
+                charaName = "gromelo",
+                handStartCount = 2,
+                handMaxCount = 3,
+                cardsName = new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek" },
+                aggroIncrement = 3,
+                manaMax = 30
+            }).Wait();
         }
 
         public void AddActor_3()
         {
             battle.Add(new PlayerActor(battle, new Character(Character.Race.ELFE, Character.Category.SORCERER, 12, "branigan"), new Hand(2, 3), "player3", new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg" }, 4, 30));
+
+            SendAsync(new PD_PlayerAdd
+            {
+                name = "player3",
+                charaRace = Character.Race.ELFE,
+                charaCategory = Character.Category.SORCERER,
+                charaLife = 12,
+                charaName = "branigan",
+                handStartCount = 2,
+                handMaxCount = 3,
+                cardsName = new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg" },
+                aggroIncrement = 4,
+                manaMax = 30
+            }).Wait();
         }
     }
 

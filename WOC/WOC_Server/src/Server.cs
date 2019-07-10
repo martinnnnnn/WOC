@@ -89,11 +89,12 @@ namespace WOC_Server
 
         public async Task Broadcast(string msg, Session toIgnore = null)
         {
+            LOG.Print("broadcasting");
             List<Task> tasks = new List<Task>();
 
             foreach (Session session in sessions)
             {
-                if (toIgnore != null && session != toIgnore)
+                if (toIgnore == null || session != toIgnore)
                 {
                     tasks.Add(session.SendAsync(msg));
                 }
