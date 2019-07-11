@@ -40,7 +40,6 @@ namespace WOC_Core
             while (n > 1)
             {
                 int k = owner.battle.random.Next(0, n);
-                LOG.Print("[CARDPILE] random {0}", k);
                 n--;
                 Card value = tmp[k];
                 tmp[k] = tmp[n];

@@ -27,15 +27,7 @@ namespace Playground
                     break;
 
                 case PD_PlayerAdd player:
-                    PlayerActor newActor = new PlayerActor(
-                        battle,
-                        new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-                        player.handStartCount,
-                        player.name,
-                        player.cardsName,
-                        player.aggroIncrement,
-                        player.manaMax);
-                    battle.Add(newActor);
+                    HandlePlayerAdd(player);
                     break;
 
                 case PD_CardPlayed cardPlayed:
@@ -61,7 +53,6 @@ namespace Playground
                         LOG.Print("[PLAYGROUND] It's my turn !");
                     }
                     break;
-
                 case PD_RoomList roomList:
                     LOG.Print("[CLIENT] {0} rooms : {1}", roomList.rooms.Count, string.Join(", ", roomList.rooms));
                     break;
@@ -74,15 +65,19 @@ namespace Playground
                     if (!validation.isValid) LOG.Print("[SERVER] {0}", validation.errorMessage);
                     break;
 
-                case PD_RoomJoin battleJoin:
-                    if (battleJoin.playerName == Name)
+                case PD_RoomJoin roomJoin:
+                    if (roomJoin.playerName == Name)
                     {
-                        LOG.Print("[CLIENT] Welcome to {0}.", battleJoin.roomName);
-                        InitBattle(battleJoin.randomSeed);
+                        LOG.Print("[CLIENT] Welcome to {0}.", roomJoin.roomName);
+                        InitBattle(roomJoin.randomSeed);
                     }
                     else
                     {
-                        LOG.Print("[CLIENT] {0} just joined.", battleJoin.playerName);
+                        LOG.Print("[CLIENT] {0} just joined.", roomJoin.playerName);
+                        //if (roomJoin.playerInfo != null)
+                        //{
+                        //    HandlePlayerAdd(roomJoin.playerInfo as PD_PlayerAdd);
+                        //}
                     }
                     break;
 
@@ -100,6 +95,19 @@ namespace Playground
             }
         }
 
+        void HandlePlayerAdd(PD_PlayerAdd player)
+        {
+            PlayerActor newActor = new PlayerActor(
+                        battle,
+                        new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
+                        player.handStartCount,
+                        player.name,
+                        player.cardsName,
+                        player.aggroIncrement,
+                        player.manaMax);
+            battle.Add(newActor);
+        }
+
         public void InitBattle(int randomSeem)
         {
             LOG.Print("[CLIENT] Battle initialization...");
@@ -115,7 +123,7 @@ namespace Playground
                 // name | mana cost | exhaust | effects list
                 new Card("smol_dmg", 1, false, new List<CardEffect>
                 {
-                    new CardEffectDamage(1)
+                    new CardEffectDamage(5)
                 }),
                 new Card("hek", 2, false, new List<CardEffect>
                 {

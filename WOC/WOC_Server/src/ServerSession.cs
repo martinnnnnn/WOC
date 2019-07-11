@@ -13,7 +13,7 @@ namespace WOC_Server
     {
         TCPServer server;
 
-        BattleRoom room;
+        public BattleRoom room;
         public PlayerActor actor;
 
         public ServerSession(TCPServer s)
@@ -61,20 +61,7 @@ namespace WOC_Server
                     break;
 
                 case PD_PlayerAdd player:
-                    actor = new PlayerActor(
-                        room.battle, 
-                        new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-                        player.handStartCount,
-                        player.name,
-                        player.cardsName, 
-                        player.aggroIncrement, 
-                        player.manaMax);
-                    LOG.Print("[SERVER] Player created ? {0}", (actor != null) ? "true" : "false");
-
-                    if (room.battle.Add(actor))
-                    {
-                        room.Broadcast(player, this).Wait();
-                    }
+                    HandlePlayerAdd(player);
                     break;
 
                 case PD_RoomCreate roomCreate:
@@ -131,13 +118,8 @@ namespace WOC_Server
                     Card card = actor.hand.Get(cardPlayed.cardIndex);
                     Character character = room.battle.Actors.Find(a => a.character.Name == cardPlayed.targetName).character;
 
-                    LOG.Print("[SERVER] Found right card ? {0}", (card.name == cardPlayed.cardName) ? "true" : "false");
-                    LOG.Print("[SERVER] Found right character ? {0}", (character != null) ? "true" : "false");
-
-                    if (actor.PlayCard(card, character))
-                    {
-                        room.Broadcast(cardPlayed, this).Wait();
-                    }
+                    room.Broadcast(cardPlayed, this).Wait();
+                    actor.PlayCard(card, character);
                     break;
 
                 case PD_TurnEnd turnEnd:
@@ -151,11 +133,37 @@ namespace WOC_Server
             }
         }
 
+        public void HandlePlayerAdd(PD_PlayerAdd player)
+        {
+            actor = new PlayerActor(
+                       room.battle,
+                       new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
+                       player.handStartCount,
+                       player.name,
+                       player.cardsName,
+                       player.aggroIncrement,
+                       player.manaMax);
+            LOG.Print("[SERVER] Player created ? {0}", (actor != null) ? "true" : "false");
+
+            if (room != null)
+            {
+                if (room.battle.Add(actor))
+                {
+                    room.Broadcast(player, this).Wait();
+                }
+            }
+        }
+
         public void HandleRoomJoin(PD_RoomJoin roomJoin)
         {
             if (server.MoveToBattleRoom(roomJoin.roomName, this))
             {
                 room = server.battleRooms.Find(r => r.Name == roomJoin.roomName);
+                //if (roomJoin.playerInfo != null)
+                //{
+                //    HandlePlayerAdd(roomJoin.playerInfo as PD_PlayerAdd);
+                //}
+
                 roomJoin.randomSeed = room.battle.RandomSeed;
                 room.Broadcast(roomJoin).Wait();
             }
@@ -182,7 +190,7 @@ namespace WOC_Server
             }
             else
             {
-                SendAsync(new PD_Validation(battleCreate.id, "Battle name already exists")).Wait();
+                SendAsync(new PD_Validation(battleCreate.id, "Room name already exists.")).Wait();
             }
         }
     }

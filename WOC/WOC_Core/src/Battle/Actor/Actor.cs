@@ -28,7 +28,6 @@ namespace WOC_Core
             this.character = character;
             character.Owner = this;
             this.character.OnDeath += battle.OnCharacterDeath;
-            LOG.Print("[ACTOR] Registering OnCharacterDeath");
             Name = name;
         }
 

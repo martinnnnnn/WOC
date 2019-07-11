@@ -47,7 +47,7 @@ namespace WOC_Server
                 // name | mana cost | exhaust | effects list
                 new Card("smol_dmg", 1, false, new List<CardEffect>
                 {
-                    new CardEffectDamage(1)
+                    new CardEffectDamage(5)
                 }),
                 new Card("hek", 2, false, new List<CardEffect>
                 {
@@ -84,6 +84,7 @@ namespace WOC_Server
         {
             LOG.Print("Battle over !!!\n Moving sessions back to the main server.");
             ForEach(s => server.sessions.Add(s));
+            ForEach(s => s.room = null);
             sessions.Clear();
             server.battleRooms.Remove(this);
         }

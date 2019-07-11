@@ -62,12 +62,13 @@ namespace WOC_Core
         public string playerName;
         public string roomName;
         public int randomSeed;
+        public IPacketData playerInfo;
     }
     public class PD_RoomLeave : IPacketData
     {
         public string name;
     }
-    public class PD_BattleStart : IPacketData {}
+    public class PD_BattleStart : IPacketData { }
 
     public class PD_RoomList : IPacketData
     {
