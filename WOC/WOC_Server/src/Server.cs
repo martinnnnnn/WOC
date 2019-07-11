@@ -157,9 +157,12 @@ namespace WOC_Server
 
                         ServerSession session = new ServerSession(this);
                         session.Connect(client);
+                        Broadcast(new PD_SessionConnect { name = session.Name }, null, true).Wait();
                         session.OnDisconnect += () =>
                         {
                             sessions.Remove(session);
+                            battleRooms.ForEach(r => r.Remove(session));
+                            Broadcast(new PD_SessionDisconnect { name = session.Name }, null, true).Wait();
                             LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
                         };
                         sessions.Add(session);

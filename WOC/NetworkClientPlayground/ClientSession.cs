@@ -21,6 +21,7 @@ namespace Playground
                 case PD_NameModify nameModify:
                     LOG.Print("[SERVER] {0} changed his name to {1}", nameModify.oldName, nameModify.newName);
                     break;
+
                 case PD_Chat chat:
                     LOG.Print(chat.senderName + " : " + chat.message);
                     break;
@@ -52,6 +53,7 @@ namespace Playground
                         LOG.Print("[PLAYGROUND] It's my turn !");
                     }
                     break;
+
                 case PD_BattleStart battleStart:
                     battle.Start();
                     if (battle.GetCurrentActor() == actor)
@@ -59,15 +61,19 @@ namespace Playground
                         LOG.Print("[PLAYGROUND] It's my turn !");
                     }
                     break;
+
                 case PD_RoomList roomList:
                     LOG.Print("[CLIENT] {0} rooms : {1}", roomList.rooms.Count, string.Join(", ", roomList.rooms));
                     break;
+
                 case PD_PlayerList playerList:
                     LOG.Print("[CLIENT] {0} players in {1} : {2}", playerList.players.Count, string.IsNullOrEmpty(playerList.roomName) ? "lobby" : playerList.roomName, string.Join(", ", playerList.players));
                     break;
+
                 case PD_Validation validation:
                     if (!validation.isValid) LOG.Print("[SERVER] {0}", validation.errorMessage);
                     break;
+
                 case PD_RoomJoin battleJoin:
                     if (battleJoin.playerName == Name)
                     {
@@ -78,6 +84,18 @@ namespace Playground
                     {
                         LOG.Print("[CLIENT] {0} just joined.", battleJoin.playerName);
                     }
+                    break;
+
+                case PD_RoomLeave roomLeave:
+                    LOG.Print("[SERVER] {0} connected.", roomLeave);
+                    break;
+
+                case PD_SessionConnect sessionConnect:
+                    LOG.Print("[SERVER] {0} connected.", sessionConnect.name);
+                    break;
+
+                case PD_SessionDisconnect sessionDisconnect:
+                    LOG.Print("[SERVER] {0} disconnected.", sessionDisconnect.name);
                     break;
             }
         }

@@ -48,7 +48,7 @@ namespace Playground
                         session.SendAsync(new PD_RoomJoin { playerName = session.Name, roomName = input[1] }).Wait();
                         break;
                     case "room_leave":
-                        session.SendAsync(new PD_RoomLeave { }).Wait();
+                        session.SendAsync(new PD_RoomLeave { name = session.Name }).Wait();
                         break;
                     case "room_list":
                         session.SendAsync(new PD_RoomList { }).Wait();

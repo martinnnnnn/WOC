@@ -15,7 +15,6 @@ namespace WOC_Core
 
         public string ServerIP;
         public int ServerPort;
-        //public Action<IPacketData> OnMessageReceived;
         public Action OnDisconnect;
 
         private TcpClient client = new TcpClient();

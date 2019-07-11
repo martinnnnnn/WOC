@@ -33,6 +33,15 @@ namespace WOC_Core
 
     public class PD_SessionShutdown : IPacketData { }
 
+    public class PD_SessionConnect : IPacketData
+    {
+        public string name;
+    }
+    public class PD_SessionDisconnect : IPacketData
+    {
+        public string name;
+    }
+
     public class PD_NameModify : IPacketData
     {
         public string oldName;
@@ -54,7 +63,10 @@ namespace WOC_Core
         public string roomName;
         public int randomSeed;
     }
-    public class PD_RoomLeave : IPacketData {}
+    public class PD_RoomLeave : IPacketData
+    {
+        public string name;
+    }
     public class PD_BattleStart : IPacketData {}
 
     public class PD_RoomList : IPacketData

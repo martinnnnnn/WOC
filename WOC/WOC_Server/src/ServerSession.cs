@@ -86,9 +86,13 @@ namespace WOC_Server
                     break;
 
                 case PD_RoomLeave roomLeave:
-                    room?.Remove(this);
+                    if (room == null)
+                    {
+                        room.Remove(this);
+                        room.Broadcast(roomLeave, this).Wait();
+                        room = null;
+                    }
                     server.sessions.Add(this);
-                    room = null;
                     break;
 
                 case PD_PlayerList playerList:
