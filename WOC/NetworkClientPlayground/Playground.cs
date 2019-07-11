@@ -31,8 +31,8 @@ namespace Playground
                         Help();
                         break;
                     case "name":
+                        session.SendAsync(new PD_NameModify { oldName = session.Name, newName = input[1] }).Wait();
                         session.Name = input[1];
-                        session.SendAsync(new PD_NameModify { name = session.Name }).Wait();
                         break;
                     case "connect":
                         session.Connect("127.0.0.1", 54001);
@@ -41,17 +41,17 @@ namespace Playground
                         session.SendClose().Wait();
                         session.Close();
                         break;
-                    case "battle_create":
-                        session.SendAsync(new PD_BattleCreate { name = input[1] }).Wait();
+                    case "room_create":
+                        session.SendAsync(new PD_RoomCreate { name = input[1] }).Wait();
                         break;
-                    case "battle_join":
-                        session.SendAsync(new PD_BattleJoin { playerName = session.Name, roomName = input[1] }).Wait();
+                    case "room_join":
+                        session.SendAsync(new PD_RoomJoin { playerName = session.Name, roomName = input[1] }).Wait();
                         break;
-                    case "battle_leave":
-                        session.SendAsync(new PD_BattleLeave { }).Wait();
+                    case "room_leave":
+                        session.SendAsync(new PD_RoomLeave { }).Wait();
                         break;
-                    case "battle_list":
-                        session.SendAsync(new PD_BattleList { }).Wait();
+                    case "room_list":
+                        session.SendAsync(new PD_RoomList { }).Wait();
                         break;
                     case "player_list":
                         session.SendAsync(new PD_PlayerList { roomName = (input.Length > 1) ? input[1] : "" }).Wait();
@@ -110,10 +110,10 @@ namespace Playground
                     "> connect" + "\n" +
                     "> close" + "\n" +
                     "> battle_start" + "\n" +
-                    "> battle_create=" + "\n" +
-                    "> battle_join=" + "\n" +
-                    "> battle_leave" + "\n" +
-                    "> battle_list" + "\n" +
+                    "> room_create=" + "\n" +
+                    "> room_join=" + "\n" +
+                    "> room_leave" + "\n" +
+                    "> room_list" + "\n" +
                     "> player_list=" + "\n" +
                     "> playcard" + "\n" +
                     "> endturn" + "\n" +
@@ -143,7 +143,7 @@ namespace Playground
             int cardIndex = -1;
             do
             {
-                Console.Write("> Hand : {1}\n> What's your move (-1 to cancel)? ", actor.Name, string.Join(",", actor.hand.AsArray().Select(c => c.name).ToArray()));
+                Console.Write("> Hand : {1}\n> What's your move (-1 to cancel)? ", string.Join(", ", actor.hand.AsArray().Select(c => c.name).ToArray()));
                 bool result = int.TryParse(Console.ReadLine(), out cardIndex);
                 card = actor.hand.Get(cardIndex);
                 if (card == null && cardIndex != -1)
@@ -156,7 +156,7 @@ namespace Playground
             int targetIndex = -1;
             while (!cardPlayed)
             {
-                Console.Write("> Potential targets : {0}\nWho is your target (-1 to cancel)?", string.Join(",", session.battle.Actors.Select(a => a.character.Name).ToArray()));
+                Console.Write("> Potential targets : {0}\nWho is your target (-1 to cancel)?", string.Join(", ", session.battle.Actors.Select(a => a.character.Name).ToArray()));
                 bool result = int.TryParse(Console.ReadLine(), out targetIndex);
                 if (targetIndex == -1)
                 {

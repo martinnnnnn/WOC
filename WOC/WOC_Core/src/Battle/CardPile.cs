@@ -11,8 +11,12 @@ namespace WOC_Core
     {
         public Queue<Card> cards = new Queue<Card>();
         public int Count => cards.Count;
+        Actor owner;
 
-        Random random = new Random(Battle.RandomSeed);
+        public CardPile(Actor owner)
+        {
+            this.owner = owner;
+        }
 
         public Card[] Pop(int count)
         {
@@ -35,7 +39,8 @@ namespace WOC_Core
             int n = tmp.Length;
             while (n > 1)
             {
-                int k = random.Next(0, n);
+                int k = owner.battle.random.Next(0, n);
+                LOG.Print("[CARDPILE] random {0}", k);
                 n--;
                 Card value = tmp[k];
                 tmp[k] = tmp[n];

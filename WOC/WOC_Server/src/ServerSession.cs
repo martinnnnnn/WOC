@@ -11,7 +11,6 @@ namespace WOC_Server
 {
     public class ServerSession : Session
     {
-
         TCPServer server;
 
         BattleRoom room;
@@ -28,14 +27,22 @@ namespace WOC_Server
             switch (data)
             {
                 case PD_NameModify nameModify:
-                    Name = nameModify.name;
+                    Name = nameModify.newName;
+                    if (room == null)
+                    {
+                        server.Broadcast(nameModify, this).Wait();
+                    }
+                    else
+                    {
+                        room.Broadcast(nameModify, this).Wait();
+                    }
                     break;
                 case PD_Chat chat:
                     try
                     {
                         if (chat.message.StartsWith("/all "))
                         {
-                            chat.message = chat.message.Remove(0, 5);
+                            chat.message = "{all} " + chat.message.Remove(0, 5);
                             server.Broadcast(chat, this, true).Wait();
                         }
                         else if (room == null)
@@ -57,7 +64,7 @@ namespace WOC_Server
                     actor = new PlayerActor(
                         room.battle, 
                         new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-                        new Hand(player.handStartCount, player.handMaxCount),
+                        player.handStartCount,
                         player.name,
                         player.cardsName, 
                         player.aggroIncrement, 
@@ -70,34 +77,15 @@ namespace WOC_Server
                     }
                     break;
 
-                case PD_BattleCreate battleCreate:
-                    if (server.CreateBattleRoom(battleCreate.name))
-                    {
-                        if (server.MoveToBattleRoom(battleCreate.name, this))
-                        {
-                            room = server.battleRooms.Find(r => r.Name == battleCreate.name);
-                            room.Broadcast(new PD_BattleJoin { playerName = Name, roomName = battleCreate.name }).Wait();
-                        }
-                    }
-                    else
-                    {
-                        SendAsync(new PD_Validation(battleCreate.id, "Battle name already exists")).Wait();
-                    }
+                case PD_RoomCreate roomCreate:
+                    HandleRoomCreate(roomCreate);
                     break;
 
-                case PD_BattleJoin battleEnter:
-                    if (server.MoveToBattleRoom(battleEnter.roomName, this))
-                    {
-                        room = server.battleRooms.Find(r => r.Name == battleEnter.roomName);
-                        room.Broadcast(battleEnter).Wait();
-                    }
-                    else
-                    {
-                        SendAsync(new PD_Validation(battleEnter.id, "Battle name does not exist.")).Wait();
-                    }
+                case PD_RoomJoin roomEnter:
+                    HandleRoomJoin(roomEnter);
                     break;
 
-                case PD_BattleLeave battleLeave:
+                case PD_RoomLeave roomLeave:
                     room?.Remove(this);
                     server.sessions.Add(this);
                     room = null;
@@ -129,7 +117,7 @@ namespace WOC_Server
                     }
                     break;
 
-                case PD_BattleList battleList:
+                case PD_RoomList battleList:
                     battleList.rooms = new List<string>();
                     battleList.rooms.AddRange(server.battleRooms.Select(r => r.Name));
                     SendAsync(battleList).Wait();
@@ -156,6 +144,41 @@ namespace WOC_Server
                         room.Broadcast(turnEnd, this).Wait();
                     }
                     break;
+            }
+        }
+
+        public void HandleRoomJoin(PD_RoomJoin roomJoin)
+        {
+            if (server.MoveToBattleRoom(roomJoin.roomName, this))
+            {
+                room = server.battleRooms.Find(r => r.Name == roomJoin.roomName);
+                roomJoin.randomSeed = room.battle.RandomSeed;
+                room.Broadcast(roomJoin).Wait();
+            }
+            else
+            {
+                SendAsync(new PD_Validation(roomJoin.id, "Battle name does not exist.")).Wait();
+            }
+        }
+
+        public void HandleRoomCreate(PD_RoomCreate battleCreate)
+        {
+            if (server.CreateBattleRoom(battleCreate.name))
+            {
+                if (server.MoveToBattleRoom(battleCreate.name, this))
+                {
+                    room = server.battleRooms.Find(r => r.Name == battleCreate.name);
+                    room.Broadcast(new PD_RoomJoin
+                    {
+                        playerName = Name,
+                        roomName = battleCreate.name,
+                        randomSeed = room.battle.RandomSeed
+                    }).Wait();
+                }
+            }
+            else
+            {
+                SendAsync(new PD_Validation(battleCreate.id, "Battle name already exists")).Wait();
             }
         }
     }

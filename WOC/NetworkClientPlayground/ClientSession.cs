@@ -18,6 +18,9 @@ namespace Playground
 
             switch (data)
             {
+                case PD_NameModify nameModify:
+                    LOG.Print("[SERVER] {0} changed his name to {1}", nameModify.oldName, nameModify.newName);
+                    break;
                 case PD_Chat chat:
                     LOG.Print(chat.senderName + " : " + chat.message);
                     break;
@@ -26,7 +29,7 @@ namespace Playground
                     PlayerActor newActor = new PlayerActor(
                         battle,
                         new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-                        new Hand(player.handStartCount, player.handMaxCount),
+                        player.handStartCount,
                         player.name,
                         player.cardsName,
                         player.aggroIncrement,
@@ -38,6 +41,7 @@ namespace Playground
                     PlayerActor owner = battle.Actors.Find(a => cardPlayed.ownerName == a.Name) as PlayerActor;
                     Card card = owner.hand.Get(cardPlayed.cardIndex);
                     Character target = battle.Actors.Find(a => a.character.Name == cardPlayed.targetName).character;
+                    owner.PlayCard(card, target);
                     break;
 
                 case PD_TurnEnd turnEnd:
@@ -55,8 +59,8 @@ namespace Playground
                         LOG.Print("[PLAYGROUND] It's my turn !");
                     }
                     break;
-                case PD_BattleList battleList:
-                    LOG.Print("[CLIENT] Received battle room list :\n{0}", string.Join(",", battleList.rooms));
+                case PD_RoomList roomList:
+                    LOG.Print("[CLIENT] {0} rooms : {1}", roomList.rooms.Count, string.Join(", ", roomList.rooms));
                     break;
                 case PD_PlayerList playerList:
                     LOG.Print("[CLIENT] {0} players in {1} : {2}", playerList.players.Count, string.IsNullOrEmpty(playerList.roomName) ? "lobby" : playerList.roomName, string.Join(", ", playerList.players));
@@ -64,11 +68,11 @@ namespace Playground
                 case PD_Validation validation:
                     if (!validation.isValid) LOG.Print("[SERVER] {0}", validation.errorMessage);
                     break;
-                case PD_BattleJoin battleJoin:
+                case PD_RoomJoin battleJoin:
                     if (battleJoin.playerName == Name)
                     {
                         LOG.Print("[CLIENT] Welcome to {0}.", battleJoin.roomName);
-                        InitBattle();
+                        InitBattle(battleJoin.randomSeed);
                     }
                     else
                     {
@@ -78,13 +82,14 @@ namespace Playground
             }
         }
 
-        public void InitBattle()
+        public void InitBattle(int randomSeem)
         {
             LOG.Print("[CLIENT] Battle initialization...");
-            battle = new Battle();
+            battle = new Battle(randomSeem);
             battle.OnBattleEnd += BattleOver;
 
             Initiative.Max = 50;
+            Hand.Max = 3;
 
             // CARDS
             List<Card> cardsMap = new List<Card>()
@@ -131,8 +136,8 @@ namespace Playground
             actor = new PlayerActor(
                 battle,
                 new Character(Character.Race.ELFE, Character.Category.DRUID, 12, "grrr"),
-                new Hand(2, 3),
-                "player1",
+                2,
+                Name,
                 new List<string> { "smol_dmg", "smol_dmg", "smol_dmg", "smol_dmg" },
                 2,
                 30);
@@ -142,13 +147,12 @@ namespace Playground
 
             SendAsync(new PD_PlayerAdd
             {
-                name = "player1",
+                name = Name,
                 charaRace = Character.Race.ELFE,
                 charaCategory = Character.Category.DRUID,
                 charaLife = 12,
                 charaName = "grrr",
                 handStartCount = 2,
-                handMaxCount = 3,
                 cardsName = new List<string> { "smol_dmg", "smol_dmg", "smol_dmg", "smol_dmg" },
                 aggroIncrement = 2,
                 manaMax = 30
@@ -162,8 +166,8 @@ namespace Playground
             actor = new PlayerActor(
                 battle, 
                 new Character(Character.Race.HUMAN, Character.Category.PALADIN, 12, "gromelo"),
-                new Hand(2, 3), 
-                "player2", 
+                2,
+                Name, 
                 new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek", "hek" },
                 3, 
                 30);
@@ -171,13 +175,12 @@ namespace Playground
 
             SendAsync(new PD_PlayerAdd
             {
-                name = "player2",
+                name = Name,
                 charaRace = Character.Race.HUMAN,
                 charaCategory = Character.Category.PALADIN,
                 charaLife = 12,
                 charaName = "gromelo",
                 handStartCount = 2,
-                handMaxCount = 3,
                 cardsName = new List<string> { "hek", "hek", "big_dmg", "big_dmg", "hek", "hek" },
                 aggroIncrement = 3,
                 manaMax = 30
@@ -191,22 +194,21 @@ namespace Playground
             actor = new PlayerActor(
                 battle,
                 new Character(Character.Race.ELFE, Character.Category.SORCERER, 12, "branigan"),
-                new Hand(2, 3),
-                "player3", 
+                2,
+                Name,
                 new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg", "hek" },
-                4, 
+                4,
                 30);
             battle.Add(actor);
 
             SendAsync(new PD_PlayerAdd
             {
-                name = "player3",
+                name = Name,
                 charaRace = Character.Race.ELFE,
                 charaCategory = Character.Category.SORCERER,
                 charaLife = 12,
                 charaName = "branigan",
                 handStartCount = 2,
-                handMaxCount = 3,
                 cardsName = new List<string> { "smol_dmg", "smol_dmg", "big_dmg", "big_dmg", "big_dmg", "big_dmg", "hek" },
                 aggroIncrement = 4,
                 manaMax = 30

@@ -12,15 +12,15 @@ namespace WOC_Core
         public Aggro aggro = new Aggro();
         public Mana mana = new Mana();
         public List<Card> deck = new List<Card>();
-        public CardPile drawPile = new CardPile();
-        public CardPile discardPile = new CardPile();
+        public CardPile drawPile;
+        public CardPile discardPile;
         public Hand hand;
 
         [JsonConstructor]
         public PlayerActor(
             Battle battle,
             Character character,
-            Hand hand,
+            int handStartingCount,
             string name,
             List<string> cardsNames,
             int aggroIncrement,
@@ -31,7 +31,9 @@ namespace WOC_Core
                 deck.Add(battle.GetCard(cardName));
             }
 
-            this.hand = hand;
+            hand = new Hand(this, handStartingCount);
+            drawPile = new CardPile(this);
+            discardPile = new CardPile(this);
             aggro.IncrementRatio = 0;
             mana.Max = manaMax;
             LOG.Print("[PLAYER] mana max : {0}", mana.Max);

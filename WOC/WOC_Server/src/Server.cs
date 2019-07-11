@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -15,9 +14,9 @@ namespace WOC_Server
     {
         public string Name;
         public Battle battle;
-        SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
 
         TCPServer server;
+        SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
 
         public void Add(ServerSession session)
         {
@@ -33,16 +32,17 @@ namespace WOC_Server
 
         public List<string> PlayerList { get => sessions.Select(s => s.Name).ToList(); }
 
-        public BattleRoom(string name, TCPServer server)
+        public BattleRoom(string name, TCPServer server, int randomSeed)
         {
             Name = name;
             this.server = server;
 
             LOG.Print("[ROOM] Battle initialization...");
-
-            battle = new Battle();
+            battle = new Battle(randomSeed);
             battle.OnBattleEnd += BattleOver;
+
             Initiative.Max = 50;
+            Hand.Max = 3;
 
             // CARDS
             List<Card> cardsMap = new List<Card>()
@@ -177,7 +177,8 @@ namespace WOC_Server
         {
             if (battleRooms.Find(r => r.Name == roomName) == null)
             {
-                battleRooms.Add(new BattleRoom(roomName, this));
+                Random random = new Random();
+                battleRooms.Add(new BattleRoom(roomName, this, random.Next()));
                 return true;
             }
             return false;

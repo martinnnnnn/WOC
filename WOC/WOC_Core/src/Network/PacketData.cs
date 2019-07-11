@@ -35,7 +35,8 @@ namespace WOC_Core
 
     public class PD_NameModify : IPacketData
     {
-        public string name;
+        public string oldName;
+        public string newName;
     }
     public class PD_Chat : IPacketData
     {
@@ -43,19 +44,20 @@ namespace WOC_Core
         public string message;
     }
 
-    public class PD_BattleCreate : IPacketData
+    public class PD_RoomCreate : IPacketData
     {
         public string name;
     }
-    public class PD_BattleJoin : IPacketData
+    public class PD_RoomJoin : IPacketData
     {
         public string playerName;
         public string roomName;
+        public int randomSeed;
     }
-    public class PD_BattleLeave : IPacketData {}
+    public class PD_RoomLeave : IPacketData {}
     public class PD_BattleStart : IPacketData {}
 
-    public class PD_BattleList : IPacketData
+    public class PD_RoomList : IPacketData
     {
         public List<string> rooms;
     }
@@ -75,7 +77,6 @@ namespace WOC_Core
         public int          charaLife;
         public string       charaName;
         public int          handStartCount;
-        public int          handMaxCount;
         public List<string> cardsName;
         public int          aggroIncrement;
         public int          manaMax;

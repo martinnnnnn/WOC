@@ -15,14 +15,8 @@ namespace WOC_Core
 {
     public class Battle
     {
-        private static int randomSeed = 0;
-        public static int RandomSeed
-        {
-            get
-            {
-                return ++randomSeed;
-            }
-        }
+        public int RandomSeed = 0;
+        public Random random;
 
         Dictionary<string, Card> cardsMap = new Dictionary<string, Card>();
         List<Actor> Cemetery = new List<Actor>();
@@ -31,6 +25,12 @@ namespace WOC_Core
 
         public Action OnBattleEnd;
         public bool HasStarted = false;
+
+        public Battle(int randomSeed)
+        {
+            RandomSeed = randomSeed;
+            random = new Random(RandomSeed);
+        }
 
         public bool Start()
         {

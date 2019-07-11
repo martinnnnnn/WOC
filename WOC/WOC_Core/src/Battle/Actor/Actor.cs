@@ -15,7 +15,7 @@ namespace WOC_Core
         }
 
         public string Name;
-        protected Battle battle;
+        public Battle battle;
         public Initiative initiative = new Initiative();
         public Character character;
 
@@ -48,7 +48,7 @@ namespace WOC_Core
         {
             if (turnState == TurnState.NOT_MINE)
             {
-                LOG.Print("[ACTOR] {0} turn starts", Name);
+                LOG.Print("[ACTOR] {0}({1}) turn starts", Name, character.Name);
                 turnState = TurnState.MINE;
                 return true;
             }

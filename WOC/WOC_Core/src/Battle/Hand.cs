@@ -7,24 +7,23 @@ namespace WOC_Core
     public class Hand
     {
         List<Card> cards = new List<Card>();
-        int maxCount;
+        public static int Max = 10;
         int startingCount;
+        Actor owner;
 
-        Random random = new Random(Battle.RandomSeed);
-
-        public Hand(int startingCount, int maxCount)
+        public Hand(Actor owner, int startingCount)
         {
+            this.owner = owner;
             this.startingCount = startingCount;
-            this.maxCount = maxCount;
         }
 
         public int Count => cards.Count;
         public int StartingCount => startingCount;
-        public bool IsFull => cards.Count == maxCount;
+        public bool IsFull => cards.Count == Max;
 
         public void Add(Card newCard)
         {
-            if (cards.Count < maxCount)
+            if (cards.Count < Max)
             {
                 cards.Add(newCard);
             }
@@ -36,7 +35,7 @@ namespace WOC_Core
             {
                 return;
             }
-            if (cards.Count + newCards.Length < maxCount)
+            if (cards.Count + newCards.Length < Max)
             {
                 cards.AddRange(newCards);
             }
@@ -86,7 +85,8 @@ namespace WOC_Core
 
             do
             {
-                int index = random.Next(0, cards.Count);
+                int index = owner.battle.random.Next(0, cards.Count);
+                LOG.Print("[HAND] random {0}", index);
                 result = cards[index];
                 cards.RemoveAt(index);
             }
