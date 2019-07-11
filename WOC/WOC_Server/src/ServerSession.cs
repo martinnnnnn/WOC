@@ -11,7 +11,6 @@ namespace WOC_Server
 {
     public class ServerSession : Session
     {
-        public string Name = "default";
 
         TCPServer server;
 
@@ -24,7 +23,6 @@ namespace WOC_Server
         }
         public override void HandleIncomingMessage(IPacketData data)
         {
-            LOG.Print("[SERVER] received a packet. {0}", data);
             base.HandleIncomingMessage(data);
 
             switch (data)
@@ -70,33 +68,42 @@ namespace WOC_Server
                     }
                     else
                     {
-                        SendAsync(new PD_Validate(battleCreate.id, "Battle name already exists")).Wait();
+                        SendAsync(new PD_Validation(battleCreate.id, "Battle name already exists")).Wait();
                     }
                     break;
 
                 case PD_BattleJoin battleEnter:
-                    if (!server.MoveToBattleRoom(battleEnter.name, this))
+                    if (server.MoveToBattleRoom(battleEnter.name, this))
                     {
-                        SendAsync(new PD_Validate(battleEnter.id, "[SERVER] Battle name does not exist")).Wait();
+                        room = server.battleRooms.Find(r => r.Name == battleEnter.name);
+                    }
+                    else
+                    {
+                        SendAsync(new PD_Validation(battleEnter.id, "Battle name does not exist.")).Wait();
                     }
                     break;
 
                 case PD_BattleLeave battleLeave:
-                    room.Remove(this);
+                    room?.Remove(this);
                     server.sessions.Add(this);
                     break;
 
                 case PD_PlayerList playerList:
-                    switch (playerList.location)
+                    if (string.IsNullOrEmpty(playerList.roomName))
                     {
-                        case PD_PlayerList.Location.ROOM:
-                            if (room != null) SendAsync(new PD_PlayerList { players = room.PlayerList }).Wait();
-                            break;
-                        case PD_PlayerList.Location.SERVER:
-                            SendAsync(new PD_PlayerList { players = server.sessions.Select(s => s.Name).ToList() }).Wait();
-                            break;
-                        case PD_PlayerList.Location.BOTH:
-                            break;
+                        SendAsync(new PD_PlayerList { players = server.sessions.Select(s => s.Name).ToList() }).Wait();
+                    }
+                    else
+                    {
+                        var room = server.battleRooms.Find(r => r.Name == playerList.roomName);
+                        if (room != null)
+                        {
+                            SendAsync(new PD_PlayerList { roomName = playerList.roomName, players = room.PlayerList }).Wait();
+                        }
+                        else
+                        {
+                            SendAsync(new PD_Validation(playerList.id, "Battle name does not exist.")).Wait();
+                        }
                     }
                     break;
 

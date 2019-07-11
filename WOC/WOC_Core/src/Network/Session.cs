@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -10,6 +11,8 @@ namespace WOC_Core
 {
     public class Session
     {
+        public string Name = "default";
+
         public string ServerIP;
         public int ServerPort;
         //public Action<IPacketData> OnMessageReceived;
@@ -77,25 +80,34 @@ namespace WOC_Core
             tokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
             token = tokenSource.Token;
             listening = true;
-
+            var stringBuilder = new StringBuilder();
             try
             {
-                byte[] byteArray = new byte[1024];
-                while (!token.IsCancellationRequested)
+                byte[] buffer = new byte[1024];
+                int byteCount = 1;
+                while (!token.IsCancellationRequested && byteCount > 0)
                 {
-                    var byteCount = await netstream.ReadAsync(byteArray, 0, byteArray.Length, token);
-                    var msg = Encoding.UTF8.GetString(byteArray, 0, byteCount);
+                    byteCount = await netstream.ReadAsync(buffer, 0, buffer.Length, token);
+                    var msg = Encoding.UTF8.GetString(buffer, 0, byteCount);
 
-                    IPacketData data = Serialization.FromJson<IPacketData>(msg);
+                    IPacketData data = null;
+                    try
+                    {
+                        data = Serialization.FromJson<IPacketData>(msg);
+                        LOG.Print("[NETWORK] Received a packet : {0}", data);
+                        HandleIncomingMessage(data);
+                    }
+                    catch (Exception e)
+                    {
+                        StackTrace stackTrace = new StackTrace();
+                        LOG.Print("[NETWORK] Error while handling the message. " + e.Message);
+                    }
 
-                    LOG.Print("[NETWORK] received from server:\n" + data);
-
-                    HandleIncomingMessage(data);
                 }
             }
             catch (Exception e)
             {
-                LOG.Print("[NETWORK] Lost connection to server. " + e.Message);
+                LOG.Print("[NETWORK] Lost connection. " + e.Message);
             }
             finally
             {
@@ -134,7 +146,7 @@ namespace WOC_Core
         {
             try
             {
-                var bytesMessage = Encoding.UTF8.GetBytes(message);
+                var bytesMessage = Encoding.ASCII.GetBytes(message);
                 await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
             }
             catch (Exception e)
@@ -146,12 +158,13 @@ namespace WOC_Core
 
         public async Task SendAsync(IPacketData data)
         {
+            LOG.Print("[NETWORK] Sending a packet : {0}", data);
             await SendAsync(Serialization.ToJson(data));
         }
         
         public async Task SendValidation(Guid toValidate, string errMessage = "")
         {
-            await SendAsync(Serialization.ToJson(new PD_Validate(toValidate, errMessage)));
+            await SendAsync(Serialization.ToJson(new PD_Validation(toValidate, errMessage)));
         }
     }
 }

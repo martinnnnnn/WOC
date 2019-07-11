@@ -35,9 +35,11 @@ namespace WOC_Core
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                //NullValueHandling = NullValueHandling.Include
             };
-            return JsonConvert.SerializeObject(obj, settings : settings, formatting: indent?Formatting.Indented:Formatting.None);
+            var hello = JsonConvert.SerializeObject(obj, settings: settings, formatting: indent ? Formatting.Indented : Formatting.None);
+            return hello;
         }
     }
 }

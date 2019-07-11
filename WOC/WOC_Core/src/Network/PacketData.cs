@@ -7,24 +7,24 @@ namespace WOC_Core
 {
     public abstract class IPacketData { public Guid id = Guid.NewGuid(); }
 
-    public class PD_Validate : IPacketData
+    public class PD_Validation : IPacketData
     {
         public Guid validationId;
         public bool isValid;
         public string errorMessage;
 
-        public PD_Validate()
+        public PD_Validation()
         {
         }
 
-        public PD_Validate(Guid valId, string message = "")
+        public PD_Validation(Guid valId, string message = "")
         {
             validationId = valId;
             isValid = string.IsNullOrEmpty(message);
             errorMessage = message;
         }
 
-        public PD_Validate(Guid valId, bool valid, string message = "")
+        public PD_Validation(Guid valId, bool valid, string message = "")
         {
             isValid = valid;
             errorMessage = message;
@@ -61,13 +61,7 @@ namespace WOC_Core
     
     public class PD_PlayerList : IPacketData
     {
-        public enum Location
-        {
-            SERVER,
-            ROOM,
-            BOTH
-        }
-        public Location location;
+        public string roomName;
         public List<string> players;
     }
     public class PD_TurnEnd : IPacketData { }

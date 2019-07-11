@@ -14,7 +14,6 @@ namespace Playground
 
         public override void HandleIncomingMessage(IPacketData data)
         {
-            LOG.Print("[CLIENT] received a packet. {0}", data);
             base.HandleIncomingMessage(data);
 
             switch (data)
@@ -61,7 +60,10 @@ namespace Playground
                     LOG.Print("[CLIENT] Received battle room list :\n{0}", string.Join(",", battleList.rooms));
                     break;
                 case PD_PlayerList playerList:
-                    LOG.Print("[CLIENT] Received players list ({0}) in {1} :\n{2}", playerList.players.Count, (playerList.location == PD_PlayerList.Location.ROOM) ? "room" : "server", string.Join(",", playerList.players));
+                    LOG.Print("[CLIENT] {0} players in {1} : {2}", playerList.players.Count, string.IsNullOrEmpty(playerList.roomName) ? "lobby" : playerList.roomName, string.Join(", ", playerList.players));
+                    break;
+                case PD_Validation validation:
+                    if (!validation.isValid) LOG.Print("[SERVER] {0}", validation.errorMessage);
                     break;
             }
         }

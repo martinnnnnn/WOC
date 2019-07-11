@@ -23,8 +23,6 @@ namespace Playground
             session.Init();
             session.Connect("127.0.0.1", 54001);
 
-            string name = "default";
-
             bool exit = false;
             while (!exit)
             {
@@ -35,8 +33,8 @@ namespace Playground
                         Help();
                         break;
                     case "name":
-                        name = input[1];
-                        session.SendAsync(new PD_NameModify { name = input[1] }).Wait();
+                        session.Name = input[1];
+                        session.SendAsync(new PD_NameModify { name = session.Name }).Wait();
                         break;
                     case "connect":
                         session.Connect("127.0.0.1", 54001);
@@ -58,7 +56,7 @@ namespace Playground
                         session.SendAsync(new PD_BattleList { }).Wait();
                         break;
                     case "player_list":
-                        session.SendAsync(new PD_PlayerList { location = (input[1] == "room") ? PD_PlayerList.Location.ROOM : PD_PlayerList.Location.SERVER }).Wait();
+                        session.SendAsync(new PD_PlayerList { roomName = (input.Length > 1) ? input[1] : "" }).Wait();
                         break;
                     case "battle_start":
                         if (session.battle.Start())
@@ -95,7 +93,7 @@ namespace Playground
                     default:
                         session.SendAsync(new PD_Chat
                         {
-                            senderName = name,
+                            senderName = session.Name,
                             message = string.Concat(input)
                         }).Wait();
                         break;

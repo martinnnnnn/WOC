@@ -35,8 +35,6 @@ namespace WOC_Server
                     case "open":
                         serverTask = server.StartAsync(IPAddress.Any, 54001);
                         break;
-                    case "start_battle":
-                        break;
                     case "close":
                         server.Close();
                         break;
