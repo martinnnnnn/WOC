@@ -38,11 +38,6 @@ namespace Playground
                     PlayerActor owner = battle.Actors.Find(a => cardPlayed.ownerName == a.Name) as PlayerActor;
                     Card card = owner.hand.Get(cardPlayed.cardIndex);
                     Character target = battle.Actors.Find(a => a.character.Name == cardPlayed.targetName).character;
-
-                    LOG.Print("[CLIENT] Found Actor ? {0}", (cardPlayed.ownerName == actor.Name) ? "true" : "false");
-                    LOG.Print("[CLIENT] Found Card ? {0}", (card.name == cardPlayed.cardName) ? "true" : "false");
-                    LOG.Print("[CLIENT] Found Character ? {0}", (target != null) ? "true" : "false");
-                    LOG.Print("[CLIENT] Card played ? {0}", (owner.PlayCard(card, target)) ? "true" : "false");
                     break;
 
                 case PD_TurnEnd turnEnd:
@@ -55,6 +50,10 @@ namespace Playground
                     break;
                 case PD_BattleStart battleStart:
                     battle.Start();
+                    if (battle.GetCurrentActor() == actor)
+                    {
+                        LOG.Print("[PLAYGROUND] It's my turn !");
+                    }
                     break;
                 case PD_BattleList battleList:
                     LOG.Print("[CLIENT] Received battle room list :\n{0}", string.Join(",", battleList.rooms));
@@ -65,10 +64,21 @@ namespace Playground
                 case PD_Validation validation:
                     if (!validation.isValid) LOG.Print("[SERVER] {0}", validation.errorMessage);
                     break;
+                case PD_BattleJoin battleJoin:
+                    if (battleJoin.playerName == Name)
+                    {
+                        LOG.Print("[CLIENT] Welcome to {0}.", battleJoin.roomName);
+                        InitBattle();
+                    }
+                    else
+                    {
+                        LOG.Print("[CLIENT] {0} just joined.", battleJoin.playerName);
+                    }
+                    break;
             }
         }
 
-        public void Init()
+        public void InitBattle()
         {
             LOG.Print("[CLIENT] Battle initialization...");
             battle = new Battle();
@@ -113,9 +123,6 @@ namespace Playground
             if (actor.character.Life > 0)
             {
                 LOG.Print("You won !!! ");
-                LOG.Print("...");
-                LOG.Print("Resetting battle !");
-                Init();
             }
         }
 

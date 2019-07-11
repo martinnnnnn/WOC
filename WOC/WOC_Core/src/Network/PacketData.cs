@@ -49,7 +49,8 @@ namespace WOC_Core
     }
     public class PD_BattleJoin : IPacketData
     {
-        public string name;
+        public string playerName;
+        public string roomName;
     }
     public class PD_BattleLeave : IPacketData {}
     public class PD_BattleStart : IPacketData {}

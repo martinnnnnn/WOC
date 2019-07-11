@@ -19,8 +19,6 @@ namespace Playground
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
-        
-            session.Init();
             session.Connect("127.0.0.1", 54001);
 
             bool exit = false;
@@ -47,7 +45,7 @@ namespace Playground
                         session.SendAsync(new PD_BattleCreate { name = input[1] }).Wait();
                         break;
                     case "battle_join":
-                        session.SendAsync(new PD_BattleJoin { name = input[1] }).Wait();
+                        session.SendAsync(new PD_BattleJoin { playerName = session.Name, roomName = input[1] }).Wait();
                         break;
                     case "battle_leave":
                         session.SendAsync(new PD_BattleLeave { }).Wait();
@@ -61,6 +59,10 @@ namespace Playground
                     case "battle_start":
                         if (session.battle.Start())
                         {
+                            if (session.battle.GetCurrentActor() == session.actor)
+                            {
+                                LOG.Print("[PLAYGROUND] It's my turn !");
+                            }
                             session.SendAsync(new PD_BattleStart()).Wait();
                         }
                         break;
@@ -109,7 +111,7 @@ namespace Playground
                     "> close" + "\n" +
                     "> battle_start" + "\n" +
                     "> battle_create=" + "\n" +
-                    "> battle_enter=" + "\n" +
+                    "> battle_join=" + "\n" +
                     "> battle_leave" + "\n" +
                     "> battle_list" + "\n" +
                     "> player_list=" + "\n" +

@@ -33,7 +33,19 @@ namespace WOC_Server
                 case PD_Chat chat:
                     try
                     {
-                        server.Broadcast(chat).Wait();
+                        if (chat.message.StartsWith("/all "))
+                        {
+                            chat.message = chat.message.Remove(0, 5);
+                            server.Broadcast(chat, this, true).Wait();
+                        }
+                        else if (room == null)
+                        {
+                            server.Broadcast(chat, this).Wait();
+                        }
+                        else
+                        {
+                            room.Broadcast(chat, this).Wait();
+                        }
                     }
                     catch (Exception)
                     {
@@ -64,6 +76,7 @@ namespace WOC_Server
                         if (server.MoveToBattleRoom(battleCreate.name, this))
                         {
                             room = server.battleRooms.Find(r => r.Name == battleCreate.name);
+                            room.Broadcast(new PD_BattleJoin { playerName = Name, roomName = battleCreate.name }).Wait();
                         }
                     }
                     else
@@ -73,9 +86,10 @@ namespace WOC_Server
                     break;
 
                 case PD_BattleJoin battleEnter:
-                    if (server.MoveToBattleRoom(battleEnter.name, this))
+                    if (server.MoveToBattleRoom(battleEnter.roomName, this))
                     {
-                        room = server.battleRooms.Find(r => r.Name == battleEnter.name);
+                        room = server.battleRooms.Find(r => r.Name == battleEnter.roomName);
+                        room.Broadcast(battleEnter).Wait();
                     }
                     else
                     {
@@ -86,6 +100,7 @@ namespace WOC_Server
                 case PD_BattleLeave battleLeave:
                     room?.Remove(this);
                     server.sessions.Add(this);
+                    room = null;
                     break;
 
                 case PD_PlayerList playerList:

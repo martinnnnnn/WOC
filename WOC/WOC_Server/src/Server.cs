@@ -222,14 +222,13 @@ namespace WOC_Server
         }
 
 
-        public async Task Broadcast(string msg, Session toIgnore = null)
+        public async Task Broadcast(string msg, Session toIgnore = null, bool toAll = false)
         {
-            LOG.Print("Broadcasting {0}", msg);
             List<Task> tasks = new List<Task>();
-
-            foreach (var room in battleRooms)
+            
+            if (toAll)
             {
-                tasks.Add(room.Broadcast(msg));
+                battleRooms.ForEach(r => tasks.Add(r.Broadcast(msg, toIgnore)));
             }
 
             foreach (Session session in sessions)
@@ -243,57 +242,9 @@ namespace WOC_Server
             await Task.WhenAll(tasks);
         }
 
-        public async Task Broadcast(IPacketData data, Session toIgnore = null)
+        public async Task Broadcast(IPacketData data, Session toIgnore = null, bool toAll = false)
         {
-            await Broadcast(Serialization.ToJson(data), toIgnore);
+            await Broadcast(Serialization.ToJson(data), toIgnore, toAll);
         }
-
-        //public void Init()
-        //{
-        //    LOG.Print("[SERVER] Welcome to the WOC Server ! ");
-        //    LOG.Print("[SERVER] Battle initialization...");
-        //    battle = new Battle();
-        //    battle.OnBattleEnd += BattleOver;
-        //    Initiative.Max = 50;
-
-        //    // CARDS
-        //    List<Card> cardsMap = new List<Card>()
-        //    {
-        //        // name | mana cost | exhaust | effects list
-        //        new Card("smol_dmg", 1, false, new List<CardEffect>
-        //        {
-        //            new CardEffectDamage(1)
-        //        }),
-        //        new Card("hek", 2, false, new List<CardEffect>
-        //        {
-        //            new CardEffectHeal(2)
-        //        }),
-        //        new Card("big_dmg", 3, false, new List<CardEffect>
-        //        {
-        //            new CardEffectDamage(10)
-        //        })
-        //    };
-        //    LOG.Print("[SERVER] Adding cards");
-        //    cardsMap.ForEach(c => battle.Add(c));
-
-        //    //PNJS
-        //    List<Actor> actors = new List<Actor>()
-        //    {
-        //        // battle | character | name | first init
-        //        new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
-        //        new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
-        //        new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
-        //    };
-        //    LOG.Print("[SERVER] Adding PNJs");
-        //    actors.ForEach(a => battle.Add(a));
-        //}
-
-        //void BattleOver()
-        //{
-        //    LOG.Print("Battle over !!! ");
-        //    LOG.Print("...");
-        //    LOG.Print("Resetting battle !");
-        //    Init();
-        //}
     }
 }

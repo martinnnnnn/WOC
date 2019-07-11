@@ -1,0 +1,11 @@
+- improve CLI
+- request handling server -> client
+- ask/send actor in room joining
+- broadcast to room / lobby handled better
+- broadcast on 
+	- connect / disconnect
+	- name change
+- stop broadcast to self on chat
+- more error messages
+- "its your turn" on first player
+- rename battle / room
