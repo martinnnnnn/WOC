@@ -15,7 +15,20 @@ namespace WOC_Core
         }
 
         public string Name;
-        public Battle battle;
+        Battle battle;
+
+        public Battle Battle
+        {
+            get
+            {
+                return battle;
+            }
+            set
+            {
+                battle = value;
+                this.character.OnDeath += battle.OnCharacterDeath;
+            }
+        }
         public Initiative initiative = new Initiative();
         public Character character;
 
@@ -26,7 +39,6 @@ namespace WOC_Core
         {
             this.character = character;
             character.Owner = this;
-            this.character.OnDeath += battle.OnCharacterDeath;
             Name = name;
         }
 

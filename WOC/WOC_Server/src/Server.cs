@@ -85,10 +85,10 @@ namespace WOC_Server
         }
         public bool MoveToBattleRoom(string roomName, ServerSession session)
         {
-            sessions.Remove(session);
             BattleRoom room = battleRooms.Find(r => r.Name == roomName);
             if (room != null)
             {
+                sessions.Remove(session);
                 room.Add(session);
                 return true;
             }

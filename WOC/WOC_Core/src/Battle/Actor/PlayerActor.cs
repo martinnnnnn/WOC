@@ -27,7 +27,7 @@ namespace WOC_Core
         {
             foreach (string cardName in cardsNames)
             {
-                deck.Add(battle.GetCard(cardName));
+                deck.Add(Battle.GetCard(cardName));
             }
 
             hand = new Hand(this, handStartingCount);

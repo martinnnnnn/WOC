@@ -39,7 +39,7 @@ namespace WOC_Core
             int n = tmp.Length;
             while (n > 1)
             {
-                int k = owner.battle.random.Next(0, n);
+                int k = owner.Battle.random.Next(0, n);
                 n--;
                 Card value = tmp[k];
                 tmp[k] = tmp[n];

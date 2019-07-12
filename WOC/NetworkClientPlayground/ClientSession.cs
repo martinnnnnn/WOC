@@ -30,6 +30,10 @@ namespace Playground
                     HandlePlayerAdd(player);
                     break;
 
+                case PD_PNJAdd pnjAdd:
+                    HandlePNJAdd(pnjAdd);
+                    break;
+
                 case PD_CardPlayed cardPlayed:
                     PlayerActor owner = battle.Actors.Find(a => cardPlayed.ownerName == a.Name) as PlayerActor;
                     Card card = owner.hand.Get(cardPlayed.cardIndex);
@@ -105,6 +109,13 @@ namespace Playground
                         player.aggroIncrement,
                         player.manaMax);
             battle.Add(newActor);
+        }
+
+        public void HandlePNJAdd(PD_PNJAdd pnjAdd)
+        {
+            var pnj = new PNJActor(new Character(pnjAdd.race, pnjAdd.category, pnjAdd.life), pnjAdd.name, pnjAdd.initiative);
+            battle.Add(pnj);
+            LOG.Print("[CLIENT] {0} is here to fight !", pnj.Name);
         }
 
         public void InitBattle(int randomSeem)

@@ -41,7 +41,7 @@ namespace WOC_Core
         {
             if (base.EndTurn())
             {
-                battle.NextActor().StartTurn();
+                Battle.NextActor().StartTurn();
                 return true;
             }
             return false;

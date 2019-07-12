@@ -85,7 +85,7 @@ namespace WOC_Core
 
             do
             {
-                int index = owner.battle.random.Next(0, cards.Count);
+                int index = owner.Battle.random.Next(0, cards.Count);
                 result = cards[index];
                 cards.RemoveAt(index);
             }

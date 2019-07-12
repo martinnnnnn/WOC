@@ -82,6 +82,15 @@ namespace WOC_Core
     }
     public class PD_TurnEnd : IPacketData { }
 
+    public class PD_PNJAdd : IPacketData
+    {
+        public string name;
+        public int life;
+        public Character.Race race;
+        public Character.Category category;
+        public int initiative;
+    }
+
     public class PD_PlayerAdd : IPacketData
     {
         public string name;

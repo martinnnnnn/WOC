@@ -10,18 +10,18 @@ namespace WOC_Core
     {
         public enum Race
         {
-            HUMAN,
-            OGRE,
-            ELFE,
+            HUMAN = 0,
+            OGRE = 1,
+            ELFE = 2,
         }
 
         public enum Category
         {
-            BARBARIAN,
-            DRUID,
-            CHAMAN,
-            PALADIN,
-            SORCERER
+            BARBARIAN = 0,
+            DRUID = 1,
+            CHAMAN = 2,
+            PALADIN = 3,
+            SORCERER = 4
         }
 
         private float life;

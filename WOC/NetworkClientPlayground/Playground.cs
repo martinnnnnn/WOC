@@ -217,14 +217,31 @@ namespace Playground
                         name = parameter[1];
                         break;
                     case "race":
+                        Enum.TryParse(parameter[1], true, out race);
                         break;
                     case "category":
+                        Enum.TryParse(parameter[1], true, out category);
+                        break;
+                    case "life":
+                        int.TryParse(parameter[1], out life);
                         break;
                     case "initiative":
+                        int.TryParse(parameter[1], out initiative);
                         break;
                 }
             }
-            PNJActor pnj = new PNJActor(new Character(race, category, life), name, initiative);
+            var pnj = new PNJActor(new Character(race, category, life), name, initiative);
+            if (session.battle != null && session.battle.Add(pnj))
+            {
+                session.SendAsync(new PD_PNJAdd
+                {
+                    name = name,
+                    life = life,
+                    race = race,
+                    category = category,
+                    initiative = initiative
+                }).Wait();
+            }            
         }
 
 

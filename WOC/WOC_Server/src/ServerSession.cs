@@ -64,6 +64,10 @@ namespace WOC_Server
                     HandlePlayerAdd(player);
                     break;
 
+                case PD_PNJAdd pnjAdd:
+                    HandlePNJAdd(pnjAdd);
+                    break;
+
                 case PD_RoomCreate roomCreate:
                     HandleRoomCreate(roomCreate);
                     break;
@@ -130,6 +134,19 @@ namespace WOC_Server
                         room.Broadcast(turnEnd, this).Wait();
                     }
                     break;
+            }
+        }
+
+        public void HandlePNJAdd(PD_PNJAdd pnjAdd)
+        {
+            var pnj = new PNJActor(new Character(pnjAdd.race, pnjAdd.category, pnjAdd.life), pnjAdd.name, pnjAdd.initiative);
+
+            if (room != null)
+            {
+                if (room.battle.Add(pnj))
+                {
+                    room.Broadcast(pnjAdd, this).Wait();
+                }
             }
         }
 

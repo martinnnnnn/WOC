@@ -65,9 +65,9 @@ namespace WOC_Server
             List<Actor> actors = new List<Actor>()
             {
                 // battle | character | name | first init
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
+                new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
+                new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
+                new PNJActor(new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
             LOG.Print("[ROOM] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
