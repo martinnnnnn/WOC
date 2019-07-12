@@ -1,15 +1,14 @@
 
 
-
-- improve CLI
+TO DO
 - request handling server -> client
-- ask/send actor in room joining
 - more error messages
-- initialive max needs to be handled differently
+- initialive max & hand max needs to be handled differently
 - broadcast on 
 	- enter lobby from room
 
-
+DONE
+- improve CLI
 - "{0} turn starts" show character name too
 - random seed propagation
 - rename battle / room

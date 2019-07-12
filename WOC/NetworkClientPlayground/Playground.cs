@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -11,7 +12,14 @@ using WOC_Core;
 
 namespace Playground
 {
+    sealed class StringArrayComparer : EqualityComparer<string[]>
+    {
+        public override bool Equals(string[] x, string[] y)
+          => StructuralComparisons.StructuralEqualityComparer.Equals(x, y);
 
+        public override int GetHashCode(string[] x)
+          => StructuralComparisons.StructuralEqualityComparer.GetHashCode(x);
+    }
 
 
     class Playground
@@ -22,58 +30,95 @@ namespace Playground
         static void Main(string[] args)
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
+            bool exit = false;
 
             session.Connect("127.0.0.1", 54001);
 
-            bool exit = false;
-            while (!exit)
+            Dictionary<string[], Action<string[]>> commands = new Dictionary<string[], Action<string[]>>(new StringArrayComparer())
             {
-                string[] input = Console.ReadLine().Split('=');
-                switch (input[0])
-                {
-                    case "help":
-                        Help();
-                        break;
-                    case "name":
-                        session.SendAsync(new PD_NameModify { oldName = session.Name, newName = input[1] }).Wait();
-                        session.Name = input[1];
-                        break;
-                    case "connect":
-                        session.Connect("127.0.0.1", 54001);
-                        break;
-                    case "close":
+                // HELP & EXIT
+                { new string[1] { "help" }, (arg) => Help() },
+                { new string[1] { "exit" }, (arg) => exit = true },
+
+                // NAME
+                { new string[1] { "name" }, (arg) => LOG.Print("[CLIENT] Your name is {0}.", session.Name) },
+                { new string[2] { "name", "change" }, (arg) =>
+                    {
+                        if (arg.Length == 0)
+                        {
+                            LOG.Print("[PLAYGROUND] You need to specify a name.");
+                            return;
+                        }
+                        session.SendAsync(new PD_NameModify { oldName = session.Name, newName = arg[0] }).Wait();
+                        session.Name = arg[0];
+                    }
+                },
+
+                // SERVER
+                { new string[2] { "server", "connect" }, (arg) => session.Connect("127.0.0.1", 54001) },
+                { new string[2] { "server", "disconnect" }, (arg) =>
+                    {
                         session.SendClose().Wait();
                         session.Close();
-                        break;
-                    case "room_create":
-                        session.SendAsync(new PD_RoomCreate { name = input[1] }).Wait();
-                        break;
-                    case "room_join":
-                        session.SendAsync(new PD_RoomJoin { playerName = session.Name, roomName = input[1] }).Wait();
-                        break;
-                    case "room_leave":
-                        session.SendAsync(new PD_RoomLeave { name = session.Name }).Wait();
-                        break;
-                    case "room_list":
-                        session.SendAsync(new PD_RoomList { }).Wait();
-                        break;
-                    case "player_list":
-                        session.SendAsync(new PD_PlayerList { roomName = (input.Length > 1) ? input[1] : "" }).Wait();
-                        break;
-                    case "battle_start":
-                        if (session.battle.Start())
+                    }
+                },
+
+                // ROOM
+                { new string[2] { "room", "make" }, (arg) =>
+                    {
+                        if (arg.Length == 0)
                         {
-                            if (session.battle.GetCurrentActor() == session.actor)
-                            {
-                                LOG.Print("[PLAYGROUND] It's my turn !");
-                            }
-                            session.SendAsync(new PD_BattleStart()).Wait();
+                            LOG.Print("[PLAYGROUND] You need to specify a name for the room.");
+                            return;
                         }
-                        break;
-                    case "playcard":
-                        PlayCard();
-                        break;
-                    case "endturn":
+                        session.SendAsync(new PD_RoomCreate { name = arg[0] }).Wait();
+                    }
+                },
+                { new string[2] { "room", "join" }, (arg) =>
+                    {
+                        if (arg.Length == 0)
+                        {
+                            LOG.Print("[PLAYGROUND] You need to specify a name for the room.");
+                            return;
+                        }
+                        session.SendAsync(new PD_RoomJoin { playerName = session.Name, roomName = arg[0] }).Wait();
+                    }
+                },
+                { new string[2] { "room", "leave" }, (arg) => session.SendAsync(new PD_RoomLeave { name = session.Name }).Wait() },
+                { new string[2] { "room", "list" }, (arg) => session.SendAsync(new PD_RoomList { }).Wait() },
+                { new string[2] { "room", "delete" }, (arg) => LOG.Print("[CLIENT] Room deletion not supported yet.") },
+
+                // PLAYER
+                { new string[2] { "player", "list" }, (arg) => session.SendAsync(new PD_PlayerList { roomName = (arg.Length > 0) ? arg[0] : "" }).Wait() },
+                { new string[2] { "player", "add" }, (arg) =>
+                    {
+                        if (arg.Length == 0)
+                        {
+                            LOG.Print("[PLAYGROUND] Which player do you want to add : 1, 2 or 3 ?");
+                            return;
+                        }
+                        switch (arg[0])
+                        {
+                            case "1":
+                                session.AddActor_1();
+                                break;
+                            case "2":
+                                session.AddActor_2();
+                                break;
+                            case "3":
+                                session.AddActor_3();
+                                break;
+                        }
+                    }
+                },
+
+                // BATTLE
+                { new string[2] { "battle", "start" }, (arg) => LOG.Print("[CLIENT] Room deletion not supported yet.") },
+
+                // TURN
+                { new string[2] { "turn", "play" }, (arg) => PlayCard() },
+                { new string[2] { "turn", "end" }, (arg) =>
+                    {
                         if (session.actor.EndTurn())
                         {
                             session.battle.NextActor().StartTurn();
@@ -83,48 +128,60 @@ namespace Playground
                             }
                             session.SendAsync(new PD_TurnEnd()).Wait();
                         }
-                        break;
-                    case "add_1":
-                        session.AddActor_1();
-                        break;
-                    case "add_2":
-                        session.AddActor_2();
-                        break;
-                    case "add_3":
-                        session.AddActor_3();
-                        break;
-                    case "exit":
-                        exit = true;
-                        break;
-                    default:
-                        session.SendAsync(new PD_Chat
-                        {
-                            senderName = session.Name,
-                            message = string.Concat(input)
-                        }).Wait();
-                        break;
+                    }
+                },
+            };
+
+            while (!exit)
+            {
+                List<string> input = Console.ReadLine().Split(' ').ToList();
+                List<string> arg = new List<string>();
+
+                while (!commands.ContainsKey(input.ToArray()) && input.Count > 0)
+                {
+                    arg.Add(input.Last());
+                    input.RemoveAt(input.Count - 1);
+                }
+                if (input.Count == 0)
+                {
+                    arg.Reverse();
+                    session.SendAsync(new PD_Chat
+                    {
+                        senderName = session.Name,
+                        message = string.Join(" ", arg)
+                    }).Wait();
+                }
+                else
+                {
+                    arg.Reverse();
+                    commands[input.ToArray()](arg.ToArray());
                 }
             }
         }
 
         static void Help()
         {
-            LOG.Print("> help" + "\n" +
-                    "> name=" + "\n" +
-                    "> connect" + "\n" +
-                    "> close" + "\n" +
-                    "> battle_start" + "\n" +
-                    "> room_create=" + "\n" +
-                    "> room_join=" + "\n" +
-                    "> room_leave" + "\n" +
-                    "> room_list" + "\n" +
-                    "> player_list=" + "\n" +
-                    "> playcard" + "\n" +
-                    "> endturn" + "\n" +
-                    "> add_1" + "\n" +
-                    "> add_2" + "\n" +
-                    "> add_3" + "\n" +
-                    "> exit" + "\n");
+            LOG.Print("> help                                : All the help you need.");
+            LOG.Print("> exit                                : Exists the game.");
+                                                             
+            LOG.Print("> name                                : Shows your name.");
+            LOG.Print("> name change <new_name>              : Changes your name to <new_name>.");
+                                                             
+            LOG.Print("> server connect                      : Connects to the server.");
+            LOG.Print("> server disconnect                   : Disconnects.");
+
+            LOG.Print("> player list [optional]<room_name>   : The names of players in room <room_name>, or in the lobby if no room name is specified.");
+            LOG.Print("> player add 1|2|3                    : Assigns player 1, 2 or 3 to you.");
+
+            LOG.Print("> battle start                        : Starts the battle.");
+
+            LOG.Print("> turn play                           : Play a card.");
+            LOG.Print("> turn end                            : End your turn.");
+
+            LOG.Print("> room make <name>                    : Creates a room with the name <name>.");
+            LOG.Print("> room join <name>                    : Joins the room called <name>.");
+            LOG.Print("> room leave                          : Leaves the room.");
+            LOG.Print("> room delete                         : {NOT IMPLEMENTED} Deletes the room.");
         }
 
 
@@ -189,4 +246,5 @@ namespace Playground
         }
     }
 }
+
 

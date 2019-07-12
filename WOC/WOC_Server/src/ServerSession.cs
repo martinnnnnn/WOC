@@ -42,7 +42,7 @@ namespace WOC_Server
                     {
                         if (chat.message.StartsWith("/all "))
                         {
-                            chat.message = "{all} " + chat.message.Remove(0, 5);
+                            chat.message = chat.message.Remove(0, 5);
                             server.Broadcast(chat, this, true).Wait();
                         }
                         else if (room == null)

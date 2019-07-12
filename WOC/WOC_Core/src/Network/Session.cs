@@ -11,7 +11,7 @@ namespace WOC_Core
 {
     public class Session
     {
-        public string Name = "default";
+        public string Name = "new player";
 
         public string ServerIP;
         public int ServerPort;
@@ -145,7 +145,7 @@ namespace WOC_Core
         {
             try
             {
-                var bytesMessage = Encoding.ASCII.GetBytes(message);
+                var bytesMessage = Encoding.UTF8.GetBytes(message);
                 await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
             }
             catch (Exception e)
