@@ -1,11 +1,22 @@
+
+
+
 - improve CLI
 - request handling server -> client
 - ask/send actor in room joining
-- broadcast to room / lobby handled better
-- broadcast on 
-	- connect / disconnect
-	- name change
-- stop broadcast to self on chat
 - more error messages
-- "its your turn" on first player
+- initialive max needs to be handled differently
+- broadcast on 
+	- enter lobby from room
+
+
+- "{0} turn starts" show character name too
+- random seed propagation
 - rename battle / room
+- broadcast on 
+	- name change
+	- join / create
+	- connect / disconnect
+- broadcast to room / lobby handled better
+- stop broadcast to self on chat
+- "its your turn" on first player
