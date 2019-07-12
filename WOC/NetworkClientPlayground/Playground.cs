@@ -127,7 +127,7 @@ namespace Playground
                 },
                 { new string[3] { "battle", "add", "pnj" }, (arg) =>
                     {
-                        AddPNJ();
+                        AddPNJ(arg);
                     }
                 },
 
@@ -190,6 +190,7 @@ namespace Playground
             LOG.Print("> player add 1|2|3                    : Assigns player 1, 2 or 3 to you.");
 
             LOG.Print("> battle start                        : Starts the battle.");
+            LOG.Print("> battle add pnj                      : Creates a PNJ. parameters : name, race, category, initiative");
 
             LOG.Print("> turn play                           : Play a card.");
             LOG.Print("> turn end                            : End your turn.");
@@ -200,9 +201,30 @@ namespace Playground
             LOG.Print("> room delete                         : {NOT IMPLEMENTED} Deletes the room.");
         }
 
-        static void AddPNJ()
+        static void AddPNJ(string[] args)
         {
-            //new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
+            string name = "default pnj name";
+            int life = 10;
+            Character.Race race = Character.Race.ELFE;
+            Character.Category category = Character.Category.BARBARIAN;
+            int initiative = 10;
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "name":
+                        name = parameter[1];
+                        break;
+                    case "race":
+                        break;
+                    case "category":
+                        break;
+                    case "initiative":
+                        break;
+                }
+            }
+            PNJActor pnj = new PNJActor(new Character(race, category, life), name, initiative);
         }
 
 
