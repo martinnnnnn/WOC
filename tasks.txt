@@ -1,6 +1,14 @@
-
-
 TO DO
+- actor editor
+- battle editor
+	- adding monstrer
+	- saving to file ?
+- carte editor
+- room master which can delete
+- separate client session from actor & battle -> doesnt make sense at all
+- let room handle room messages
+- let battle handle battle messages
+- monster logic
 - request handling server -> client
 - more error messages
 - initialive max & hand max needs to be handled differently

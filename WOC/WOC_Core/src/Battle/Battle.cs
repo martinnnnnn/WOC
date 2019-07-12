@@ -105,6 +105,7 @@ namespace WOC_Core
             if (Actors.Find(a => a.Name == actor.Name) == null)
             {
                 Actors.Add(actor);
+                actor.battle = this;
                 LOG.Print("[BATTLE] Actor {0} added.", actor.Name);
                 return true;
             }

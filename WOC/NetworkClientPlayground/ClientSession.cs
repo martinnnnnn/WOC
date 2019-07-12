@@ -98,7 +98,6 @@ namespace Playground
         void HandlePlayerAdd(PD_PlayerAdd player)
         {
             PlayerActor newActor = new PlayerActor(
-                        battle,
                         new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
                         player.handStartCount,
                         player.name,
@@ -141,9 +140,9 @@ namespace Playground
             List<Actor> actors = new List<Actor>()
             {
                 // battle | character | name | first init
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
-                new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
+                new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
+                new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
+                new PNJActor(new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
             LOG.Print("[CLIENT] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
@@ -160,7 +159,6 @@ namespace Playground
         public void AddActor_1()
         {
             actor = new PlayerActor(
-                battle,
                 new Character(Character.Race.ELFE, Character.Category.DRUID, 12, "grrr"),
                 2,
                 Name,
@@ -190,7 +188,6 @@ namespace Playground
         public void AddActor_2()
         {
             actor = new PlayerActor(
-                battle, 
                 new Character(Character.Race.HUMAN, Character.Category.PALADIN, 12, "gromelo"),
                 2,
                 Name, 
@@ -218,7 +215,6 @@ namespace Playground
         public void AddActor_3()
         {
             actor = new PlayerActor(
-                battle,
                 new Character(Character.Race.ELFE, Character.Category.SORCERER, 12, "branigan"),
                 2,
                 Name,

@@ -10,10 +10,9 @@ namespace WOC_Core
     {
 
         public PNJActor(
-            Battle battle,
             Character character,
             string name,
-            int initialInitiative) : base(battle, character, name)
+            int initialInitiative) : base(character, name)
         {
             initiative.Set(initialInitiative);
         }

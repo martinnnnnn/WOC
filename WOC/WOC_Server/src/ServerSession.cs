@@ -136,7 +136,6 @@ namespace WOC_Server
         public void HandlePlayerAdd(PD_PlayerAdd player)
         {
             actor = new PlayerActor(
-                       room.battle,
                        new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
                        player.handStartCount,
                        player.name,

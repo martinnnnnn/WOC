@@ -22,9 +22,8 @@ namespace WOC_Core
 
         public TurnState turnState = TurnState.NOT_MINE;
 
-        public Actor(Battle battle, Character character, string name)
+        public Actor(Character character, string name)
         {
-            this.battle = battle;
             this.character = character;
             character.Owner = this;
             this.character.OnDeath += battle.OnCharacterDeath;

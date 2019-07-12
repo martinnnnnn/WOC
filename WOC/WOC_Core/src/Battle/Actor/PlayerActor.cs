@@ -18,13 +18,12 @@ namespace WOC_Core
 
         [JsonConstructor]
         public PlayerActor(
-            Battle battle,
             Character character,
             int handStartingCount,
             string name,
             List<string> cardsNames,
             int aggroIncrement,
-            int manaMax) : base(battle, character, name)
+            int manaMax) : base(character, name)
         {
             foreach (string cardName in cardsNames)
             {

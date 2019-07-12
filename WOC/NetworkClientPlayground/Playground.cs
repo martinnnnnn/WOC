@@ -113,7 +113,23 @@ namespace Playground
                 },
 
                 // BATTLE
-                { new string[2] { "battle", "start" }, (arg) => LOG.Print("[CLIENT] Room deletion not supported yet.") },
+                { new string[2] { "battle", "start" }, (arg) =>
+                    {
+                        if (session.battle.Start())
+                        {
+                            if (session.battle.GetCurrentActor() == session.actor)
+                            {
+                                LOG.Print("[PLAYGROUND] It's my turn !");
+                            }
+                            session.SendAsync(new PD_BattleStart()).Wait();
+                        }
+                    }
+                },
+                { new string[3] { "battle", "add", "pnj" }, (arg) =>
+                    {
+                        AddPNJ();
+                    }
+                },
 
                 // TURN
                 { new string[2] { "turn", "play" }, (arg) => PlayCard() },
@@ -184,6 +200,10 @@ namespace Playground
             LOG.Print("> room delete                         : {NOT IMPLEMENTED} Deletes the room.");
         }
 
+        static void AddPNJ()
+        {
+            //new PNJActor(battle, new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre1", 5),
+        }
 
 
         static void PlayCard()
