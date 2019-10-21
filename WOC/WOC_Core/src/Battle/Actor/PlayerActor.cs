@@ -18,19 +18,11 @@ namespace WOC_Core
 
         [JsonConstructor]
         public PlayerActor(
-            Character character,
-            int handStartingCount,
             string name,
-            List<string> cardsNames,
             int aggroIncrement,
-            int manaMax) : base(character, name)
+            int manaMax) : base(name)
         {
-            foreach (string cardName in cardsNames)
-            {
-                deck.Add(Battle.GetCard(cardName));
-            }
-
-            hand = new Hand(this, handStartingCount);
+            hand = new Hand(this);
             drawPile = new CardPile(this);
             discardPile = new CardPile(this);
             aggro.IncrementRatio = 0;
@@ -38,12 +30,20 @@ namespace WOC_Core
             LOG.Print("[PLAYER] mana max : {0}", mana.Max);
         }
 
+        public void AddCards(List<string> cardsNames)
+        {
+            foreach (string cardName in cardsNames)
+            {
+                deck.Add(Card.Get(cardName));
+            }
+        }
+
         public override void BattleInit()
         {
             base.BattleInit();
 
             // init character
-            character.SetLife(character.MaxLife);
+            Chara.SetLife(Chara.MaxLife);
 
             // init drawpile
             drawPile.Flush();
@@ -75,8 +75,8 @@ namespace WOC_Core
             {
                 mana.Reset();
                 aggro.StartTurn();
-                DrawCards(hand.StartingCount);
-                LOG.Print("{0}/{1} mana, {2} life", mana.Value, mana.Max, character.Life);
+                DrawCards(Hand.StartingCount);
+                LOG.Print("{0}/{1} mana, {2} life", mana.Value, mana.Max, Chara.Life);
                 return true;
             }
             return false;

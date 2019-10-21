@@ -22,6 +22,8 @@ namespace WOC_Server
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
 
+            Task.Run(() => StartDiscoveryServer());
+
             TCPServer server = new TCPServer();
             Task serverTask = server.StartAsync(IPAddress.Any, 54001);
 
@@ -50,6 +52,22 @@ namespace WOC_Server
             serverTask?.Wait();
             LOG.Print("Server closed, any input will end the program");
             Console.ReadLine();
+        }
+
+        static void StartDiscoveryServer()
+        {
+            LOG.Print("[DISCOVERY] Booting discovery server at port {0}", 8888);
+            var Server = new UdpClient(8888);
+
+            while (true)
+            {
+                var ClientEp = new IPEndPoint(IPAddress.Any, 0);
+                var request = Server.Receive(ref ClientEp);
+                var discovery = Serialization.FromJson<PD_Discovery>(Encoding.ASCII.GetString(request));
+
+                LOG.Print("[DISCOVERY] Client looking for a server : {0}", ClientEp.Address.ToString());
+                Server.Send(request, request.Length, ClientEp);
+            }
         }
     }
 }

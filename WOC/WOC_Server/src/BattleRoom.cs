@@ -41,7 +41,7 @@ namespace WOC_Server
             Initiative.Max = 50;
             Hand.Max = 3;
 
-            // CARDS
+            Card.Clear();
             List<Card> cardsMap = new List<Card>()
             {
                 // name | mana cost | exhaust | effects list
@@ -59,7 +59,7 @@ namespace WOC_Server
                 })
             };
             LOG.Print("[ROOM] Adding cards");
-            cardsMap.ForEach(c => battle.Add(c));
+            cardsMap.ForEach(c => Card.Add(c));
 
             //PNJS
             List<Actor> actors = new List<Actor>()

@@ -46,6 +46,7 @@
     <Compile Include="ClientSession.cs" />
     <Compile Include="Playground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Room.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

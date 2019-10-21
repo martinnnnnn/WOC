@@ -73,6 +73,11 @@ namespace WOC_Server
             }
         }
 
+        public bool Exists(string roomName)
+        {
+            return (battleRooms.Find(r => r.Name == roomName) != null);
+        }
+
         public bool CreateBattleRoom(string roomName)
         {
             if (battleRooms.Find(r => r.Name == roomName) == null)

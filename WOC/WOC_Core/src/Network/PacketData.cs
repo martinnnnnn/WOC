@@ -33,6 +33,8 @@ namespace WOC_Core
 
     public class PD_SessionShutdown : IPacketData { }
 
+    public class PD_Discovery : IPacketData { }
+
     public class PD_SessionConnect : IPacketData
     {
         public string name;
@@ -53,16 +55,12 @@ namespace WOC_Core
         public string message;
     }
 
-    public class PD_RoomCreate : IPacketData
-    {
-        public string name;
-    }
     public class PD_RoomJoin : IPacketData
     {
         public string playerName;
         public string roomName;
         public int randomSeed;
-        public IPacketData playerInfo;
+        public bool create;
     }
     public class PD_RoomLeave : IPacketData
     {
@@ -91,18 +89,26 @@ namespace WOC_Core
         public int initiative;
     }
 
-    public class PD_PlayerAdd : IPacketData
+    public class PD_BattlePlayerAdd : IPacketData
     {
-        public string name;
-        public Character.Race charaRace;
-        public Character.Category charaCategory;
-        public int          charaLife;
-        public string       charaName;
-        public int          handStartCount;
-        public List<string> cardsName;
-        public int          aggroIncrement;
-        public int          manaMax;
+        public string playerName;
+        public string oldCharacterName;
+        public string newCharacterName;
     }
+
+    public class PD_SessionPlayerAdd : IPacketData
+    {
+        public string               name;
+        public Character.Race       charaRace;
+        public Character.Category   charaCategory;
+        public int                  charaLife;
+        public string               charaName;
+        public int                  handStartCount;
+        public List<string>         cardsName;
+        public int                  aggroIncrement;
+        public int                  manaMax;
+    }
+
 
     public class PD_CardPlayed : IPacketData
     {

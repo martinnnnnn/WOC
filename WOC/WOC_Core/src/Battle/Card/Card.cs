@@ -18,6 +18,29 @@ namespace WOC_Core
 
     public class Card
     {
+        static Dictionary<string, Card> list = new Dictionary<string, Card>();
+
+        public static Card Get(string cardName)
+        {
+            return new Card(list[cardName]);
+        }
+
+        public static bool Add(Card card)
+        {
+            if (list.ContainsKey(card.name))
+            {
+                return false;
+            }
+            list.Add(card.name, card);
+            return true;
+        }
+
+        public static void Clear()
+        {
+            list.Clear();
+        }
+
+
         public List<CardEffect> effects = new List<CardEffect>();
         public string name = "";
         public int manaCost = 0;

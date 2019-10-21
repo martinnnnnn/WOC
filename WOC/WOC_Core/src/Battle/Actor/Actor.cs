@@ -30,15 +30,32 @@ namespace WOC_Core
             }
         }
         public Initiative initiative = new Initiative();
-        public Character character;
+
+        private Character character;
+        public Character Chara
+        {
+            get
+            {
+                return character;
+            }
+            set
+            {
+                character = value;
+                character.Owner = this;
+            }
+        }
 
 
         public TurnState turnState = TurnState.NOT_MINE;
 
+        public Actor(string name)
+        {
+            Name = name;
+        }
+
         public Actor(Character character, string name)
         {
-            this.character = character;
-            character.Owner = this;
+            Chara = character;
             Name = name;
         }
 

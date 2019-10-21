@@ -18,7 +18,6 @@ namespace WOC_Core
         public int RandomSeed = 0;
         public Random random;
 
-        Dictionary<string, Card> cardsMap = new Dictionary<string, Card>();
         List<Actor> Cemetery = new List<Actor>();
         public List<Actor> Actors = new List<Actor>();
         Actor current;
@@ -83,21 +82,6 @@ namespace WOC_Core
             {
                 OnBattleEnd();
             }
-        }
-
-        public Card GetCard(string cardName)
-        {
-            return new Card(cardsMap[cardName]);
-        }
-
-        public bool Add(Card card)
-        {
-            if (cardsMap.ContainsKey(card.name))
-            {
-                return false;
-            }
-            cardsMap.Add(card.name, card);
-            return true;
         }
 
         public bool Add(Actor actor)

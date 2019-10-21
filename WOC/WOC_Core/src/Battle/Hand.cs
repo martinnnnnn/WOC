@@ -8,17 +8,15 @@ namespace WOC_Core
     {
         List<Card> cards = new List<Card>();
         public static int Max = 10;
-        int startingCount;
+        public static int StartingCount = 5;
         Actor owner;
 
-        public Hand(Actor owner, int startingCount)
+        public Hand(Actor owner)
         {
             this.owner = owner;
-            this.startingCount = startingCount;
         }
 
         public int Count => cards.Count;
-        public int StartingCount => startingCount;
         public bool IsFull => cards.Count == Max;
 
         public void Add(Card newCard)
