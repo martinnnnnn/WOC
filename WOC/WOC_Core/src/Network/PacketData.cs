@@ -31,9 +31,201 @@ namespace WOC_Core
         }
     }
 
+    public class PD_Discovery : IPacketData { }
+
+
+    /*
+ * API :
+ *      
+ *      
+ *      USER
+ *      - make user
+ *      - modify user
+ *      - delete user
+ *      - connect user
+ *      - disconnect user
+ *      - add character
+ *      - remove character
+ *      - add user (as friend)
+ *      - remove user (as friend)
+ *      - add character
+ *      - modify character
+ *      - delete character
+ *      - set default character
+
+ *      SERVER
+ *      - send message (all / private / room / friends)
+ *      - make room
+ *      - rename room
+ *      - join room
+ *      - list room
+ *      - list players (in server)
+ *      - list players (in room)
+ *      
+ *      ROOM
+ *      - add PNJ
+ *      - battle init
+ *      - battle start
+ *      - battle end
+ *      
+ *      BATTLE
+ *      - state
+ *      - card played
+ *      - turn end
+ * */
+
+
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    ///                                         USER
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    public class PD_UserMake : IPacketData
+    {
+        public string email;
+        public string password;
+        public string name;
+    }
+
+    public class PD_UserModify : IPacketData
+    {
+        public string oldEmail;
+        public string oldPassword;
+        public string oldName;
+
+        public string newEmail;
+        public string newPassword;
+        public string newName;
+    }
+
+    public class PD_UserDelete : IPacketData
+    {
+        public string email;
+        public string password;
+    }
+
+    public class PD_UserConnect : IPacketData
+    {
+        public string name;
+        public string email;
+        public string password;
+    }
+
+    public class PD_UserDisconnect : IPacketData
+    {
+        public string name;
+        public string email;
+    }
+
+    public class PD_UserAddFriend : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_UserRemoveFriend : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_UserAddCharacter : IPacketData
+    {
+        public string name;
+        public Character.Race race;
+        public Character.Category category;
+        public int life;
+    }
+
+    public class PD_UserModifyCharacter : IPacketData
+    {
+        public string name;
+        public Character.Race race;
+        public Character.Category category;
+        public int life;
+    }
+
+    public class PD_UserDeleteCharacter : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_UserSetDefaultCharacter : IPacketData
+    {
+        public string name;
+    }
+
+
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    ///                                         SERVER
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    public class PD_ServerChat : IPacketData
+    {
+        public string senderName;
+        public string message;
+    }
+
+    public class PD_ServerMakeRoom : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_ServerRenameRoom : IPacketData
+    {
+        public string oldName;
+        public string newName;
+    }
+
+    public class PD_ServerJoinRoom : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_ServerListRoom : IPacketData { }
+
+    public class PD_ServerListPlayers : IPacketData
+    {
+        public string roomName;
+    }
+
+
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    ///                                         ROOM
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+
+    public class PD_RoomAddPNJ : IPacketData
+    {
+        public string name;
+        public int life;
+        public Character.Race race;
+        public Character.Category category;
+        public int initiative;
+    }
+
+    public class PD_RoomBattleInit : IPacketData { }
+    public class PD_RoomBattleStart : IPacketData { }
+
+
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    ///                                         BATTLE
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+
+    public class PD_BattleCardPlayed : IPacketData
+    {
+        public string ownerName;
+        public string targetName;
+        public int cardIndex;
+        public string cardName;
+    }
+
+    public class PD_BattleEndTurn : IPacketData { }
+
+    public class PD_BattleState : IPacketData { }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public class PD_SessionShutdown : IPacketData { }
 
-    public class PD_Discovery : IPacketData { }
 
     public class PD_SessionConnect : IPacketData
     {

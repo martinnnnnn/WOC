@@ -62,6 +62,7 @@
     <Compile Include="src\Battle\Mana.cs" />
     <Compile Include="src\Battle\Race.cs" />
     <Compile Include="src\Debug.cs" />
+    <Compile Include="src\Game\User.cs" />
     <Compile Include="src\Network\PacketData.cs" />
     <Compile Include="src\Network\Session.cs" />
     <Compile Include="src\Serialization\Serialization.cs" />

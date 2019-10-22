@@ -6,18 +6,15 @@ using System.Threading.Tasks;
 
 namespace WOC_Core
 {
-    /*
-     * API :
-     * 
-     *      - Add
-     * 
-     * 
-     * */
-
-
     class User
     {
+        public string email;
+        public string password;
         public string name;
+
+        public PlayerActor actor;
         public List<Character> characters = new List<Character>();
+
+        // game history stats
     }
 }
