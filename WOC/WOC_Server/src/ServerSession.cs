@@ -116,6 +116,11 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountModify data)
         {
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
             Debug.Assert(account.email == data.oldEmail, "Cannot try to modify a user that's not the one currently connected.");
             string errorMessage = "";
 
@@ -157,6 +162,11 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountDelete data)
         {
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
             string errorMessage = "";
             bool result = server.users.TryRemove(data.email, out Account deletingAccount);
             if (result)
@@ -207,6 +217,11 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountDisconnect data)
         {
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
             string errorMessage = "";
             bool result = server.users.TryGetValue(data.email, out Account disconnectingAccount);
             if (result)
@@ -225,24 +240,62 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountAddFriend data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
+            string errorMessage = "";
+            if (account.name != data.name)
+            {
+                Account newFriend = server.users.FirstOrDefault(acc => acc.Value.name == data.name).Value;
+
+                if (newFriend != null)
+                {
+                    account.friends.Add(newFriend);
+                }
+                else
+                {
+                    errorMessage = "Could not find your friend.";
+                }
+            }
+            else
+            {
+                errorMessage = "You cannot add yourself.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
+
         public void HandleAPICall(PD_AccountRemoveFriend data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
+            string errorMessage = "";
+            if (account.name != data.name)
+            {
+                Account oldFriend = account.friends.FirstOrDefault(acc => acc.name == data.name);
+
+                if (oldFriend != null)
+                {
+                    account.friends.Remove(oldFriend);
+                }
+                else
+                {
+                    errorMessage = "Could not find your friend.";
+                }
+            }
+            else
+            {
+                errorMessage = "You cannot remove yourself as a friend.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
-        public void HandleAPICall(PD_AccountAddCharacter data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_AccountDeleteCharacter data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_AccountSetDefaultCharacter data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
+
         public void HandleAPICall(PD_ServerChat data)
         {
             try
@@ -270,6 +323,60 @@ namespace WOC_Server
                 LOG.Print("[SERVER] Failed to broadcast message.");
             }
         }
+
+        public void HandleAPICall(PD_AccountAddCharacter data)
+        {
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
+            if (account.characters.FirstOrDefault(c => c.Name == data.name) == null)
+            {
+                account.characters.Add(new Character(data.race, data.category, data.life, data.name));
+            }
+            else
+            {
+                SendAsync(new PD_Validation(data.id, "Character name already exists in your roster.")).Wait();
+            }
+        }
+
+        public void HandleAPICall(PD_AccountDeleteCharacter data)
+        {
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
+            var toRemove = account.characters.FirstOrDefault(c => c.Name == data.name);
+            if (toRemove != null)
+            {
+                account.characters.Remove(toRemove);
+            }
+            else
+            {
+                SendAsync(new PD_Validation(data.id, "Character name could not be found in your roster")).Wait();
+            }
+        }
+
+        public void HandleAPICall(PD_AccountSetDefaultCharacter data)
+        {
+            if (!AssureConnected(data.id))
+            {
+                return;
+            }
+
+            var toDefault = account.characters.FirstOrDefault(c => c.Name == data.name);
+            if (toDefault != null)
+            {
+                account.defaultCharacter = toDefault;
+            }
+            else
+            {
+                SendAsync(new PD_Validation(data.id, "Character name could not be found in your roster.")).Wait();
+            }
+        }
+
         public void HandleAPICall(PD_ServerMakeRoom data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
@@ -315,6 +422,15 @@ namespace WOC_Server
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
 
+        public bool AssureConnected(Guid id)
+        {
+            if (account == null || !account.connected)
+            {
+                SendAsync(new PD_Validation(id, "You need to be connected to do this.")).Wait();
+                return false;
+            }
+            return true;
+        }
 
         public override void HandleIncomingMessage(IPacketData data)
         {

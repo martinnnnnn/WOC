@@ -73,6 +73,13 @@ namespace Playground
                 { new string[2] { "account", "modify" }, (arg) => AccountModify(arg) },
                 { new string[2] { "account", "connect" }, (arg) => AccountConnect(arg) },
 
+                { new string[2] { "friend", "add" }, (arg) => AddFriend(arg) },
+                { new string[2] { "friend", "remove" }, (arg) => RemoveFriend(arg) },
+
+                { new string[2] { "character", "add" }, (arg) => CharacterAdd(arg) },
+                { new string[2] { "character", "delete" }, (arg) => CharacterDelete(arg) },
+                { new string[2] { "character", "default" }, (arg) => CharacterSetDefault(arg) },
+
 
                 //PD_AccountModify
 
@@ -323,6 +330,80 @@ namespace Playground
             }
         }
 
+        static void AddFriend(string[] args)
+        {
+            if (session.account != null && session.account.connected)
+            {
+                session.SendAsync(new PD_AccountAddFriend
+                {
+                    name = args[0],
+                }).Wait();
+            }
+            else
+            {
+                LOG.Print("You need to be connected to add a friend.");
+            }
+        }
+
+        static void RemoveFriend(string[] args)
+        {
+            if (session.account != null && session.account.connected)
+            {
+                session.SendAsync(new PD_AccountRemoveFriend
+                {
+                    name = args[0],
+                }).Wait();
+            }
+            else
+            {
+                LOG.Print("You need to be connected to add a friend.");
+            }
+        }
+
+        static void CharacterAdd(string[] args)
+        {
+            //if (session.account != null && session.account.connected)
+            //{
+            //    session.SendAsync(new PD_AccountAddFriend
+            //    {
+            //        name = args[0],
+            //    }).Wait();
+            //}
+            //else
+            //{
+            //    LOG.Print("You need to be connected to add a friend.");
+            //}
+        }
+
+        static void CharacterDelete(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            var toRemove = session.account.characters.FirstOrDefault(c => c.Name == args[0]);
+            if (toRemove != null)
+            {
+                session.account.characters.Remove(toRemove);
+                session.SendAsync(new PD_AccountDeleteCharacter
+                {
+                    name = args[0],
+                }).Wait();
+            }
+        }
+        
+        static void CharacterSetDefault(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            var toDefault = session.account.characters.FirstOrDefault(c => c.Name == args[0]);
+            if (toDefault != null)
+            {
+                session.account.defaultCharacter = toDefault;
+                session.SendAsync(new PD_AccountSetDefaultCharacter
+                {
+                    name = args[0],
+                }).Wait();
+            }
+        }
 
 
 
@@ -341,6 +422,16 @@ namespace Playground
         //        create = create
         //    }).Wait();
         //}
+
+        static public bool AssureConnected()
+        {
+            if (session.account == null || !session.account.connected)
+            {
+                LOG.Print("You need to be connected to add a friend.");
+                return false;
+            }
+            return true;
+        }
 
         static void Help()
         {

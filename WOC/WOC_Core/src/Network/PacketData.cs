@@ -177,7 +177,15 @@ namespace WOC_Core
     /// ///////////////////////////////////////////////////////////////////////////////////////
     public class PD_ServerChat : IPacketData
     {
+        public enum Type
+        {
+            ALL,
+            FRIENDS,
+            FRIEND,
+            ROOM
+        }
         public string senderName;
+        public Type type;
         public string message;
     }
 
