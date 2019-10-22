@@ -38,16 +38,16 @@ namespace WOC_Core
  * API :
  *      
  *      
- *      USER
- *      - make user
- *      - modify user
- *      - delete user
- *      - connect user
- *      - disconnect user
+ *      ACCOUNT
+ *      - make account
+ *      - modify account
+ *      - delete account
+ *      - connect account
+ *      - disconnect account
  *      - add character
  *      - remove character
- *      - add user (as friend)
- *      - remove user (as friend)
+ *      - add account (as friend)
+ *      - remove account (as friend)
  *      - add character
  *      - modify character
  *      - delete character
@@ -76,16 +76,16 @@ namespace WOC_Core
 
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    ///                                         USER
+    ///                                         ACCOUNT
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    public class PD_UserMake : IPacketData
+    public class PD_AccountMake : IPacketData
     {
         public string email;
         public string password;
         public string name;
     }
 
-    public class PD_UserModify : IPacketData
+    public class PD_AccountModify : IPacketData
     {
         public string oldEmail;
         public string oldPassword;
@@ -96,36 +96,56 @@ namespace WOC_Core
         public string newName;
     }
 
-    public class PD_UserDelete : IPacketData
+    public class PD_AccountNameModify : IPacketData
+    {
+        public string oldName;
+        public string newName;
+    }
+
+    public class PD_AccountDelete : IPacketData
     {
         public string email;
         public string password;
     }
 
-    public class PD_UserConnect : IPacketData
+    public class PD_AccountDeleted : IPacketData
     {
         public string name;
+    }
+
+    public class PD_AccountConnect : IPacketData
+    {
+        //public string name;
         public string email;
         public string password;
     }
 
-    public class PD_UserDisconnect : IPacketData
+    public class PD_AccountConnected : IPacketData
     {
         public string name;
+    }
+
+    public class PD_AccountDisconnect : IPacketData
+    {
         public string email;
     }
 
-    public class PD_UserAddFriend : IPacketData
+    public class PD_AccountDisconnected : IPacketData
     {
         public string name;
     }
 
-    public class PD_UserRemoveFriend : IPacketData
+    public class PD_AccountAddFriend : IPacketData
     {
         public string name;
     }
 
-    public class PD_UserAddCharacter : IPacketData
+    public class PD_AccountRemoveFriend : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_AccountAddCharacter : IPacketData
     {
         public string name;
         public Character.Race race;
@@ -133,7 +153,7 @@ namespace WOC_Core
         public int life;
     }
 
-    public class PD_UserModifyCharacter : IPacketData
+    public class PD_AccountModifyCharacter : IPacketData
     {
         public string name;
         public Character.Race race;
@@ -141,12 +161,12 @@ namespace WOC_Core
         public int life;
     }
 
-    public class PD_UserDeleteCharacter : IPacketData
+    public class PD_AccountDeleteCharacter : IPacketData
     {
         public string name;
     }
 
-    public class PD_UserSetDefaultCharacter : IPacketData
+    public class PD_AccountSetDefaultCharacter : IPacketData
     {
         public string name;
     }
@@ -227,86 +247,86 @@ namespace WOC_Core
     public class PD_SessionShutdown : IPacketData { }
 
 
-    public class PD_SessionConnect : IPacketData
-    {
-        public string name;
-    }
-    public class PD_SessionDisconnect : IPacketData
-    {
-        public string name;
-    }
+    //public class PD_SessionConnect : IPacketData
+    //{
+    //    public string name;
+    //}
+    //public class PD_SessionDisconnect : IPacketData
+    //{
+    //    public string name;
+    //}
 
-    public class PD_NameModify : IPacketData
-    {
-        public string oldName;
-        public string newName;
-    }
-    public class PD_Chat : IPacketData
-    {
-        public string senderName;
-        public string message;
-    }
+    //public class PD_NameModify : IPacketData
+    //{
+    //    public string oldName;
+    //    public string newName;
+    //}
+    //public class PD_Chat : IPacketData
+    //{
+    //    public string senderName;
+    //    public string message;
+    //}
 
-    public class PD_RoomJoin : IPacketData
-    {
-        public string playerName;
-        public string roomName;
-        public int randomSeed;
-        public bool create;
-    }
-    public class PD_RoomLeave : IPacketData
-    {
-        public string name;
-    }
-    public class PD_BattleStart : IPacketData { }
+    //public class PD_RoomJoin : IPacketData
+    //{
+    //    public string playerName;
+    //    public string roomName;
+    //    public int randomSeed;
+    //    public bool create;
+    //}
+    //public class PD_RoomLeave : IPacketData
+    //{
+    //    public string name;
+    //}
+    //public class PD_BattleStart : IPacketData { }
 
-    public class PD_RoomList : IPacketData
-    {
-        public List<string> rooms;
-    }
+    //public class PD_RoomList : IPacketData
+    //{
+    //    public List<string> rooms;
+    //}
     
-    public class PD_PlayerList : IPacketData
-    {
-        public string roomName;
-        public List<string> players;
-    }
-    public class PD_TurnEnd : IPacketData { }
+    //public class PD_PlayerList : IPacketData
+    //{
+    //    public string roomName;
+    //    public List<string> players;
+    //}
+    //public class PD_TurnEnd : IPacketData { }
 
-    public class PD_PNJAdd : IPacketData
-    {
-        public string name;
-        public int life;
-        public Character.Race race;
-        public Character.Category category;
-        public int initiative;
-    }
+    //public class PD_PNJAdd : IPacketData
+    //{
+    //    public string name;
+    //    public int life;
+    //    public Character.Race race;
+    //    public Character.Category category;
+    //    public int initiative;
+    //}
 
-    public class PD_BattlePlayerAdd : IPacketData
-    {
-        public string playerName;
-        public string oldCharacterName;
-        public string newCharacterName;
-    }
+    //public class PD_BattlePlayerAdd : IPacketData
+    //{
+    //    public string playerName;
+    //    public string oldCharacterName;
+    //    public string newCharacterName;
+    //}
 
-    public class PD_SessionPlayerAdd : IPacketData
-    {
-        public string               name;
-        public Character.Race       charaRace;
-        public Character.Category   charaCategory;
-        public int                  charaLife;
-        public string               charaName;
-        public int                  handStartCount;
-        public List<string>         cardsName;
-        public int                  aggroIncrement;
-        public int                  manaMax;
-    }
+    //public class PD_SessionPlayerAdd : IPacketData
+    //{
+    //    public string               name;
+    //    public Character.Race       charaRace;
+    //    public Character.Category   charaCategory;
+    //    public int                  charaLife;
+    //    public string               charaName;
+    //    public int                  handStartCount;
+    //    public List<string>         cardsName;
+    //    public int                  aggroIncrement;
+    //    public int                  manaMax;
+    //}
 
 
-    public class PD_CardPlayed : IPacketData
-    {
-        public string ownerName;
-        public string targetName;
-        public int cardIndex;
-        public string cardName;
-    }
+    //public class PD_CardPlayed : IPacketData
+    //{
+    //    public string ownerName;
+    //    public string targetName;
+    //    public int cardIndex;
+    //    public string cardName;
+    //}
 }

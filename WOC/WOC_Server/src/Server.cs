@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using WOC_Core;
-
+using System.Collections.Concurrent;
 
 namespace WOC_Server
 {
@@ -21,6 +21,13 @@ namespace WOC_Server
 
         private CancellationToken token;
         public SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
+
+
+        public ConcurrentDictionary<string, WOC_Core.Account> users = new ConcurrentDictionary<string, WOC_Core.Account>();
+
+
+
+
 
         public List<BattleRoom> battleRooms = new List<BattleRoom>();
 
@@ -54,12 +61,12 @@ namespace WOC_Server
 
                         ServerSession session = new ServerSession(this);
                         session.Connect(client);
-                        Broadcast(new PD_SessionConnect { name = session.Name }, null, true).Wait();
+                        //Broadcast(new PD_SessionConnect { name = session.Name }, null, true).Wait();
                         session.OnDisconnect += () =>
                         {
                             sessions.Remove(session);
                             battleRooms.ForEach(r => r.Remove(session));
-                            Broadcast(new PD_SessionDisconnect { name = session.Name }, null, true).Wait();
+                            //Broadcast(new PD_SessionDisconnect { name = session.Name }, null, true).Wait();
                             LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
                         };
                         sessions.Add(session);

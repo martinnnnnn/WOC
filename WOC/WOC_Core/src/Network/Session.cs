@@ -11,7 +11,7 @@ namespace WOC_Core
 {
     public class Session
     {
-        public string Name = "new player";
+        public Account account;
 
         public string ServerIP;
         public int ServerPort;

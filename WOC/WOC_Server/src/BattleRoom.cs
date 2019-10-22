@@ -27,7 +27,7 @@ namespace WOC_Server
 
         public void ForEach(Action<ServerSession> p) => sessions.ToList().ForEach(p);
 
-        public List<string> PlayerList { get => sessions.Select(s => s.Name).ToList(); }
+        //public List<string> PlayerList { get => sessions.Select(s => s.Name).ToList(); }
 
         public BattleRoom(string name, TCPServer server, int randomSeed)
         {

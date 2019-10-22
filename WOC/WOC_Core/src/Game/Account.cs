@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace WOC_Core
 {
-    class User
+    public class Account
     {
         public string email;
         public string password;
         public string name;
 
-        public PlayerActor actor;
+        public bool connected = false;
+        public PlayerActor actor = null;
         public List<Character> characters = new List<Character>();
 
         // game history stats

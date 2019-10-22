@@ -66,117 +66,128 @@ namespace Playground
                 { new string[1] { "help" }, (arg) => Help() },
                 { new string[1] { "exit" }, (arg) => exit = true },
 
-                // NAME
-                { new string[1] { "name" }, (arg) => LOG.Print("[CLIENT] Your name is {0}.", session.Name) },
-                { new string[2] { "name", "change" }, (arg) =>
-                    {
-                        if (arg.Length == 0)
-                        {
-                            LOG.Print("[PLAYGROUND] You need to specify a name.");
-                            return;
-                        }
-                        session.SendAsync(new PD_NameModify { oldName = session.Name, newName = arg[0] }).Wait();
-                        session.Name = arg[0];
-                    }
-                },
+                { new string[1] { "/" }, (arg) => Chat(arg) },
 
-                // SERVER
-                { new string[2] { "server", "connect" }, (arg) => session.Connect(serverIp, 54001) },
-                { new string[2] { "server", "disconnect" }, (arg) =>
-                {
-                    session.SendClose().Wait();
-                    session.Close();
-                }},
+                //PD_UserMake
+                { new string[2] { "account", "make" }, (arg) => AccountMake(arg) },
+                { new string[2] { "account", "modify" }, (arg) => AccountModify(arg) },
+                { new string[2] { "account", "connect" }, (arg) => AccountConnect(arg) },
 
-                // ROOM
-                { new string[2] { "room", "make" }, (arg) =>
-                {
-                    RoomJoin(arg, true);
-                }},
-                { new string[2] { "room", "join" }, (arg) =>
-                {
-                    RoomJoin(arg, false);
 
-                }},
-                { new string[2] { "room", "leave" }, (arg) => session.SendAsync(new PD_RoomLeave { name = session.Name }).Wait() },
-                { new string[2] { "room", "list" }, (arg) => session.SendAsync(new PD_RoomList { }).Wait() },
-                { new string[2] { "room", "delete" }, (arg) => LOG.Print("[CLIENT] Room deletion not supported yet.") },
+                //PD_AccountModify
 
-                // PLAYER
-                { new string[2] { "player", "list" }, (arg) => session.SendAsync(new PD_PlayerList { roomName = (arg.Length > 0) ? arg[0] : "" }).Wait() },
-                { new string[2] { "player", "add" }, (arg) =>
-                {
-                    AddPlayer(arg);
+
+                //// NAME
+                //{ new string[1] { "name" }, (arg) => LOG.Print("[CLIENT] Your name is {0}.", session.Name) },
+                //{ new string[2] { "name", "change" }, (arg) =>
+                //    {
+                //        if (arg.Length == 0)
+                //        {
+                //            LOG.Print("[PLAYGROUND] You need to specify a name.");
+                //            return;
+                //        }
+                //        session.SendAsync(new PD_NameModify { oldName = session.Name, newName = arg[0] }).Wait();
+                //        session.Name = arg[0];
+                //    }
+                //},
+
+                //// SERVER
+                //{ new string[2] { "server", "connect" }, (arg) => session.Connect(serverIp, 54001) },
+                //{ new string[2] { "server", "disconnect" }, (arg) =>
+                //{
+                //    session.SendClose().Wait();
+                //    session.Close();
+                //}},
+
+                //// ROOM
+                //{ new string[2] { "room", "make" }, (arg) =>
+                //{
+                //    RoomJoin(arg, true);
+                //}},
+                //{ new string[2] { "room", "join" }, (arg) =>
+                //{
+                //    RoomJoin(arg, false);
+
+                //}},
+                //{ new string[2] { "room", "leave" }, (arg) => session.SendAsync(new PD_RoomLeave { name = session.Name }).Wait() },
+                //{ new string[2] { "room", "list" }, (arg) => session.SendAsync(new PD_RoomList { }).Wait() },
+                //{ new string[2] { "room", "delete" }, (arg) => LOG.Print("[CLIENT] Room deletion not supported yet.") },
+
+                //// PLAYER
+                //{ new string[2] { "player", "list" }, (arg) => session.SendAsync(new PD_PlayerList { roomName = (arg.Length > 0) ? arg[0] : "" }).Wait() },
+                //{ new string[2] { "player", "add" }, (arg) =>
+                //{
+                //    AddPlayer(arg);
                     
-                }},
+                //}},
 
-                // BATTLE
-                { new string[2] { "battle", "start" }, (arg) =>
-                {
-                    if (session.room == null)
-                    {
-                        LOG.Print("[PLAYGROUND] You are not in a room ; starting a battle is not possible.");
-                        return;
-                    }
+                //// BATTLE
+                //{ new string[2] { "battle", "start" }, (arg) =>
+                //{
+                //    if (session.room == null)
+                //    {
+                //        LOG.Print("[PLAYGROUND] You are not in a room ; starting a battle is not possible.");
+                //        return;
+                //    }
 
-                    if (session.room.battle.Start())
-                    {
-                        if (session.room.battle.GetCurrentActor() == session.room.actor)
-                        {
-                            LOG.Print("[PLAYGROUND] It's my turn !");
-                        }
-                        session.SendAsync(new PD_BattleStart()).Wait();
-                    }
-                }
-                },
-                { new string[3] { "battle", "add", "pnj" }, (arg) =>
-                {
-                    AddPNJ(arg);
-                }},
+                //    if (session.room.battle.Start())
+                //    {
+                //        if (session.room.battle.GetCurrentActor() == session.room.actor)
+                //        {
+                //            LOG.Print("[PLAYGROUND] It's my turn !");
+                //        }
+                //        session.SendAsync(new PD_BattleStart()).Wait();
+                //    }
+                //}
+                //},
+                //{ new string[3] { "battle", "add", "pnj" }, (arg) =>
+                //{
+                //    AddPNJ(arg);
+                //}},
 
-                { new string[3] { "battle", "add", "player" }, (arg) =>
-                {
-                    PlayerActor actor = session.actors.Find(a => a.Chara.Name == arg[0]);
-                    if (arg.Length == 0 || actor == null)
-                    {
-                        LOG.Print("[PLAYGROUND] No character with this name.");
-                        return;
-                    }
-                    if (session.room == null)
-                    {
-                        LOG.Print("[PLAYGROUND] You're not in a room yet.");
-                        return;
-                    }
+                //{ new string[3] { "battle", "add", "player" }, (arg) =>
+                //{
+                //    PlayerActor actor = session.actors.Find(a => a.Chara.Name == arg[0]);
+                //    if (arg.Length == 0 || actor == null)
+                //    {
+                //        LOG.Print("[PLAYGROUND] No character with this name.");
+                //        return;
+                //    }
+                //    if (session.room == null)
+                //    {
+                //        LOG.Print("[PLAYGROUND] You're not in a room yet.");
+                //        return;
+                //    }
 
-                    string oldCharacterName = "";
-                    if (session.room.actor !=  null)
-                    {
-                        session.room.battle.Actors.Remove(actor);
-                    }
+                //    string oldCharacterName = "";
+                //    if (session.room.actor !=  null)
+                //    {
+                //        session.room.battle.Actors.Remove(actor);
+                //    }
 
-                    session.room.actor = actor;
-                    session.room.battle.Add(actor);
-                    session.SendAsync(new PD_BattlePlayerAdd
-                    {
-                        playerName = actor.Name,
-                        characterName = actor.Chara.Name
-                    }).Wait();
-                }},
+                //    session.room.actor = actor;
+                //    session.room.battle.Add(actor);
+                //    session.SendAsync(new PD_BattlePlayerAdd
+                //    {
+                //        playerName = actor.Name,
+                //        characterName = actor.Chara.Name
+                //    }).Wait();
+                //}},
 
-                // TURN
-                { new string[2] { "turn", "play" }, (arg) => PlayCard() },
-                { new string[2] { "turn", "end" }, (arg) =>
-                {
-                    if (session.room.actor.EndTurn())
-                    {
-                        session.room.battle.NextActor().StartTurn();
-                        if (session.room.battle.GetCurrentActor() == session.room.actor)
-                        {
-                            LOG.Print("[PLAYGROUND] It's my turn !");
-                        }
-                        session.SendAsync(new PD_TurnEnd()).Wait();
-                    }
-                }},
+                //// TURN
+                //{ new string[2] { "turn", "play" }, (arg) => PlayCard() },
+                //{ new string[2] { "turn", "end" }, (arg) =>
+                //{
+                //    if (session.room.actor.EndTurn())
+                //    {
+                //        session.room.battle.NextActor().StartTurn();
+                //        if (session.room.battle.GetCurrentActor() == session.room.actor)
+                //        {
+                //            LOG.Print("[PLAYGROUND] It's my turn !");
+                //        }
+                //        session.SendAsync(new PD_TurnEnd()).Wait();
+                //    }
+                //}},
             };
 
             while (!exit)
@@ -189,38 +200,147 @@ namespace Playground
                     arg.Add(input.Last());
                     input.RemoveAt(input.Count - 1);
                 }
-                if (input.Count == 0)
+                //if (input.Count > 0)
                 {
                     arg.Reverse();
-                    session.SendAsync(new PD_Chat
+                    bool result = commands.TryGetValue(input.ToArray(), out Action<string[]> action);
+                    if (result)
                     {
-                        senderName = session.Name,
-                        message = string.Join(" ", arg)
-                    }).Wait();
-                }
-                else
-                {
-                    arg.Reverse();
-                    commands[input.ToArray()](arg.ToArray());
+                        action(arg.ToArray());
+                    }
+                    else
+                    {
+                        LOG.Print("[PLAYGROUND] Invalid command");
+                    }
                 }
             }
         }
 
-        static void RoomJoin(string[] args, bool create)
+        static void AccountMake(string[] args)
         {
-            if (args.Length == 0)
+            string accEmail = "";
+            string accPassord = "";
+            string accName = "";
+
+            foreach (string arg in args)
             {
-                LOG.Print("[PLAYGROUND] You need to specify a name for the room.");
-                return;
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "email":
+                        accEmail = parameter[1];
+                        break;
+                    case "password":
+                        accPassord = parameter[1];
+                        break;
+                    case "name":
+                        accName = parameter[1];
+                        break;
+                }
             }
-            
-            session.SendAsync(new PD_RoomJoin
+
+            session.account = new Account()
             {
-                playerName = session.Name,
-                roomName = args[0],
-                create = create
-            }).Wait();
+                email = accEmail,
+                password = accPassord,
+                name = accName
+            };
+            session.SendAsync(new PD_AccountMake { email = accEmail, password = accPassord, name = accName }).Wait();
         }
+
+        static void AccountModify(string[] args)
+        {
+            string accEmail = "";
+            string accPassord = "";
+            string accName = "";
+
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "email":
+                        accEmail = parameter[1];
+                        break;
+                    case "password":
+                        accPassord = parameter[1];
+                        break;
+                    case "name":
+                        accName = parameter[1];
+                        break;
+                }
+            }
+
+            session.SendAsync(new PD_AccountModify
+            {
+                oldEmail = session.account.email,
+                oldPassword = session.account.password,
+                oldName = session.account.name,
+                newEmail = accEmail,
+                newPassword = accPassord,
+                newName = accName
+            }).Wait();
+
+            if (!String.IsNullOrEmpty(accEmail))
+            {
+                session.account.email = accEmail;
+            }
+            if (!String.IsNullOrEmpty(accPassord))
+            {
+                session.account.password = accPassord;
+            }
+            if (!String.IsNullOrEmpty(accName))
+            {
+                session.account.name = accName;
+            }
+        }
+
+        static void AccountConnect(string[] args)
+        {
+            if (session.account != null)
+            {
+                session.SendAsync(new PD_AccountConnect { email = session.account.email, password = session.account.password }).Wait();
+            }
+            else
+            {
+                LOG.Print("[PLAYGROUND] You need to create a account first.");
+            }
+        }
+
+        static void Chat(string[] args)
+        {
+            if (session.account != null && session.account.connected)
+            {
+                session.SendAsync(new PD_ServerChat
+                {
+                    senderName = session.account.name,
+                    message = string.Join(" ", args)
+                }).Wait();
+            }
+            else
+            {
+                LOG.Print("You need to be connected to chat.");
+            }
+        }
+
+
+
+
+        //static void RoomJoin(string[] args, bool create)
+        //{
+        //    if (args.Length == 0)
+        //    {
+        //        LOG.Print("[PLAYGROUND] You need to specify a name for the room.");
+        //        return;
+        //    }
+
+        //    session.SendAsync(new PD_RoomJoin
+        //    {
+        //        playerName = session.Name,
+        //        roomName = args[0],
+        //        create = create
+        //    }).Wait();
+        //}
 
         static void Help()
         {
@@ -249,190 +369,190 @@ namespace Playground
         }
 
 
-        static void AddPlayer(string[] args)
-        {
-            //character
-            string charaName = "default name";
-            int life = 10;
-            Character.Race race = Character.Race.ELFE;
-            Character.Category category = Character.Category.BARBARIAN;
+        //static void AddPlayer(string[] args)
+        //{
+        //    //character
+        //    string charaName = "default name";
+        //    int life = 10;
+        //    Character.Race race = Character.Race.ELFE;
+        //    Character.Category category = Character.Category.BARBARIAN;
 
-            int handStartingCount = 2;
-            int aggroIncrement = 2;
-            int manaMax = 2;
+        //    int handStartingCount = 2;
+        //    int aggroIncrement = 2;
+        //    int manaMax = 2;
 
-            foreach (string arg in args)
-            {
-                string[] parameter = arg.Split('=');
-                switch (parameter[0])
-                {
-                    case "name":
-                        charaName = parameter[1];
-                        break;
-                    case "life":
-                        int.TryParse(parameter[1], out life);
-                        break;
-                    case "race":
-                        Enum.TryParse(parameter[1], true, out race);
-                        break;
-                    case "category":
-                        Enum.TryParse(parameter[1], true, out category);
-                        break;
-                    case "hand":
-                        int.TryParse(parameter[1], out handStartingCount);
-                        break;
-                    case "aggro":
-                        int.TryParse(parameter[1], out aggroIncrement);
-                        break;
-                    case "mana":
-                        int.TryParse(parameter[1], out manaMax);
-                        break;
-                }
-            }
+        //    foreach (string arg in args)
+        //    {
+        //        string[] parameter = arg.Split('=');
+        //        switch (parameter[0])
+        //        {
+        //            case "name":
+        //                charaName = parameter[1];
+        //                break;
+        //            case "life":
+        //                int.TryParse(parameter[1], out life);
+        //                break;
+        //            case "race":
+        //                Enum.TryParse(parameter[1], true, out race);
+        //                break;
+        //            case "category":
+        //                Enum.TryParse(parameter[1], true, out category);
+        //                break;
+        //            case "hand":
+        //                int.TryParse(parameter[1], out handStartingCount);
+        //                break;
+        //            case "aggro":
+        //                int.TryParse(parameter[1], out aggroIncrement);
+        //                break;
+        //            case "mana":
+        //                int.TryParse(parameter[1], out manaMax);
+        //                break;
+        //        }
+        //    }
 
-            PlayerActor actor = new PlayerActor(new Character(race, category, life), handStartingCount, session.Name, aggroIncrement, manaMax);
-            session.actors.Add(actor);
+        //    PlayerActor actor = new PlayerActor(new Character(race, category, life), handStartingCount, session.Name, aggroIncrement, manaMax);
+        //    session.actors.Add(actor);
 
-            session.SendAsync(new PD_SessionPlayerAdd
-            {
-                name = actor.Name,
-                charaRace = actor.character.race,
-                charaCategory = actor.character.category,
-                charaLife = (int)actor.character.Life,
-                charaName = actor.character.Name,
-                handStartCount = actor.hand.StartingCount,
-                cardsName = actor.deck.Select(c => c.name).ToList(),
-                aggroIncrement = (int)actor.aggro.IncrementRatio,
-                manaMax = actor.mana.Max
-            }).Wait();
-        }
+        //    session.SendAsync(new PD_SessionPlayerAdd
+        //    {
+        //        name = actor.Name,
+        //        charaRace = actor.character.race,
+        //        charaCategory = actor.character.category,
+        //        charaLife = (int)actor.character.Life,
+        //        charaName = actor.character.Name,
+        //        handStartCount = actor.hand.StartingCount,
+        //        cardsName = actor.deck.Select(c => c.name).ToList(),
+        //        aggroIncrement = (int)actor.aggro.IncrementRatio,
+        //        manaMax = actor.mana.Max
+        //    }).Wait();
+        //}
 
 
 
-        static void AddPNJ(string[] args)
-        {
-            if (session.room == null)
-            {
-                LOG.Print("[PLAYGROUND] You need to be in a room to do that");
-                return;
-            }
+        //static void AddPNJ(string[] args)
+        //{
+        //    if (session.room == null)
+        //    {
+        //        LOG.Print("[PLAYGROUND] You need to be in a room to do that");
+        //        return;
+        //    }
 
-            string name = "default pnj name";
-            int life = 10;
-            Character.Race race = Character.Race.ELFE;
-            Character.Category category = Character.Category.BARBARIAN;
-            int initiative = 10;
-            foreach (string arg in args)
-            {
-                string[] parameter = arg.Split('=');
-                switch (parameter[0])
-                {
-                    case "name":
-                        name = parameter[1];
-                        break;
-                    case "race":
-                        Enum.TryParse(parameter[1], true, out race);
-                        break;
-                    case "category":
-                        Enum.TryParse(parameter[1], true, out category);
-                        break;
-                    case "life":
-                        int.TryParse(parameter[1], out life);
-                        break;
-                    case "initiative":
-                        int.TryParse(parameter[1], out initiative);
-                        break;
-                }
-            }
-            var pnj = new PNJActor(new Character(race, category, life), name, initiative);
+        //    string name = "default pnj name";
+        //    int life = 10;
+        //    Character.Race race = Character.Race.ELFE;
+        //    Character.Category category = Character.Category.BARBARIAN;
+        //    int initiative = 10;
+        //    foreach (string arg in args)
+        //    {
+        //        string[] parameter = arg.Split('=');
+        //        switch (parameter[0])
+        //        {
+        //            case "name":
+        //                name = parameter[1];
+        //                break;
+        //            case "race":
+        //                Enum.TryParse(parameter[1], true, out race);
+        //                break;
+        //            case "category":
+        //                Enum.TryParse(parameter[1], true, out category);
+        //                break;
+        //            case "life":
+        //                int.TryParse(parameter[1], out life);
+        //                break;
+        //            case "initiative":
+        //                int.TryParse(parameter[1], out initiative);
+        //                break;
+        //        }
+        //    }
+        //    var pnj = new PNJActor(new Character(race, category, life), name, initiative);
 
-            if (!session.room.battle.Add(pnj))
-            {
-                LOG.Print("[PLAYGROUND] A PNJ with this name already exists.");
-                return;
-            }
+        //    if (!session.room.battle.Add(pnj))
+        //    {
+        //        LOG.Print("[PLAYGROUND] A PNJ with this name already exists.");
+        //        return;
+        //    }
 
-            session.SendAsync(new PD_PNJAdd
-            {
-                name = name,
-                life = life,
-                race = race,
-                category = category,
-                initiative = initiative
-            }).Wait();
-        }
+        //    session.SendAsync(new PD_PNJAdd
+        //    {
+        //        name = name,
+        //        life = life,
+        //        race = race,
+        //        category = category,
+        //        initiative = initiative
+        //    }).Wait();
+        //}
 
-        static void PlayCard()
-        {
-            if (session.room == null)
-            {
-                LOG.Print("[PLAYGROUND] You need to be in a room to do that.");
-                return;
-            }
+        //static void PlayCard()
+        //{
+        //    if (session.room == null)
+        //    {
+        //        LOG.Print("[PLAYGROUND] You need to be in a room to do that.");
+        //        return;
+        //    }
 
-            if (session.room.battle.HasStarted)
-            {
-                LOG.Print("[PLAYGROUND] The battle has not started yet.");
-                return;
-            }
+        //    if (session.room.battle.HasStarted)
+        //    {
+        //        LOG.Print("[PLAYGROUND] The battle has not started yet.");
+        //        return;
+        //    }
 
-            Battle battle = session.room.battle;
-            PlayerActor actor = session.room.actor;
-            Card card;
-            if (actor != battle.GetCurrentActor())
-            {
-                LOG.Print("[BATTLE] It's not your turn !");
-                return;
-            }
-            if (actor.hand.Count == 0)
-            {
-                LOG.Print("[BATTLE] No more cards left !");
-                return;
-            }
+        //    Battle battle = session.room.battle;
+        //    PlayerActor actor = session.room.actor;
+        //    Card card;
+        //    if (actor != battle.GetCurrentActor())
+        //    {
+        //        LOG.Print("[BATTLE] It's not your turn !");
+        //        return;
+        //    }
+        //    if (actor.hand.Count == 0)
+        //    {
+        //        LOG.Print("[BATTLE] No more cards left !");
+        //        return;
+        //    }
 
-            int cardIndex = -1;
-            do
-            {
-                Console.Write("> Hand : {0}\n> What's your move (-1 to cancel)? ", string.Join(", ", actor.hand.AsArray().Select(c => c.name).ToArray()));
-                bool result = int.TryParse(Console.ReadLine(), out cardIndex);
-                card = actor.hand.Get(cardIndex);
-                if (card == null && cardIndex != -1)
-                {
-                    LOG.Print("You need to give me a valid index !");
-                }
-            } while (card == null && cardIndex != -1);
+        //    int cardIndex = -1;
+        //    do
+        //    {
+        //        Console.Write("> Hand : {0}\n> What's your move (-1 to cancel)? ", string.Join(", ", actor.hand.AsArray().Select(c => c.name).ToArray()));
+        //        bool result = int.TryParse(Console.ReadLine(), out cardIndex);
+        //        card = actor.hand.Get(cardIndex);
+        //        if (card == null && cardIndex != -1)
+        //        {
+        //            LOG.Print("You need to give me a valid index !");
+        //        }
+        //    } while (card == null && cardIndex != -1);
 
-            bool cardPlayed = false;
-            int targetIndex = -1;
-            while (!cardPlayed)
-            {
-                Console.Write("> Potential targets : {0}\nWho is your target (-1 to cancel)?", string.Join(", ", battle.Actors.Select(a => a.character.Name).ToArray()));
-                bool result = int.TryParse(Console.ReadLine(), out targetIndex);
-                if (targetIndex == -1)
-                {
-                    break;
-                }
-                if ((targetIndex < 0 || targetIndex >= battle.Actors.Count) && targetIndex != -1)
-                {
-                    LOG.Print("You need to give me a valid index !");
-                }
-                else if (targetIndex != -1)
-                {
-                    Character target = battle.Actors[targetIndex].character;
-                    cardPlayed = actor.PlayCard(card, battle.Actors[targetIndex].character);
-                    if (cardPlayed)
-                    {
-                        session.SendAsync(new PD_CardPlayed
-                        {
-                            ownerName = actor.Name,
-                            targetName = target.Name,
-                            cardIndex = cardIndex,
-                            cardName = card.name
-                        }).Wait();
-                    }
-                }
-            }
-        }
+        //    bool cardPlayed = false;
+        //    int targetIndex = -1;
+        //    while (!cardPlayed)
+        //    {
+        //        Console.Write("> Potential targets : {0}\nWho is your target (-1 to cancel)?", string.Join(", ", battle.Actors.Select(a => a.character.Name).ToArray()));
+        //        bool result = int.TryParse(Console.ReadLine(), out targetIndex);
+        //        if (targetIndex == -1)
+        //        {
+        //            break;
+        //        }
+        //        if ((targetIndex < 0 || targetIndex >= battle.Actors.Count) && targetIndex != -1)
+        //        {
+        //            LOG.Print("You need to give me a valid index !");
+        //        }
+        //        else if (targetIndex != -1)
+        //        {
+        //            Character target = battle.Actors[targetIndex].character;
+        //            cardPlayed = actor.PlayCard(card, battle.Actors[targetIndex].character);
+        //            if (cardPlayed)
+        //            {
+        //                session.SendAsync(new PD_CardPlayed
+        //                {
+        //                    ownerName = actor.Name,
+        //                    targetName = target.Name,
+        //                    cardIndex = cardIndex,
+        //                    cardName = card.name
+        //                }).Wait();
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
 
