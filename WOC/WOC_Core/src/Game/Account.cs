@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,5 +22,12 @@ namespace WOC_Core
 
         public Session session = null;
         // game history stats
+
+        public void SetDefaultCharacter(string name)
+        {
+            defaultCharacter = characters.Find(c => c.Name == name);
+            Debug.Assert(defaultCharacter != null);
+        }
+
     }
 }

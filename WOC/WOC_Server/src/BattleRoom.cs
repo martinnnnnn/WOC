@@ -89,7 +89,7 @@ namespace WOC_Server
             server.battleRooms.Remove(this);
         }
 
-        public async Task Broadcast(string msg, Session toIgnore = null)
+        public async Task Broadcast(IPacketData data, Session toIgnore = null)
         {
             List<Task> tasks = new List<Task>();
 
@@ -97,15 +97,10 @@ namespace WOC_Server
             {
                 if (toIgnore == null || session != toIgnore)
                 {
-                    tasks.Add(session.SendAsync(msg));
+                    tasks.Add(session.SendAsync(data));
                 }
             }
             await Task.WhenAll(tasks);
-        }
-
-        public async Task Broadcast(IPacketData data, Session toIgnore = null)
-        {
-            await Broadcast(Serialization.ToJson(data), toIgnore);
         }
     }
 }

@@ -153,16 +153,14 @@ namespace Playground
             LOG.Print("Player {0} deleted.", data.name);
         }
 
-
         public void HandleAPICall(PD_AccountAddFriend data)
         {
             account.friends.Add(data.name);
         }
         public void HandleAPICall(PD_AccountRemoveFriend data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account.friends.Remove(data.name);
         }
-
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,40 +172,53 @@ namespace Playground
             {
                 email = data.email,
                 password = data.password,
-                name = data.name
+                name = data.name,
+                connected = true
             };
         }
 
         public void HandleAPICall(PD_AccountModify data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            if (!String.IsNullOrEmpty(data.newEmail))
+            {
+                account.email = data.newEmail;
+            }
+            if (!String.IsNullOrEmpty(data.newPassword))
+            {
+                account.password = data.newEmail;
+            }
+            if (!String.IsNullOrEmpty(data.newName))
+            {
+                account.name = data.newName;
+            }
         }
 
         public void HandleAPICall(PD_AccountDelete data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account = null;
         }
 
         public void HandleAPICall(PD_AccountConnect data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account.connected = true;
         }
 
         public void HandleAPICall(PD_AccountDisconnect data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account.connected = false;
+            LOG.Print("[CLIENT] Disconnected");
         }
         public void HandleAPICall(PD_AccountAddCharacter data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account.characters.Add(new Character(data.race, data.category, data.life, data.name));
         }
         public void HandleAPICall(PD_AccountDeleteCharacter data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account.characters.RemoveAll(c => c.Name == data.name);
         }
         public void HandleAPICall(PD_AccountSetDefaultCharacter data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account.SetDefaultCharacter(data.name);
         }
 
         public void HandleAPICall(PD_ServerMakeRoom data)

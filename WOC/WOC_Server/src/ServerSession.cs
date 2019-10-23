@@ -98,20 +98,28 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountMake data)
         {
+            Debug.Assert(account == null);
+
             if (String.IsNullOrEmpty(data.email) || String.IsNullOrEmpty(data.password) || String.IsNullOrEmpty(data.name))
             {
                 SendAsync(new PD_Validation(data.id,"Not enough info to create acount.")).Wait();
                 return;
             }
 
-            bool result = server.users.TryAdd(data.email, new Account()
+            account = new Account()
             {
                 email = data.email,
                 password = data.password,
-                name = data.name
-            });
+                name = data.name,
+                connected = true,
+                session = this
+            };
 
-            SendAsync(new PD_Validation(data.id, result ? "" : "This email is already used.")).Wait();
+            bool result = server.users.TryAdd(data.email, account);
+
+            if (!result) account = null;
+
+            SendAsync(new PD_Validation(data.id, result ? "" : "This email is already used."), true).Wait();
         }
 
         public void HandleAPICall(PD_AccountModify data)
@@ -228,7 +236,7 @@ namespace WOC_Server
                 errorMessage = "Could not find matching email.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            SendAsync(new PD_Validation(data.id, errorMessage), true).Wait();
         }
 
         public void HandleAPICall(PD_AccountAddFriend data)
@@ -295,6 +303,8 @@ namespace WOC_Server
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
+        //TODO send validation for chat
+        //TODO chat with friends / room / all
         public void HandleAPICall(PD_ServerChat data)
         {
             try
@@ -327,20 +337,23 @@ namespace WOC_Server
         {
             if (!AssureConnected(data.id)) return;
 
+            string errorMessage = "";
             if (account.characters.FirstOrDefault(c => c.Name == data.name) == null)
             {
                 account.characters.Add(new Character(data.race, data.category, data.life, data.name));
             }
             else
             {
-                SendAsync(new PD_Validation(data.id, "Character name already exists in your roster.")).Wait();
+                errorMessage = "Character name already exists in your roster.";
             }
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
         public void HandleAPICall(PD_AccountDeleteCharacter data)
         {
             if (!AssureConnected(data.id)) return;
 
+            string errorMessage = "";
             var toRemove = account.characters.FirstOrDefault(c => c.Name == data.name);
             if (toRemove != null)
             {
@@ -348,16 +361,17 @@ namespace WOC_Server
             }
             else
             {
-                SendAsync(new PD_Validation(data.id, "Character name could not be found in your roster")).Wait();
+                errorMessage = "Character name could not be found in your roster.";
             }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
         public void HandleAPICall(PD_AccountSetDefaultCharacter data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
+
+            string errorMessage = "";
 
             var toDefault = account.characters.FirstOrDefault(c => c.Name == data.name);
             if (toDefault != null)
@@ -366,8 +380,10 @@ namespace WOC_Server
             }
             else
             {
-                SendAsync(new PD_Validation(data.id, "Character name could not be found in your roster.")).Wait();
+                errorMessage = "Character name could not be found in your roster.";
             }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
         public void HandleAPICall(PD_ServerMakeRoom data)

@@ -134,29 +134,24 @@ namespace WOC_Server
         }
 
 
-        public async Task Broadcast(string msg, Session toIgnore = null, bool toAll = false)
+        public async Task Broadcast(IPacketData data, Session toIgnore = null, bool toAll = false)
         {
             List<Task> tasks = new List<Task>();
             
             if (toAll)
             {
-                battleRooms.ForEach(r => tasks.Add(r.Broadcast(msg, toIgnore)));
+                battleRooms.ForEach(r => tasks.Add(r.Broadcast(data, toIgnore)));
             }
 
             foreach (Session session in sessions)
             {
                 if (toIgnore == null || session != toIgnore)
                 {
-                    tasks.Add(session.SendAsync(msg));
+                    tasks.Add(session.SendAsync(data));
                 }
             }
 
             await Task.WhenAll(tasks);
-        }
-
-        public async Task Broadcast(IPacketData data, Session toIgnore = null, bool toAll = false)
-        {
-            await Broadcast(Serialization.ToJson(data), toIgnore, toAll);
         }
     }
 }

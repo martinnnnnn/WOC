@@ -221,6 +221,12 @@ namespace Playground
                 }
             }
         }
+        static void SendWithValidation(IPacketData data, bool force = false)
+        {
+            Debug.Assert(session.awaitingValidations.TryAdd(data.id, data));
+            session.SendAsync(data, force).Wait();
+        }
+
 
         static void AccountMake(string[] args)
         {
@@ -247,21 +253,15 @@ namespace Playground
                 }
             }
 
-            SendWithValidation(new PD_AccountMake { email = accEmail, password = accPassord, name = accName });
+            SendWithValidation(new PD_AccountMake { email = accEmail, password = accPassord, name = accName }, true);
         }
 
-        static void SendWithValidation(IPacketData data)
-        {
-            Debug.Assert(session.awaitingValidations.TryAdd(data.id, data));
-            session.SendAsync(data).Wait();
-        }
 
         static void AccountDelete(string[] args)
         {
             if (!AssureConnected()) return;
 
-            session.account = null;
-            session.SendAsync(new PD_AccountDelete { email = session.account.email, password = session.account.password }).Wait();
+            SendWithValidation(new PD_AccountDelete { email = session.account.email, password = session.account.password });
         }
 
         static void AccountModify(string[] args)
@@ -289,7 +289,7 @@ namespace Playground
                 }
             }
 
-            session.SendAsync(new PD_AccountModify
+            SendWithValidation(new PD_AccountModify
             {
                 oldEmail = session.account.email,
                 oldPassword = session.account.password,
@@ -297,28 +297,14 @@ namespace Playground
                 newEmail = accEmail,
                 newPassword = accPassord,
                 newName = accName
-            }).Wait();
-
-            if (!String.IsNullOrEmpty(accEmail))
-            {
-                session.account.email = accEmail;
-            }
-            if (!String.IsNullOrEmpty(accPassord))
-            {
-                session.account.password = accPassord;
-            }
-            if (!String.IsNullOrEmpty(accName))
-            {
-                session.account.name = accName;
-            }
+            });
         }
 
         static void AccountConnect(string[] args)
         {
             if (session.account != null)
             {
-                session.account.connected = true;
-                session.SendAsync(new PD_AccountConnect { email = session.account.email, password = session.account.password }).Wait();
+                SendWithValidation(new PD_AccountConnect { email = session.account.email, password = session.account.password }, true);
             }
             else
             {
@@ -330,8 +316,7 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            session.account.connected = false;
-            session.SendAsync(new PD_AccountDisconnect { email = session.account.email }).Wait();
+            SendWithValidation(new PD_AccountDisconnect { email = session.account.email });
         }
 
         static void Chat(string[] args)
@@ -349,13 +334,9 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            if (session.account.friends.Find(f => f == args[0]) != default(string))
+            if (session.account.friends.Find(f => f == args[0]) == default(string))
             {
-                session.account.friends.Add(args[0]);
-                session.SendAsync(new PD_AccountAddFriend
-                {
-                    name = args[0],
-                }).Wait();
+                SendWithValidation(new PD_AccountAddFriend { name = args[0] });
             }
             else
             {
@@ -367,11 +348,14 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            session.account.friends.Remove(args[0]);
-            session.SendAsync(new PD_AccountRemoveFriend
+            if (session.account.friends.Find(f => f == args[0]) != default(string))
             {
-                name = args[0],
-            }).Wait();
+                SendWithValidation(new PD_AccountRemoveFriend { name = args[0] });
+            }
+            else
+            {
+                LOG.Print("You cannot delete a friend you don't have.");
+            }
         }
 
         static void CharacterAdd(string[] args)
@@ -403,15 +387,13 @@ namespace Playground
                 }
             }
 
-            session.account.characters.Add(new Character(inputRace, inputCategory, inputLife, inputName));
-
-            session.SendAsync(new PD_AccountAddCharacter
+            SendWithValidation(new PD_AccountAddCharacter
             {
                 name = inputName,
                 race = inputRace,
                 category = inputCategory,
                 life = inputLife
-            }).Wait();
+            });
         }
 
         static void CharacterDelete(string[] args)
@@ -421,11 +403,7 @@ namespace Playground
             var toRemove = session.account.characters.FirstOrDefault(c => c.Name == args[0]);
             if (toRemove != null)
             {
-                session.account.characters.Remove(toRemove);
-                session.SendAsync(new PD_AccountDeleteCharacter
-                {
-                    name = args[0],
-                }).Wait();
+                SendWithValidation(new PD_AccountDeleteCharacter { name = toRemove.Name });
             }
         }
         
@@ -436,11 +414,7 @@ namespace Playground
             var toDefault = session.account.characters.FirstOrDefault(c => c.Name == args[0]);
             if (toDefault != null)
             {
-                session.account.defaultCharacter = toDefault;
-                session.SendAsync(new PD_AccountSetDefaultCharacter
-                {
-                    name = toDefault.Name,
-                }).Wait();
+                SendWithValidation(new PD_AccountSetDefaultCharacter { name = toDefault.Name });
             }
         }
 
@@ -466,7 +440,7 @@ namespace Playground
         {
             if (session.account == null || !session.account.connected)
             {
-                LOG.Print("You need to be connected to add a friend.");
+                LOG.Print("You need to be connected to do this.");
                 return false;
             }
             return true;

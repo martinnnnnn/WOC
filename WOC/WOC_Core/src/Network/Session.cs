@@ -155,10 +155,17 @@ namespace WOC_Core
             }
         }
 
-        public async Task SendAsync(IPacketData data)
+        public async Task SendAsync(IPacketData data, bool force = false)
         {
-            LOG.Print("[NETWORK] Sending a packet : {0}", data);
-            await SendAsync(Serialization.ToJson(data));
+            if ((account != null && account.connected) || force)
+            {
+                LOG.Print("[NETWORK] Sending a packet : {0}", data);
+                await SendAsync(Serialization.ToJson(data));
+            }
+            else
+            {
+                LOG.Print("[NETWORK] Not authorized to send : {0}", data);
+            }
         }
         
         public async Task SendValidation(Guid toValidate, string errMessage = "")
