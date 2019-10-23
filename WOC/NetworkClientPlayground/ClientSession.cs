@@ -41,35 +41,50 @@ namespace Playground
                 case PD_AccountDeleted accountDeleted:
                     HandleAPICall(accountDeleted);
                     break;
-                case PD_AccountMake userMake:
-                    HandleAPICall(userMake);
+                case PD_AccountMake accountMake:
+                    HandleAPICall(accountMake);
                     break;
-                case PD_AccountModify userModify:
-                    HandleAPICall(userModify);
+                case PD_AccountModify accountModify:
+                    HandleAPICall(accountModify);
                     break;
-                case PD_AccountDelete userDelete:
-                    HandleAPICall(userDelete);
+                case PD_AccountDelete accountDelete:
+                    HandleAPICall(accountDelete);
                     break;
-                case PD_AccountConnect userConnect:
-                    HandleAPICall(userConnect);
+                case PD_AccountConnect accountConnect:
+                    HandleAPICall(accountConnect);
                     break;
-                case PD_AccountDisconnect userDisconnect:
-                    HandleAPICall(userDisconnect);
+                case PD_AccountDisconnect accountDisconnect:
+                    HandleAPICall(accountDisconnect);
                     break;
-                case PD_AccountAddFriend userAddFriend:
-                    HandleAPICall(userAddFriend);
+                case PD_AccountAddFriend accountAddFriend:
+                    HandleAPICall(accountAddFriend);
                     break;
-                case PD_AccountRemoveFriend userRemoveFriend:
-                    HandleAPICall(userRemoveFriend);
+                case PD_AccountRemoveFriend accountRemoveFriend:
+                    HandleAPICall(accountRemoveFriend);
                     break;
-                case PD_AccountAddCharacter userAddCharacter:
-                    HandleAPICall(userAddCharacter);
+                case PD_AccountAddCharacter accountAddCharacter:
+                    HandleAPICall(accountAddCharacter);
                     break;
-                case PD_AccountDeleteCharacter userDeleteCharacter:
-                    HandleAPICall(userDeleteCharacter);
+                case PD_AccountModifyCharacter accountModifyCharacter:
+                    HandleAPICall(accountModifyCharacter);
                     break;
-                case PD_AccountSetDefaultCharacter userSetDefaultCharacter:
-                    HandleAPICall(userSetDefaultCharacter);
+                case PD_AccountDeleteCharacter accountDeleteCharacter:
+                    HandleAPICall(accountDeleteCharacter);
+                    break;
+                case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
+                    HandleAPICall(accountSetDefaultCharacter);
+                    break;
+                case PD_AccountAddDeck accountAddDeck:
+                    HandleAPICall(accountAddDeck);
+                    break;
+                case PD_AccountModifyDeck accountModifyDeck:
+                    HandleAPICall(accountModifyDeck);
+                    break;
+                case PD_AccountDeleteDeck accountDeleteDeck:
+                    HandleAPICall(accountDeleteDeck);
+                    break;
+                case PD_AccountSetDefaultDeck accountSetDefaultDeck:
+                    HandleAPICall(accountSetDefaultDeck);
                     break;
                 case PD_ServerMakeRoom serverMakeRoom:
                     HandleAPICall(serverMakeRoom);
@@ -212,6 +227,11 @@ namespace Playground
         {
             account.characters.Add(new Character(data.race, data.category, data.life, data.name));
         }
+        public void HandleAPICall(PD_AccountModifyCharacter data)
+        {
+            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+        }
+
         public void HandleAPICall(PD_AccountDeleteCharacter data)
         {
             account.characters.RemoveAll(c => c.Name == data.name);
@@ -219,6 +239,25 @@ namespace Playground
         public void HandleAPICall(PD_AccountSetDefaultCharacter data)
         {
             account.SetDefaultCharacter(data.name);
+        }
+        public void HandleAPICall(PD_AccountAddDeck data)
+        {
+            account.decks.Add(new Deck() { name = data.name, cardNames = data.cardNames });
+        }
+        public void HandleAPICall(PD_AccountModifyDeck data)
+        {
+            Deck deck = account.decks.Find(d => d.name == data.oldName);
+            deck.name = data.newName;
+            deck.cardNames = data.cardNames;
+        }
+        public void HandleAPICall(PD_AccountDeleteDeck data)
+        {
+            account.decks.RemoveAll(d => d.name == data.name);
+        }
+        public void HandleAPICall(PD_AccountSetDefaultDeck data)
+        {
+            Deck deck = account.decks.Find(d => d.name == data.name);
+            account.defaultDeck = deck;
         }
 
         public void HandleAPICall(PD_ServerMakeRoom data)

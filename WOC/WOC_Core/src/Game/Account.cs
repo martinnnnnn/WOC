@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 
 namespace WOC_Core
 {
+    public class Deck
+    {
+        public string name;
+        public List<string> cardNames = new List<string>();
+    }
+
     public class Account
     {
         public string email;
@@ -17,11 +23,16 @@ namespace WOC_Core
 
         public bool connected = false;
         public PlayerActor actor = null;
+
         public Character defaultCharacter = null;
         public List<Character> characters = new List<Character>();
 
+        public Deck defaultDeck = null;
+        public List<Deck> decks = new List<Deck>();
+
         public Session session = null;
-        // game history stats
+
+        //TODO game history stats
 
         public void SetDefaultCharacter(string name)
         {

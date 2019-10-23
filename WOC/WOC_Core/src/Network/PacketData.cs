@@ -171,6 +171,29 @@ namespace WOC_Core
         public string name;
     }
 
+    public class PD_AccountAddDeck : IPacketData
+    {
+        public string name;
+        public List<string> cardNames;
+    }
+
+    public class PD_AccountModifyDeck : IPacketData
+    {
+        public string oldName;
+        public string newName;
+        public List<string> cardNames;
+    }
+
+    public class PD_AccountDeleteDeck : IPacketData
+    {
+        public string name;
+    }
+
+    public class PD_AccountSetDefaultDeck : IPacketData
+    {
+        public string name;
+    }
+
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
     ///                                         SERVER
@@ -192,6 +215,7 @@ namespace WOC_Core
     public class PD_ServerMakeRoom : IPacketData
     {
         public string name;
+        public int randomSeed;
     }
 
     public class PD_ServerRenameRoom : IPacketData

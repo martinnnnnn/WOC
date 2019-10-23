@@ -26,35 +26,47 @@ namespace WOC_Server
         {
             switch (data)
             {
-                case PD_AccountMake userMake:
-                    HandleAPICall(userMake);
+                case PD_AccountMake accountMake:
+                    HandleAPICall(accountMake);
                     break;
-                case PD_AccountModify userModify:
-                    HandleAPICall(userModify);
+                case PD_AccountModify accountModify:
+                    HandleAPICall(accountModify);
                     break;
-                case PD_AccountDelete userDelete:
-                    HandleAPICall(userDelete);
+                case PD_AccountDelete accountDelete:
+                    HandleAPICall(accountDelete);
                     break;
-                case PD_AccountConnect userConnect:
-                    HandleAPICall(userConnect);
+                case PD_AccountConnect accountConnect:
+                    HandleAPICall(accountConnect);
                     break;
-                case PD_AccountDisconnect userDisconnect:
-                    HandleAPICall(userDisconnect);
+                case PD_AccountDisconnect accountDisconnect:
+                    HandleAPICall(accountDisconnect);
                     break;
-                case PD_AccountAddFriend userAddFriend:
-                    HandleAPICall(userAddFriend);
+                case PD_AccountAddFriend accountAddFriend:
+                    HandleAPICall(accountAddFriend);
                     break;
-                case PD_AccountRemoveFriend userRemoveFriend:
-                    HandleAPICall(userRemoveFriend);
+                case PD_AccountRemoveFriend accountRemoveFriend:
+                    HandleAPICall(accountRemoveFriend);
                     break;
-                case PD_AccountAddCharacter userAddCharacter:
-                    HandleAPICall(userAddCharacter);
+                case PD_AccountAddCharacter accountAddCharacter:
+                    HandleAPICall(accountAddCharacter);
                     break;
-                case PD_AccountDeleteCharacter userDeleteCharacter:
-                    HandleAPICall(userDeleteCharacter);
+                case PD_AccountDeleteCharacter accountDeleteCharacter:
+                    HandleAPICall(accountDeleteCharacter);
                     break;
-                case PD_AccountSetDefaultCharacter userSetDefaultCharacter:
-                    HandleAPICall(userSetDefaultCharacter);
+                case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
+                    HandleAPICall(accountSetDefaultCharacter);
+                    break;
+                case PD_AccountAddDeck accountAddDeck:
+                    HandleAPICall(accountAddDeck);
+                    break;
+                case PD_AccountModifyDeck accountModifyDeck:
+                    HandleAPICall(accountModifyDeck);
+                    break;
+                case PD_AccountDeleteDeck accountDeleteDeck:
+                    HandleAPICall(accountDeleteDeck);
+                    break;
+                case PD_AccountSetDefaultDeck accountSetDefaultDeck:
+                    HandleAPICall(accountSetDefaultDeck);
                     break;
                 case PD_ServerChat serverChat:
                     HandleAPICall(serverChat);
@@ -370,7 +382,6 @@ namespace WOC_Server
         public void HandleAPICall(PD_AccountSetDefaultCharacter data)
         {
             if (!AssureConnected(data.id)) return;
-
             string errorMessage = "";
 
             var toDefault = account.characters.FirstOrDefault(c => c.Name == data.name);
@@ -386,10 +397,115 @@ namespace WOC_Server
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
+        public void HandleAPICall(PD_AccountAddDeck data)
+        {
+            if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
+
+            if (account.decks.Find(d => d.name == data.name) == null)
+            {
+                account.decks.Add(new Deck() { name = data.name, cardNames = data.cardNames });
+            }
+            else
+            {
+                errorMessage = "A deck with the same name already exists.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+        }
+
+        public void HandleAPICall(PD_AccountModifyDeck data)
+        {
+            if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
+
+            Deck deck = account.decks.Find(d => d.name == data.oldName);
+            if (deck != null)
+            {
+                deck.name = data.newName;
+                deck.cardNames = data.cardNames;
+            }
+            else
+            {
+                errorMessage = "No deck with this name was found.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+        }
+        public void HandleAPICall(PD_AccountDeleteDeck data)
+        {
+            if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
+
+            if (account.decks.RemoveAll(d => d.name == data.name) != 1)
+            {
+                errorMessage = "Wrong number of decks removed with the name provided.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+        }
+        public void HandleAPICall(PD_AccountSetDefaultDeck data)
+        {
+            if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
+
+            Deck deck = account.decks.Find(d => d.name == data.name);
+            if (deck != null)
+            {
+                account.defaultDeck = deck;
+            }
+            else
+            {
+                errorMessage = "No deck with this name was found.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+        }
+
         public void HandleAPICall(PD_ServerMakeRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            string errorMessage = "";
+
+            if (server.Exists(data.name))
+            {
+                errorMessage = "Room name already exists";
+            }
+
+            server.CreateBattleRoom(data.name);
+
+            if (server.MoveToBattleRoom(data.name, this))
+            {
+                room = server.battleRooms.Find(r => r.Name == data.name);
+
+                //account.actor = new PlayerActor(
+                //           new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
+                //           player.handStartCount,
+                //           player.name,
+                //           player.aggroIncrement,
+                //           player.manaMax);
+                LOG.Print("[SERVER] Player created ? {0}", (actor != null) ? "true" : "false");
+
+                //    if (room != null)
+                //    {
+                //        if (room.battle.Add(actor))
+                //        {
+                //            actor.AddCards(player.cardsName);
+                //            room.Broadcast(player, this).Wait();
+                //        }
+                //    }
+
+                data.randomSeed = room.battle.RandomSeed;
+                room.Broadcast(data).Wait();
+            }
+            else
+            {
+                errorMessage = "Battle name does not exist.";
+                
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
+
         public void HandleAPICall(PD_ServerRenameRoom data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");

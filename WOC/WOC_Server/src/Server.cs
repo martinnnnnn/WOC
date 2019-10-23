@@ -24,8 +24,27 @@ namespace WOC_Server
 
 
         public ConcurrentDictionary<string, WOC_Core.Account> users = new ConcurrentDictionary<string, WOC_Core.Account>();
+        public List<Card> cards = new List<Card>();
 
-
+        public TCPServer()
+        {
+            cards = new List<Card>()
+            {
+                // name | mana cost | exhaust | effects list
+                new Card("smol_dmg", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                })
+            };
+        }
 
 
         public List<BattleRoom> battleRooms = new List<BattleRoom>();

@@ -74,13 +74,21 @@ namespace Playground
                 { new string[2] { "account", "modify" }, (arg) => AccountModify(arg) },
                 { new string[2] { "account", "connect" }, (arg) => AccountConnect(arg) },
                 { new string[2] { "account", "disconnect" }, (arg) => AccountDisconnect(arg) },
+                //TODO need to retrieve account info on login
 
                 { new string[2] { "friend", "add" }, (arg) => AddFriend(arg) },
                 { new string[2] { "friend", "remove" }, (arg) => RemoveFriend(arg) },
+                { new string[2] { "friend", "list" }, (arg) => String.Join(", ", session.account.friends) },
 
                 { new string[2] { "character", "add" }, (arg) => CharacterAdd(arg) },
+                { new string[2] { "character", "modify" }, (arg) => CharacterModify(arg) },
                 { new string[2] { "character", "delete" }, (arg) => CharacterDelete(arg) },
                 { new string[2] { "character", "default" }, (arg) => CharacterSetDefault(arg) },
+
+                { new string[2] { "deck", "add" }, (arg) => DeckAdd(arg) },
+                { new string[2] { "deck", "add" }, (arg) => DeckModify(arg) },
+                { new string[2] { "deck", "delete" }, (arg) => DeckDelete(arg) },
+                { new string[2] { "deck", "default" }, (arg) => DeckSetDefault(arg) },
 
 
                 //// NAME
@@ -396,6 +404,11 @@ namespace Playground
             });
         }
 
+        static void CharacterModify(string[] args)
+        {
+            LOG.Print("Not supported");
+        }
+
         static void CharacterDelete(string[] args)
         {
             if (!AssureConnected()) return;
@@ -416,6 +429,27 @@ namespace Playground
             {
                 SendWithValidation(new PD_AccountSetDefaultCharacter { name = toDefault.Name });
             }
+        }
+
+        static void DeckAdd(string[] args)
+        {
+            LOG.Print("Not supported");
+        }
+
+        static void DeckModify(string[] args)
+        {
+            LOG.Print("Not supported");
+        }
+
+        static void DeckDelete(string[] args)
+        {
+            LOG.Print("Not supported");
+ 
+        }
+
+        static void DeckSetDefault(string[] args)
+        {
+            LOG.Print("Not supported");
         }
 
 

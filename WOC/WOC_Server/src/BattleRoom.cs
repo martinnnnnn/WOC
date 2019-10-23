@@ -22,44 +22,25 @@ namespace WOC_Server
                 sessions.Add(session);
             }
         }
+
         public void Clear() => sessions.Clear();
         public void Remove(ServerSession s) => sessions.Remove(s);
 
         public void ForEach(Action<ServerSession> p) => sessions.ToList().ForEach(p);
 
-        //public List<string> PlayerList { get => sessions.Select(s => s.Name).ToList(); }
+        public List<string> PlayerList { get => sessions.Select(s => s.account.name).ToList(); }
 
         public BattleRoom(string name, TCPServer server, int randomSeed)
         {
             Name = name;
             this.server = server;
 
-            LOG.Print("[ROOM] Battle initialization...");
+            LOG.Print("[ROOM] Battle construction...");
             battle = new Battle(randomSeed);
             battle.OnBattleEnd += BattleOver;
 
             Initiative.Max = 50;
             Hand.Max = 3;
-
-            Card.Clear();
-            List<Card> cardsMap = new List<Card>()
-            {
-                // name | mana cost | exhaust | effects list
-                new Card("smol_dmg", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                })
-            };
-            LOG.Print("[ROOM] Adding cards");
-            cardsMap.ForEach(c => Card.Add(c));
 
             //PNJS
             List<Actor> actors = new List<Actor>()
@@ -71,6 +52,39 @@ namespace WOC_Server
             };
             LOG.Print("[ROOM] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
+        }
+
+        public void InitBattle()
+        {
+            LOG.Print("[ROOM] Battle initialization...");
+
+            //ForEach(s =>
+            //{
+            //    s.account.actor = new PlayerActor(s.account.name, 0, 0);
+            //    var actor = s.account.actor;
+            //    if (battle.Add(actor))
+            //    {
+            //        actor.AddCards(player.cardsName);
+            //        room.Broadcast(player, this).Wait();
+            //    }
+            //});
+            
+            //account.actor = new PlayerActor(
+            //           new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
+            //           player.handStartCount,
+            //           player.name,
+            //           player.aggroIncrement,
+            //           player.manaMax);
+
+            //    if (room != null)
+            //    {
+            //        if (room.battle.Add(actor))
+            //        {
+            //            actor.AddCards(player.cardsName);
+            //            room.Broadcast(player, this).Wait();
+            //        }
+            //    }
+
         }
 
         bool locked = false;
