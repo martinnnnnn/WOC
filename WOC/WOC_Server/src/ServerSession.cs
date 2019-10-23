@@ -116,10 +116,7 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountModify data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             Debug.Assert(account.email == data.oldEmail, "Cannot try to modify a user that's not the one currently connected.");
             string errorMessage = "";
@@ -162,10 +159,7 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountDelete data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             string errorMessage = "";
             bool result = server.users.TryRemove(data.email, out Account deletingAccount);
@@ -199,6 +193,7 @@ namespace WOC_Server
                 if (connectingAccount.password == data.password)
                 {
                     connectingAccount.connected = true;
+                    connectingAccount.session = this;
                     account = connectingAccount;
                     server.Broadcast(new PD_AccountConnected { name = account.name }, this, true).Wait();
                 }
@@ -217,10 +212,7 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountDisconnect data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             string errorMessage = "";
             bool result = server.users.TryGetValue(data.email, out Account disconnectingAccount);
@@ -228,6 +220,7 @@ namespace WOC_Server
             {
                 server.Broadcast(new PD_AccountDisconnected { name = account.name }, this, true).Wait();
                 disconnectingAccount.connected = false;
+                disconnectingAccount.session = null;
                 account = null;
             }
             else
@@ -240,23 +233,26 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountAddFriend data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             string errorMessage = "";
             if (account.name != data.name)
             {
                 Account newFriend = server.users.FirstOrDefault(acc => acc.Value.name == data.name).Value;
 
-                if (newFriend != null)
+                if (newFriend == null)
                 {
-                    account.friends.Add(newFriend);
+                    errorMessage = "Could not find your friend.";
+                }
+                else if (account.friends.FirstOrDefault(acc => acc == data.name) != default(string))
+                {
+                    errorMessage = "Already your friend !";
                 }
                 else
                 {
-                    errorMessage = "Could not find your friend.";
+                    account.friends.Add(newFriend.name);
+                    newFriend.friends.Add(account.name);
+                    newFriend.session?.SendAsync(new PD_AccountAddFriend{ name = account.name });
                 }
             }
             else
@@ -269,28 +265,31 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountRemoveFriend data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             string errorMessage = "";
             if (account.name != data.name)
             {
-                Account oldFriend = account.friends.FirstOrDefault(acc => acc.name == data.name);
+                Account oldFriend = server.users.FirstOrDefault(acc => acc.Value.name == data.name).Value;
 
-                if (oldFriend != null)
+                if (oldFriend == null)
                 {
-                    account.friends.Remove(oldFriend);
+                    errorMessage = "Could not find your friend.";
+                }
+                else if (account.friends.FirstOrDefault(acc => acc == data.name) == default(string))
+                {
+                    errorMessage = "Not your friend !";
                 }
                 else
                 {
-                    errorMessage = "Could not find your friend.";
+                    account.friends.Remove(oldFriend.name);
+                    oldFriend.friends.Remove(account.name);
+                    oldFriend.session?.SendAsync(new PD_AccountRemoveFriend { name = account.name });
                 }
             }
             else
             {
-                errorMessage = "You cannot remove yourself as a friend.";
+                errorMessage = "You cannot add yourself.";
             }
 
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
@@ -326,10 +325,7 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountAddCharacter data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             if (account.characters.FirstOrDefault(c => c.Name == data.name) == null)
             {
@@ -343,10 +339,7 @@ namespace WOC_Server
 
         public void HandleAPICall(PD_AccountDeleteCharacter data)
         {
-            if (!AssureConnected(data.id))
-            {
-                return;
-            }
+            if (!AssureConnected(data.id)) return;
 
             var toRemove = account.characters.FirstOrDefault(c => c.Name == data.name);
             if (toRemove != null)

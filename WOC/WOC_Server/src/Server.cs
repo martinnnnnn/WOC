@@ -28,7 +28,6 @@ namespace WOC_Server
 
 
 
-
         public List<BattleRoom> battleRooms = new List<BattleRoom>();
 
         public async Task StartAsync(IPAddress ip, int port)

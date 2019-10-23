@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +13,9 @@ namespace Playground
     {
         //public PlayerActor currentActor;
         public List<PlayerActor> actors = new List<PlayerActor>();
+
+        public ConcurrentDictionary<Guid, IPacketData> awaitingValidations = new ConcurrentDictionary<Guid, IPacketData>();
+
         //public Room room;
         //public Battle battle;
 
@@ -108,8 +112,22 @@ namespace Playground
 
         public void HandleAPICall(PD_Validation data)
         {
-            //TODO validations need to be handled correctly
-            LOG.Print("[CLIENT] Received validation from server : {0} {1}", data.isValid ? "valid" : "invalid", String.IsNullOrEmpty(data.errorMessage) ? "" : "-> " + data.errorMessage);
+            bool result = awaitingValidations.TryRemove(data.validationId, out IPacketData validatedPacket);
+
+            if (!result)
+            {
+                LOG.Print("Could not find packet awaiting validation.");
+                return;
+            }
+
+            if (!data.isValid)
+            {
+                LOG.Print("[CLIENT] Validation denied for packet {0} -> {1}", validatedPacket.GetType().Name, data.errorMessage);
+                return;
+            }
+
+            LOG.Print("[CLIENT] Applying validation for packet {0}, still {1} packet awaiting validation.", validatedPacket.GetType().Name, awaitingValidations.Count);
+            HandleAPICall(validatedPacket);
         }
 
         public void HandleAPICall(PD_AccountNameModify data)
@@ -123,16 +141,26 @@ namespace Playground
         }
         public void HandleAPICall(PD_AccountConnected data)
         {
-            LOG.Print("Played {0} connected.", data.name);
+            LOG.Print("Player {0} connected.", data.name);
         }
 
         public void HandleAPICall(PD_AccountDisconnected data)
         {
-            LOG.Print("Played {0} disconnected.", data.name);
+            LOG.Print("Player {0} disconnected.", data.name);
         }
         public void HandleAPICall(PD_AccountDeleted data)
         {
-            LOG.Print("Played {0} deleted.", data.name);
+            LOG.Print("Player {0} deleted.", data.name);
+        }
+
+
+        public void HandleAPICall(PD_AccountAddFriend data)
+        {
+            account.friends.Add(data.name);
+        }
+        public void HandleAPICall(PD_AccountRemoveFriend data)
+        {
+            Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
 
 
@@ -142,7 +170,12 @@ namespace Playground
 
         public void HandleAPICall(PD_AccountMake data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            account = new Account()
+            {
+                email = data.email,
+                password = data.password,
+                name = data.name
+            };
         }
 
         public void HandleAPICall(PD_AccountModify data)
@@ -161,14 +194,6 @@ namespace Playground
         }
 
         public void HandleAPICall(PD_AccountDisconnect data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_AccountAddFriend data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_AccountRemoveFriend data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }

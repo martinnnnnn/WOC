@@ -11,7 +11,7 @@ namespace WOC_Core
         public string email;
         public string password;
         public string name;
-        public List<Account> friends = new List<Account>();
+        public List<string> friends = new List<string>();
 
 
         public bool connected = false;
@@ -19,6 +19,7 @@ namespace WOC_Core
         public Character defaultCharacter = null;
         public List<Character> characters = new List<Character>();
 
+        public Session session = null;
         // game history stats
     }
 }

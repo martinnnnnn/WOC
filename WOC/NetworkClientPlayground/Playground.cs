@@ -70,8 +70,10 @@ namespace Playground
 
                 //PD_UserMake
                 { new string[2] { "account", "make" }, (arg) => AccountMake(arg) },
+                { new string[2] { "account", "delete" }, (arg) => AccountDelete(arg) },
                 { new string[2] { "account", "modify" }, (arg) => AccountModify(arg) },
                 { new string[2] { "account", "connect" }, (arg) => AccountConnect(arg) },
+                { new string[2] { "account", "disconnect" }, (arg) => AccountDisconnect(arg) },
 
                 { new string[2] { "friend", "add" }, (arg) => AddFriend(arg) },
                 { new string[2] { "friend", "remove" }, (arg) => RemoveFriend(arg) },
@@ -79,9 +81,6 @@ namespace Playground
                 { new string[2] { "character", "add" }, (arg) => CharacterAdd(arg) },
                 { new string[2] { "character", "delete" }, (arg) => CharacterDelete(arg) },
                 { new string[2] { "character", "default" }, (arg) => CharacterSetDefault(arg) },
-
-
-                //PD_AccountModify
 
 
                 //// NAME
@@ -225,6 +224,8 @@ namespace Playground
 
         static void AccountMake(string[] args)
         {
+            if (session.account != null) return;
+
             string accEmail = "";
             string accPassord = "";
             string accName = "";
@@ -246,17 +247,27 @@ namespace Playground
                 }
             }
 
-            session.account = new Account()
-            {
-                email = accEmail,
-                password = accPassord,
-                name = accName
-            };
-            session.SendAsync(new PD_AccountMake { email = accEmail, password = accPassord, name = accName }).Wait();
+            SendWithValidation(new PD_AccountMake { email = accEmail, password = accPassord, name = accName });
+        }
+
+        static void SendWithValidation(IPacketData data)
+        {
+            Debug.Assert(session.awaitingValidations.TryAdd(data.id, data));
+            session.SendAsync(data).Wait();
+        }
+
+        static void AccountDelete(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            session.account = null;
+            session.SendAsync(new PD_AccountDelete { email = session.account.email, password = session.account.password }).Wait();
         }
 
         static void AccountModify(string[] args)
         {
+            if (!AssureConnected()) return;
+
             string accEmail = "";
             string accPassord = "";
             string accName = "";
@@ -306,6 +317,7 @@ namespace Playground
         {
             if (session.account != null)
             {
+                session.account.connected = true;
                 session.SendAsync(new PD_AccountConnect { email = session.account.email, password = session.account.password }).Wait();
             }
             else
@@ -314,26 +326,32 @@ namespace Playground
             }
         }
 
+        static void AccountDisconnect(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            session.account.connected = false;
+            session.SendAsync(new PD_AccountDisconnect { email = session.account.email }).Wait();
+        }
+
         static void Chat(string[] args)
         {
-            if (session.account != null && session.account.connected)
+            if (!AssureConnected()) return;
+
+            session.SendAsync(new PD_ServerChat
             {
-                session.SendAsync(new PD_ServerChat
-                {
-                    senderName = session.account.name,
-                    message = string.Join(" ", args)
-                }).Wait();
-            }
-            else
-            {
-                LOG.Print("You need to be connected to chat.");
-            }
+                senderName = session.account.name,
+                message = string.Join(" ", args)
+            }).Wait();
         }
 
         static void AddFriend(string[] args)
         {
-            if (session.account != null && session.account.connected)
+            if (!AssureConnected()) return;
+
+            if (session.account.friends.Find(f => f == args[0]) != default(string))
             {
+                session.account.friends.Add(args[0]);
                 session.SendAsync(new PD_AccountAddFriend
                 {
                     name = args[0],
@@ -341,38 +359,59 @@ namespace Playground
             }
             else
             {
-                LOG.Print("You need to be connected to add a friend.");
+                LOG.Print("You cannot add a friend twice.");
             }
         }
 
         static void RemoveFriend(string[] args)
         {
-            if (session.account != null && session.account.connected)
+            if (!AssureConnected()) return;
+
+            session.account.friends.Remove(args[0]);
+            session.SendAsync(new PD_AccountRemoveFriend
             {
-                session.SendAsync(new PD_AccountRemoveFriend
-                {
-                    name = args[0],
-                }).Wait();
-            }
-            else
-            {
-                LOG.Print("You need to be connected to add a friend.");
-            }
+                name = args[0],
+            }).Wait();
         }
 
         static void CharacterAdd(string[] args)
         {
-            //if (session.account != null && session.account.connected)
-            //{
-            //    session.SendAsync(new PD_AccountAddFriend
-            //    {
-            //        name = args[0],
-            //    }).Wait();
-            //}
-            //else
-            //{
-            //    LOG.Print("You need to be connected to add a friend.");
-            //}
+            if (!AssureConnected()) return;
+
+            string inputName = "default name";
+            int inputLife = 10;
+            Character.Race inputRace = Character.Race.ELFE;
+            Character.Category inputCategory = Character.Category.BARBARIAN;
+
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "name":
+                        inputName = parameter[1];
+                        break;
+                    case "life":
+                        int.TryParse(parameter[1], out inputLife);
+                        break;
+                    case "race":
+                        Enum.TryParse(parameter[1], true, out inputRace);
+                        break;
+                    case "category":
+                        Enum.TryParse(parameter[1], true, out inputCategory);
+                        break;
+                }
+            }
+
+            session.account.characters.Add(new Character(inputRace, inputCategory, inputLife, inputName));
+
+            session.SendAsync(new PD_AccountAddCharacter
+            {
+                name = inputName,
+                race = inputRace,
+                category = inputCategory,
+                life = inputLife
+            }).Wait();
         }
 
         static void CharacterDelete(string[] args)
@@ -400,7 +439,7 @@ namespace Playground
                 session.account.defaultCharacter = toDefault;
                 session.SendAsync(new PD_AccountSetDefaultCharacter
                 {
-                    name = args[0],
+                    name = toDefault.Name,
                 }).Wait();
             }
         }
