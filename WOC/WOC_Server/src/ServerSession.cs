@@ -15,7 +15,6 @@ namespace WOC_Server
         TCPServer server;
 
         public Room room;
-        public PlayerActor actor;
 
         public ServerSession(TCPServer s)
         {
@@ -83,7 +82,7 @@ namespace WOC_Server
                 case PD_ServerJoinRoom serverJoinRoom:
                     HandleAPICall(serverJoinRoom);
                     break;
-                case PD_ServerListRoom serverListRoom:
+                case PD_ServerDeleteRoom serverListRoom:
                     HandleAPICall(serverListRoom);
                     break;
                 case PD_ServerListPlayers serverListPlayers:
@@ -488,63 +487,77 @@ namespace WOC_Server
         public void HandleAPICall(PD_ServerMakeRoom data)
         {
             string errorMessage = "";
+            Room room = null;
 
             if (!server.Exists(data.name))
             {
-                
+                room = server.CreateRoom(data.name);
+                server.MoveToRoom(room, this);
+                data.randomSeed = room.battle.RandomSeed;
+                server.Broadcast(data, this, true).Wait();
             }
             else
             {
                 errorMessage = "Room name already exists";
             }
-
-            server.CreateBattleRoom(data.name);
-
-            if (server.MoveToBattleRoom(data.name, this))
-            {
-                room = server.battleRooms.Find(r => r.Name == data.name);
-
-                //account.actor = new PlayerActor(
-                //           new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-                //           player.handStartCount,
-                //           player.name,
-                //           player.aggroIncrement,
-                //           player.manaMax);
-                LOG.Print("[SERVER] Player created ? {0}", (actor != null) ? "true" : "false");
-
-                //    if (room != null)
-                //    {
-                //        if (room.battle.Add(actor))
-                //        {
-                //            actor.AddCards(player.cardsName);
-                //            room.Broadcast(player, this).Wait();
-                //        }
-                //    }
-
-                data.randomSeed = room.battle.RandomSeed;
-                room.Broadcast(data).Wait();
-            }
-            else
-            {
-                errorMessage = "Battle name does not exist.";
-                
-            }
-
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
         public void HandleAPICall(PD_ServerRenameRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            string errorMessage = "";
+            Room room = server.rooms.FirstOrDefault(r => data.oldName == r.Name);
+            if (room != null)
+            {
+                room.Name = data.newName;
+                server.Broadcast(data, this, true).Wait();
+            }
+            else
+            {
+                errorMessage = "Could not find room.";
+            }
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
+
         public void HandleAPICall(PD_ServerJoinRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            Debug.Assert(data.userName == account.name);
+            string errorMessage = "";
+
+            Room room = server.rooms.FirstOrDefault(r => data.roomName == r.Name);
+            if (room != null)
+            {
+                server.MoveToRoom(room, this);
+                server.Broadcast(data, this, true).Wait();
+            }
+            else
+            {
+                errorMessage = "Could not find room.";
+            }
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
-        public void HandleAPICall(PD_ServerListRoom data)
+
+        public void HandleAPICall(PD_ServerDeleteRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            string errorMessage = "";
+
+            Room room = server.rooms.FirstOrDefault(r => data.name == r.Name);
+            if (room != null)
+            {
+                room.ForEach(s => server.sessions.Add(s));
+                room.ForEach(s => s.room = null);
+                room.Clear();
+                server.rooms.Remove(room);
+
+                server.Broadcast(data, this, true).Wait();
+            }
+            else
+            {
+                errorMessage = "Could not find room.";
+            }
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
+
         public void HandleAPICall(PD_ServerListPlayers data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");

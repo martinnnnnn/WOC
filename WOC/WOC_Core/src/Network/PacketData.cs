@@ -230,10 +230,14 @@ namespace WOC_Core
 
     public class PD_ServerJoinRoom : IPacketData
     {
-        public string name;
+        public string roomName;
+        public string userName;
     }
 
-    public class PD_ServerListRoom : IPacketData { }
+    public class PD_ServerDeleteRoom : IPacketData
+    {
+        public string name;
+    }
 
     public class PD_ServerListPlayers : IPacketData
     {

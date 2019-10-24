@@ -100,6 +100,11 @@ namespace Playground
                 { new string[2] { "deck", "delete" }, (arg) => DeckDelete(arg) },
                 { new string[2] { "deck", "default" }, (arg) => DeckSetDefault(arg) },
 
+                { new string[2] { "room", "make" }, (arg) => RoomMake(arg) },
+                { new string[2] { "room", "join" }, (arg) => RoomJoin(arg) },
+                { new string[2] { "room", "rename" }, (arg) => RoomRename(arg) },
+                { new string[2] { "room", "delete" }, (arg) => RoomDelete(arg) },
+                { new string[2] { "room", "list" }, (arg) => RoomList(arg) },
 
                 //// NAME
                 //{ new string[1] { "name" }, (arg) => LOG.Print("[CLIENT] Your name is {0}.", session.Name) },
@@ -569,7 +574,6 @@ namespace Playground
                     oldName = oName,
                     newName = nName
                 });
-
             }
         }
 
@@ -585,10 +589,83 @@ namespace Playground
 
         static void DeckSetDefault(string[] args)
         {
-            LOG.Print("Not supported");
+            if (!AssureConnected()) return;
+
+            SendWithValidation(new PD_AccountSetDefaultDeck
+            {
+                name = args[0]
+            });
         }
 
+        static void RoomMake(string[] args)
+        {
+            if (!AssureConnected()) return;
 
+            SendWithValidation(new PD_ServerMakeRoom
+            {
+                name = args[0]
+            });
+        }
+
+        static void RoomJoin(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            SendWithValidation(new PD_ServerJoinRoom
+            {
+                roomName = args[0],
+                userName = session.account.name
+            });
+        }
+
+        static void RoomRename(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            string oName = "";
+            string nName = "";
+
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "old":
+                        oName = parameter[1];
+                        break;
+                    case "new":
+                        nName = parameter[1];
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(oName) && !string.IsNullOrEmpty(oName))
+            {
+                SendWithValidation(new PD_ServerRenameRoom
+                {
+                    oldName = oName,
+                    newName = nName
+                });
+            }
+        }
+
+        static void RoomDelete(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            SendWithValidation(new PD_ServerDeleteRoom
+            {
+                name = args[0]
+            });
+        }
+
+        static void RoomList(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            LOG.Print("Live room list : {0}", string.Join(", ", session.liveRooms.Select(lr => lr.name)));
+        }
+        
 
         //static void RoomJoin(string[] args, bool create)
         //{

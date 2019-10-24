@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WOC_Core;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace WOC_Server
 {
@@ -119,7 +120,7 @@ namespace WOC_Server
         }
 
 
-        public List<Room> battleRooms = new List<Room>();
+        public List<Room> rooms = new List<Room>();
 
         public async Task StartAsync(IPAddress ip, int port)
         {
@@ -155,7 +156,7 @@ namespace WOC_Server
                         session.OnDisconnect += () =>
                         {
                             sessions.Remove(session);
-                            battleRooms.ForEach(r => r.Remove(session));
+                            rooms.ForEach(r => r.Remove(session));
                             //Broadcast(new PD_SessionDisconnect { name = session.Name }, null, true).Wait();
                             LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
                         };
@@ -172,29 +173,23 @@ namespace WOC_Server
 
         public bool Exists(string roomName)
         {
-            return (battleRooms.Find(r => r.Name == roomName) != null);
+            return (rooms.Find(r => r.Name == roomName) != null);
         }
 
-        public bool CreateBattleRoom(string roomName)
+        public Room CreateRoom(string roomName)
         {
-            if (battleRooms.Find(r => r.Name == roomName) == null)
-            {
-                Random random = new Random();
-                battleRooms.Add(new Room(roomName, this, random.Next()));
-                return true;
-            }
-            return false;
+            Debug.Assert(rooms.Find(r => r.Name == roomName) == null);
+
+            Random random = new Random();
+            Room room = new Room(roomName, this, random.Next());
+            rooms.Add(room);
+            return room;
         }
-        public bool MoveToBattleRoom(string roomName, ServerSession session)
+        public void MoveToRoom(Room room, ServerSession session)
         {
-            Room room = battleRooms.Find(r => r.Name == roomName);
-            if (room != null)
-            {
-                sessions.Remove(session);
-                room.Add(session);
-                return true;
-            }
-            return false;
+            Debug.Assert(rooms.Find(r => r == room) != null);
+            sessions.Remove(session);
+            room.Add(session);
         }
 
         public void LeaveRoom(ServerSession session)
@@ -214,7 +209,7 @@ namespace WOC_Server
                     s?.Close();
                 }
                 sessions.Clear();
-                battleRooms.Clear();
+                rooms.Clear();
                 listening = false;
                 LOG.Print("[SERVER] Server closed.");
             }
@@ -231,7 +226,7 @@ namespace WOC_Server
             
             if (toAll)
             {
-                battleRooms.ForEach(r => tasks.Add(r.Broadcast(data, toIgnore)));
+                rooms.ForEach(r => tasks.Add(r.Broadcast(data, toIgnore)));
             }
 
             foreach (Session session in sessions)

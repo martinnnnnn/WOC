@@ -13,10 +13,11 @@ namespace Playground
     {
         //public PlayerActor currentActor;
         public List<PlayerActor> actors = new List<PlayerActor>();
+        public List<Room> liveRooms = new List<Room>();
 
         public ConcurrentDictionary<Guid, IPacketData> awaitingValidations = new ConcurrentDictionary<Guid, IPacketData>();
 
-        //public Room room;
+        public Room room = null;
         //public Battle battle;
 
         public void HandleAPICall(IPacketData data)
@@ -98,8 +99,8 @@ namespace Playground
                 case PD_ServerJoinRoom serverJoinRoom:
                     HandleAPICall(serverJoinRoom);
                     break;
-                case PD_ServerListRoom serverListRoom:
-                    HandleAPICall(serverListRoom);
+                case PD_ServerDeleteRoom serverRemoveRoom:
+                    HandleAPICall(serverRemoveRoom);
                     break;
                 case PD_ServerListPlayers serverListPlayers:
                     HandleAPICall(serverListPlayers);
@@ -270,7 +271,7 @@ namespace Playground
 
         public void HandleAPICall(PD_ServerMakeRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            liveRooms.Add(new Room(data.name, data.randomSeed));
         }
         public void HandleAPICall(PD_ServerRenameRoom data)
         {
@@ -280,7 +281,7 @@ namespace Playground
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_ServerListRoom data)
+        public void HandleAPICall(PD_ServerDeleteRoom data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
