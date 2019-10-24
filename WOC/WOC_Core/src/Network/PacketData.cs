@@ -254,15 +254,15 @@ namespace WOC_Core
         public int initiative;
     }
 
-    public class PD_RoomBattleInit : IPacketData { }
-    public class PD_RoomBattleStart : IPacketData { }
+    public class PD_RoomInitBattle : IPacketData { }
+    public class PD_RoomStartBattle : IPacketData { }
 
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
     ///                                         BATTLE
     /// ///////////////////////////////////////////////////////////////////////////////////////
 
-    public class PD_BattleCardPlayed : IPacketData
+    public class PD_BattlePlayCard : IPacketData
     {
         public string ownerName;
         public string targetName;

@@ -119,7 +119,7 @@ namespace WOC_Server
         }
 
 
-        public List<BattleRoom> battleRooms = new List<BattleRoom>();
+        public List<Room> battleRooms = new List<Room>();
 
         public async Task StartAsync(IPAddress ip, int port)
         {
@@ -180,14 +180,14 @@ namespace WOC_Server
             if (battleRooms.Find(r => r.Name == roomName) == null)
             {
                 Random random = new Random();
-                battleRooms.Add(new BattleRoom(roomName, this, random.Next()));
+                battleRooms.Add(new Room(roomName, this, random.Next()));
                 return true;
             }
             return false;
         }
         public bool MoveToBattleRoom(string roomName, ServerSession session)
         {
-            BattleRoom room = battleRooms.Find(r => r.Name == roomName);
+            Room room = battleRooms.Find(r => r.Name == roomName);
             if (room != null)
             {
                 sessions.Remove(session);

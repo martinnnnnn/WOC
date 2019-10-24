@@ -107,13 +107,13 @@ namespace Playground
                 case PD_RoomAddPNJ roomAddPNJ:
                     HandleAPICall(roomAddPNJ);
                     break;
-                case PD_RoomBattleInit roomBattleInit:
+                case PD_RoomInitBattle roomBattleInit:
                     HandleAPICall(roomBattleInit);
                     break;
-                case PD_RoomBattleStart roomBattleStart:
+                case PD_RoomStartBattle roomBattleStart:
                     HandleAPICall(roomBattleStart);
                     break;
-                case PD_BattleCardPlayed battleCardPlayed:
+                case PD_BattlePlayCard battleCardPlayed:
                     HandleAPICall(battleCardPlayed);
                     break;
                 case PD_BattleEndTurn battleEndTurn:
@@ -292,15 +292,15 @@ namespace Playground
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_RoomBattleInit data)
+        public void HandleAPICall(PD_RoomInitBattle data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_RoomBattleStart data)
+        public void HandleAPICall(PD_RoomStartBattle data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_BattleCardPlayed data)
+        public void HandleAPICall(PD_BattlePlayCard data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }

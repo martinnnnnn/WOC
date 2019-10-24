@@ -14,7 +14,7 @@ namespace WOC_Server
     {
         TCPServer server;
 
-        public BattleRoom room;
+        public Room room;
         public PlayerActor actor;
 
         public ServerSession(TCPServer s)
@@ -92,13 +92,13 @@ namespace WOC_Server
                 case PD_RoomAddPNJ roomAddPNJ:
                     HandleAPICall(roomAddPNJ);
                     break;
-                case PD_RoomBattleInit roomBattleInit:
+                case PD_RoomInitBattle roomBattleInit:
                     HandleAPICall(roomBattleInit);
                     break;
-                case PD_RoomBattleStart roomBattleStart:
+                case PD_RoomStartBattle roomBattleStart:
                     HandleAPICall(roomBattleStart);
                     break;
-                case PD_BattleCardPlayed battleCardPlayed:
+                case PD_BattlePlayCard battleCardPlayed:
                     HandleAPICall(battleCardPlayed);
                     break;
                 case PD_BattleEndTurn battleEndTurn:
@@ -489,7 +489,11 @@ namespace WOC_Server
         {
             string errorMessage = "";
 
-            if (server.Exists(data.name))
+            if (!server.Exists(data.name))
+            {
+                
+            }
+            else
             {
                 errorMessage = "Room name already exists";
             }
@@ -549,15 +553,15 @@ namespace WOC_Server
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_RoomBattleInit data)
+        public void HandleAPICall(PD_RoomInitBattle data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_RoomBattleStart data)
+        public void HandleAPICall(PD_RoomStartBattle data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_BattleCardPlayed data)
+        public void HandleAPICall(PD_BattlePlayCard data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
