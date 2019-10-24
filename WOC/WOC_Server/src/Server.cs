@@ -42,7 +42,79 @@ namespace WOC_Server
                 new Card("big_dmg", 3, false, new List<CardEffect>
                 {
                     new CardEffectDamage(10)
-                })
+                }),
+                new Card("smol_dmg2", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek2", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg2", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                    new Card("smol_dmg3", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek3", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg3", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg4", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek4", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg4", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg5", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek5", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg5", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg6", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek6", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg6", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg7", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek7", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg7", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
             };
         }
 

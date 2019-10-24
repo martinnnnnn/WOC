@@ -40,5 +40,11 @@ namespace WOC_Core
             Debug.Assert(defaultCharacter != null);
         }
 
+        public void SetDefaultDeck(string name)
+        {
+            defaultDeck = decks.Find(c => c.name == name);
+            Debug.Assert(defaultDeck != null);
+        }
+
     }
 }

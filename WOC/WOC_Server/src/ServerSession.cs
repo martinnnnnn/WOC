@@ -56,11 +56,14 @@ namespace WOC_Server
                 case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
                     HandleAPICall(accountSetDefaultCharacter);
                     break;
-                case PD_AccountAddDeck accountAddDeck:
-                    HandleAPICall(accountAddDeck);
+                case PD_AccountNewDeck accountNewDeck:
+                    HandleAPICall(accountNewDeck);
                     break;
-                case PD_AccountModifyDeck accountModifyDeck:
-                    HandleAPICall(accountModifyDeck);
+                case PD_AccountAddCard accountAddCard:
+                    HandleAPICall(accountAddCard);
+                    break;
+                case PD_AccountRenameDeck accountRenameDeck:
+                    HandleAPICall(accountRenameDeck);
                     break;
                 case PD_AccountDeleteDeck accountDeleteDeck:
                     HandleAPICall(accountDeleteDeck);
@@ -397,14 +400,16 @@ namespace WOC_Server
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
-        public void HandleAPICall(PD_AccountAddDeck data)
+        public void HandleAPICall(PD_AccountNewDeck data)
         {
             if (!AssureConnected(data.id)) return;
             string errorMessage = "";
 
             if (account.decks.Find(d => d.name == data.name) == null)
             {
-                account.decks.Add(new Deck() { name = data.name, cardNames = data.cardNames });
+                Deck newDeck = new Deck() { name = data.name, cardNames = data.cardNames };
+                account.decks.Add(newDeck);
+                account.defaultDeck = account.defaultDeck ?? newDeck;
             }
             else
             {
@@ -414,7 +419,26 @@ namespace WOC_Server
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
         }
 
-        public void HandleAPICall(PD_AccountModifyDeck data)
+        public void HandleAPICall(PD_AccountAddCard data)
+        {
+            if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
+
+            Deck deck = account.decks.Find(d => d.name == data.deckName);
+            if (deck != null)
+            {
+                deck.cardNames.Add(data.cardName);
+            }
+            else
+            {
+                errorMessage = "Could not find the deck.";
+            }
+
+            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+        }
+        
+
+        public void HandleAPICall(PD_AccountRenameDeck data)
         {
             if (!AssureConnected(data.id)) return;
             string errorMessage = "";
@@ -423,7 +447,6 @@ namespace WOC_Server
             if (deck != null)
             {
                 deck.name = data.newName;
-                deck.cardNames = data.cardNames;
             }
             else
             {
@@ -439,7 +462,7 @@ namespace WOC_Server
 
             if (account.decks.RemoveAll(d => d.name == data.name) != 1)
             {
-                errorMessage = "Wrong number of decks removed with the name provided.";
+                errorMessage = "Wrong deck name.";
             }
 
             SendAsync(new PD_Validation(data.id, errorMessage)).Wait();

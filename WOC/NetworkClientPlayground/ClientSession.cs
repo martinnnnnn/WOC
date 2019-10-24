@@ -74,11 +74,14 @@ namespace Playground
                 case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
                     HandleAPICall(accountSetDefaultCharacter);
                     break;
-                case PD_AccountAddDeck accountAddDeck:
-                    HandleAPICall(accountAddDeck);
+                case PD_AccountNewDeck accountNewDeck:
+                    HandleAPICall(accountNewDeck);
                     break;
-                case PD_AccountModifyDeck accountModifyDeck:
-                    HandleAPICall(accountModifyDeck);
+                case PD_AccountAddCard accountAddCard:
+                    HandleAPICall(accountAddCard);
+                    break;
+                case PD_AccountRenameDeck accountRenameDeck:
+                    HandleAPICall(accountRenameDeck);
                     break;
                 case PD_AccountDeleteDeck accountDeleteDeck:
                     HandleAPICall(accountDeleteDeck);
@@ -240,15 +243,20 @@ namespace Playground
         {
             account.SetDefaultCharacter(data.name);
         }
-        public void HandleAPICall(PD_AccountAddDeck data)
+        public void HandleAPICall(PD_AccountNewDeck data)
         {
-            account.decks.Add(new Deck() { name = data.name, cardNames = data.cardNames });
+            Deck deck = new Deck() { name = data.name, cardNames = data.cardNames };
+            account.defaultDeck = account.defaultDeck ?? deck;
+            account.decks.Add(deck);
         }
-        public void HandleAPICall(PD_AccountModifyDeck data)
+        public void HandleAPICall(PD_AccountAddCard data)
+        {
+            account.decks.Find(d => d.name == data.deckName).cardNames.Add(data.cardName);
+        }
+        public void HandleAPICall(PD_AccountRenameDeck data)
         {
             Deck deck = account.decks.Find(d => d.name == data.oldName);
             deck.name = data.newName;
-            deck.cardNames = data.cardNames;
         }
         public void HandleAPICall(PD_AccountDeleteDeck data)
         {

@@ -27,35 +27,43 @@ namespace Playground
     {
 
         static ClientSession session = new ClientSession();
-
+        static List<Card> cards;
         static void Main(string[] args)
         {
+            InitCards();
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");
             bool exit = false;
 
-            var Client = new UdpClient();
+            var udpClient = new UdpClient();
+            udpClient.Client.ReceiveTimeout = 10000;
             var RequestData = Encoding.ASCII.GetBytes(Serialization.ToJson(new PD_Discovery { }));
             var ServerEp = new IPEndPoint(IPAddress.Any, 0);
             string serverIp = "";
-
-            Client.EnableBroadcast = true;
-            try
+            bool serverFound = false;
+            udpClient.EnableBroadcast = true;
+            while (!serverFound)
             {
-                Client.Send(RequestData, RequestData.Length, new IPEndPoint(IPAddress.Broadcast, 8888));
+                try
+                {
+                    LOG.Print("[DISCOVERY] Looking for a server...");
+                    udpClient.Send(RequestData, RequestData.Length, new IPEndPoint(IPAddress.Broadcast, 8888));
 
-                var ServerResponseData = Client.Receive(ref ServerEp);
-                var ServerResponse = Encoding.ASCII.GetString(ServerResponseData);
-                serverIp = ServerEp.Address.ToString();
+                    var ServerResponseData = udpClient.Receive(ref ServerEp);
+                    var ServerResponse = Encoding.ASCII.GetString(ServerResponseData);
+                    serverIp = ServerEp.Address.ToString();
 
-                PD_Discovery data = Serialization.FromJson<PD_Discovery>(ServerResponse);
+                    PD_Discovery data = Serialization.FromJson<PD_Discovery>(ServerResponse);
                 
-                LOG.Print("[DISCOVERY] Found a server : {0}", serverIp);
-                Client.Close();
-            }
-            catch (Exception)
-            {
-                StackTrace stackTrace = new StackTrace();
-                LOG.Print("[DISCOVERY] Coudln't find a server.");
+                    LOG.Print("[DISCOVERY] Found a server : {0}", serverIp);
+                    udpClient.Close();
+                    serverFound = true;
+                }
+                catch (Exception)
+                {
+                    StackTrace stackTrace = new StackTrace();
+                    LOG.Print("[DISCOVERY] Coudln't find a server.");
+                    Thread.Sleep(2000);
+                }
             }
 
             session.Connect(serverIp, 54001);
@@ -67,6 +75,7 @@ namespace Playground
                 { new string[1] { "exit" }, (arg) => exit = true },
 
                 { new string[1] { "/" }, (arg) => Chat(arg) },
+                { new string[1] { "info" }, (arg) => Info(arg) },
 
                 //PD_UserMake
                 { new string[2] { "account", "make" }, (arg) => AccountMake(arg) },
@@ -85,8 +94,9 @@ namespace Playground
                 { new string[2] { "character", "delete" }, (arg) => CharacterDelete(arg) },
                 { new string[2] { "character", "default" }, (arg) => CharacterSetDefault(arg) },
 
+                { new string[2] { "deck", "new" }, (arg) => DeckNew(arg) },
                 { new string[2] { "deck", "add" }, (arg) => DeckAdd(arg) },
-                { new string[2] { "deck", "add" }, (arg) => DeckModify(arg) },
+                { new string[2] { "deck", "rename" }, (arg) => DeckRename(arg) },
                 { new string[2] { "deck", "delete" }, (arg) => DeckDelete(arg) },
                 { new string[2] { "deck", "default" }, (arg) => DeckSetDefault(arg) },
 
@@ -234,6 +244,50 @@ namespace Playground
             Debug.Assert(session.awaitingValidations.TryAdd(data.id, data));
             session.SendAsync(data, force).Wait();
         }
+
+        static void Info(string[] args)
+        {
+            switch (args[0])
+            {
+                case "account":
+                    LOG.Print("Email : {0} | Name : {1}\nStatus : {2}\nFriends count : {3} | Characters count : {4} | Decks count : {5}",
+                        session.account.email, session.account.name,
+                        session.account.connected ? "Online" : "Offline",
+                        session.account.friends.Count, session.account.characters.Count, session.account.decks.Count);
+                    break;
+                case "friends":
+                    LOG.Print("Friends list : {0}", string.Join(", ", session.account.friends));
+                    break;
+                case "characters":
+                    string[] charaInfo = new string[session.account.characters.Count];
+                    int index = 0;
+                    session.account.characters.ForEach(c =>
+                    {
+                        charaInfo[index] = string.Format("{0} | {1} | {2} | {3}", c.Name, c.race.ToString(), c.category.ToString(), c.Life);
+                        index++;
+                    });
+                    LOG.Print("Default Character : {0}", session.account.defaultCharacter?.Name);
+                    LOG.Print("Characters list :\n{0}", string.Join("\n", charaInfo));
+                    break;
+                case "decks":
+                    string[] deckInfo = new string[session.account.decks.Count];
+                    int indx = 0;
+                    session.account.decks.ForEach(d =>
+                    {
+                        deckInfo[indx] = string.Format("{0} -> {1}", d.name, string.Format(", ", d.cardNames));
+                        indx++;
+                    });
+                    LOG.Print("Default Deck : {0}", session.account.defaultDeck?.name);
+                    LOG.Print("Decks list :\n{0}", string.Join("\n", deckInfo));
+                    break;
+            }
+        }
+
+        
+        //name
+        //race
+        //category
+        //life
 
 
         static void AccountMake(string[] args)
@@ -431,20 +485,102 @@ namespace Playground
             }
         }
 
-        static void DeckAdd(string[] args)
+        static void DeckNew(string[] args)
         {
-            LOG.Print("Not supported");
+            if (!AssureConnected()) return;
+
+            string inputName = "default name";
+
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "name":
+                        inputName = parameter[1];
+                        break;
+                }
+            }
+
+            SendWithValidation(new PD_AccountNewDeck
+            {
+                name = inputName
+            });
         }
 
-        static void DeckModify(string[] args)
+        static void DeckAdd(string[] args)
         {
-            LOG.Print("Not supported");
+            if (!AssureConnected()) return;
+            Debug.Assert(session.account.defaultDeck != null);
+
+            Card card = null;
+            string deckName = session.account.defaultDeck.name;
+
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "name":
+                        card = cards.Find(c => c.name == parameter[1]);
+                        break;
+                    case "deck":
+                        deckName = parameter[1];
+                        break;
+                }
+            }
+
+            if (card != null)
+            {
+                SendWithValidation(new PD_AccountAddCard
+                {
+                    deckName = deckName,
+                    cardName = card.name
+                });
+            }
+        }
+
+        static void DeckRename(string[] args)
+        {
+            if (!AssureConnected()) return;
+            Debug.Assert(session.account.defaultDeck != null);
+
+            string oName = "";
+            string nName = "";
+
+            foreach (string arg in args)
+            {
+                string[] parameter = arg.Split('=');
+                switch (parameter[0])
+                {
+                    case "old":
+                        oName = parameter[1];
+                        break;
+                    case "new":
+                        nName = parameter[1];
+                        break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(oName) && !string.IsNullOrEmpty(oName))
+            {
+                SendWithValidation(new PD_AccountRenameDeck
+                {
+                    oldName = oName,
+                    newName = nName
+                });
+
+            }
         }
 
         static void DeckDelete(string[] args)
         {
-            LOG.Print("Not supported");
- 
+            if (!AssureConnected()) return;
+
+            SendWithValidation(new PD_AccountDeleteDeck
+            {
+                name = args[0]
+            });
         }
 
         static void DeckSetDefault(string[] args)
@@ -506,6 +642,97 @@ namespace Playground
             LOG.Print("> room delete                         : {NOT IMPLEMENTED} Deletes the room.");
         }
 
+        static void InitCards()
+        {
+            cards = new List<Card>()
+            {
+                // name | mana cost | exhaust | effects list
+                new Card("smol_dmg", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg2", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek2", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg2", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                    new Card("smol_dmg3", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek3", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg3", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg4", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek4", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg4", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg5", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek5", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg5", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg6", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek6", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg6", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+                new Card("smol_dmg7", 1, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(5)
+                }),
+                new Card("hek7", 2, false, new List<CardEffect>
+                {
+                    new CardEffectHeal(2)
+                }),
+                new Card("big_dmg7", 3, false, new List<CardEffect>
+                {
+                    new CardEffectDamage(10)
+                }),
+            };
+        }
 
         //static void AddPlayer(string[] args)
         //{

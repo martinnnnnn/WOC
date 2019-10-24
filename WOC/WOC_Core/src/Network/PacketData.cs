@@ -171,17 +171,21 @@ namespace WOC_Core
         public string name;
     }
 
-    public class PD_AccountAddDeck : IPacketData
+    public class PD_AccountNewDeck : IPacketData
     {
         public string name;
         public List<string> cardNames;
     }
+    public class PD_AccountAddCard : IPacketData
+    {
+        public string deckName;
+        public string cardName;
+    }
 
-    public class PD_AccountModifyDeck : IPacketData
+    public class PD_AccountRenameDeck : IPacketData
     {
         public string oldName;
         public string newName;
-        public List<string> cardNames;
     }
 
     public class PD_AccountDeleteDeck : IPacketData
