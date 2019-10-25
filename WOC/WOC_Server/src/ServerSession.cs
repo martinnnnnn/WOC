@@ -113,27 +113,37 @@ namespace WOC_Server
         public void HandleAPICall(PD_AccountMake data)
         {
             Debug.Assert(account == null);
+            string errorMessage = "";
 
             if (String.IsNullOrEmpty(data.email) || String.IsNullOrEmpty(data.password) || String.IsNullOrEmpty(data.name))
             {
-                SendAsync(new PD_Validation(data.id,"Not enough info to create acount.")).Wait();
-                return;
+                errorMessage = "Not enough info to create acount.";
+            }
+            else
+            {
+                account = new Account()
+                {
+                    email = data.email,
+                    password = data.password,
+                    name = data.name,
+                    connected = true,
+                    session = this
+                };
+
+                bool result = server.users.TryAdd(data.email, account);
+
+                if (!result)
+                {
+                    account = null;
+                    errorMessage = "This email is already used.";
+                }
+                else
+                {
+                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true).Wait();
+                }
             }
 
-            account = new Account()
-            {
-                email = data.email,
-                password = data.password,
-                name = data.name,
-                connected = true,
-                session = this
-            };
-
-            bool result = server.users.TryAdd(data.email, account);
-
-            if (!result) account = null;
-
-            SendAsync(new PD_Validation(data.id, result ? "" : "This email is already used."), true).Wait();
+            SendAsync(new PD_Validation(data.id, errorMessage), true).Wait();
         }
 
         public void HandleAPICall(PD_AccountModify data)
@@ -323,13 +333,14 @@ namespace WOC_Server
         {
             try
             {
-                if (data.message.StartsWith("/f "))
+                if (data.message.StartsWith("f "))
                 {
-                    LOG.Print("Talk with friend not implemented");
+                    data.message = data.message.Remove(0, 2);
+                    server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected)).Wait();
                 }
-                if (data.message.StartsWith("/all "))
+                if (data.message.StartsWith("all "))
                 {
-                    data.message = data.message.Remove(0, 5);
+                    data.message = data.message.Remove(0, 4);
                     server.Broadcast(data, this, true).Wait();
                 }
                 else if (room == null)
@@ -406,7 +417,7 @@ namespace WOC_Server
 
             if (account.decks.Find(d => d.name == data.name) == null)
             {
-                Deck newDeck = new Deck() { name = data.name, cardNames = data.cardNames };
+                Deck newDeck = new Deck() { name = data.name };
                 account.decks.Add(newDeck);
                 account.defaultDeck = account.defaultDeck ?? newDeck;
             }
@@ -426,7 +437,14 @@ namespace WOC_Server
             Deck deck = account.decks.Find(d => d.name == data.deckName);
             if (deck != null)
             {
-                deck.cardNames.Add(data.cardName);
+                if (server.cards.Find(c => c.name == data.cardName) != null)
+                {
+                    deck.cardNames.Add(data.cardName);
+                }
+                else
+                {
+                    errorMessage = "Wrong card name.";
+                }
             }
             else
             {
@@ -487,11 +505,10 @@ namespace WOC_Server
         public void HandleAPICall(PD_ServerMakeRoom data)
         {
             string errorMessage = "";
-            Room room = null;
 
-            if (!server.Exists(data.name))
+            if (!server.Exists(data.roomName))
             {
-                room = server.CreateRoom(data.name);
+                room = server.CreateRoom(data.roomName);
                 server.MoveToRoom(room, this);
                 data.randomSeed = room.battle.RandomSeed;
                 server.Broadcast(data, this, true).Wait();
@@ -506,7 +523,7 @@ namespace WOC_Server
         public void HandleAPICall(PD_ServerRenameRoom data)
         {
             string errorMessage = "";
-            Room room = server.rooms.FirstOrDefault(r => data.oldName == r.Name);
+            room = server.rooms.FirstOrDefault(r => data.oldName == r.Name);
             if (room != null)
             {
                 room.Name = data.newName;

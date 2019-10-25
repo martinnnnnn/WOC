@@ -12,8 +12,9 @@ namespace Playground
     public class ClientSession : Session
     {
         //public PlayerActor currentActor;
-        public List<PlayerActor> actors = new List<PlayerActor>();
+        //public List<PlayerActor> actors = new List<PlayerActor>();
         public List<Room> liveRooms = new List<Room>();
+        public List<string> onlineAccountNames = new List<string>();
 
         public ConcurrentDictionary<Guid, IPacketData> awaitingValidations = new ConcurrentDictionary<Guid, IPacketData>();
 
@@ -161,11 +162,13 @@ namespace Playground
         public void HandleAPICall(PD_AccountConnected data)
         {
             LOG.Print("Player {0} connected.", data.name);
+            onlineAccountNames.Add(data.name);
         }
 
         public void HandleAPICall(PD_AccountDisconnected data)
         {
             LOG.Print("Player {0} disconnected.", data.name);
+            onlineAccountNames.Remove(data.name);
         }
         public void HandleAPICall(PD_AccountDeleted data)
         {
@@ -174,10 +177,12 @@ namespace Playground
 
         public void HandleAPICall(PD_AccountAddFriend data)
         {
+            LOG.Print("{0} added you as a friend. Adding to your friends list...", data.name);
             account.friends.Add(data.name);
         }
         public void HandleAPICall(PD_AccountRemoveFriend data)
         {
+            LOG.Print("{0} removed you as a friend. Removing from your friends list...", data.name);
             account.friends.Remove(data.name);
         }
 
@@ -194,6 +199,7 @@ namespace Playground
                 name = data.name,
                 connected = true
             };
+            LOG.Print("Your account has been created.", data.name);
         }
 
         public void HandleAPICall(PD_AccountModify data)
@@ -210,16 +216,19 @@ namespace Playground
             {
                 account.name = data.newName;
             }
+            LOG.Print("The modifications have been applied.");
         }
 
         public void HandleAPICall(PD_AccountDelete data)
         {
             account = null;
+            LOG.Print("Your account has been deleted.");
         }
 
         public void HandleAPICall(PD_AccountConnect data)
         {
             account.connected = true;
+            LOG.Print("Connection successful.");
         }
 
         public void HandleAPICall(PD_AccountDisconnect data)
@@ -230,6 +239,7 @@ namespace Playground
         public void HandleAPICall(PD_AccountAddCharacter data)
         {
             account.characters.Add(new Character(data.race, data.category, data.life, data.name));
+            LOG.Print("Character {0} added successfuly.", data.name);
         }
         public void HandleAPICall(PD_AccountModifyCharacter data)
         {
@@ -239,6 +249,8 @@ namespace Playground
         public void HandleAPICall(PD_AccountDeleteCharacter data)
         {
             account.characters.RemoveAll(c => c.Name == data.name);
+            LOG.Print("Character {0} deleted successfuly.", data.name);
+
         }
         public void HandleAPICall(PD_AccountSetDefaultCharacter data)
         {
@@ -246,9 +258,10 @@ namespace Playground
         }
         public void HandleAPICall(PD_AccountNewDeck data)
         {
-            Deck deck = new Deck() { name = data.name, cardNames = data.cardNames };
+            Deck deck = new Deck() { name = data.name };
             account.defaultDeck = account.defaultDeck ?? deck;
             account.decks.Add(deck);
+            LOG.Print("Deck {0} created.", data.name);
         }
         public void HandleAPICall(PD_AccountAddCard data)
         {
@@ -258,32 +271,65 @@ namespace Playground
         {
             Deck deck = account.decks.Find(d => d.name == data.oldName);
             deck.name = data.newName;
+            LOG.Print("Deck {0} renamed to {1}.", data.oldName, data.newName);
         }
         public void HandleAPICall(PD_AccountDeleteDeck data)
         {
             account.decks.RemoveAll(d => d.name == data.name);
+            LOG.Print("Deck {0} deleted.", data.name);
         }
         public void HandleAPICall(PD_AccountSetDefaultDeck data)
         {
             Deck deck = account.decks.Find(d => d.name == data.name);
             account.defaultDeck = deck;
+            LOG.Print("Deck {0} i now default.", data.name);
         }
 
         public void HandleAPICall(PD_ServerMakeRoom data)
         {
-            liveRooms.Add(new Room(data.name, data.randomSeed));
+            Room newRoom = new Room(data.roomName, data.randomSeed);
+            liveRooms.Add(newRoom);
+            LOG.Print("Room {0} created.", data.roomName);
+            if (data.creatorName == account.name)
+            {
+                room = newRoom;
+                LOG.Print("Room {0} joined.", data.roomName);
+            }
         }
         public void HandleAPICall(PD_ServerRenameRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            Room renamedRoom = liveRooms.FirstOrDefault(r => r.name == data.oldName);
+            if (renamedRoom != null)
+            {
+                renamedRoom.name = data.newName;
+                LOG.Print("Room {0} renamed to {1}.", data.oldName, data.newName);
+            }
         }
         public void HandleAPICall(PD_ServerJoinRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            if (data.userName == account.name)
+            {
+                room = liveRooms.Find(r => r.name == data.roomName);
+                LOG.Print("Room {0} joined", data.roomName);
+            }
+            else if (room != null && room.name == data.roomName)
+            {
+                LOG.Print("{0} just joined!", data.userName);
+            }
         }
         public void HandleAPICall(PD_ServerDeleteRoom data)
         {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            if (room != null && room.name == data.name)
+            {
+                LOG.Print("Your room just got deleted!");
+                room = null;
+            }
+            else
+            {
+                LOG.Print("Room {0} got deleted.", data.name);
+            }
+
+            liveRooms.RemoveAll(r => r.name == data.name);
         }
         public void HandleAPICall(PD_ServerListPlayers data)
         {

@@ -83,6 +83,7 @@ namespace Playground
                 { new string[2] { "account", "modify" }, (arg) => AccountModify(arg) },
                 { new string[2] { "account", "connect" }, (arg) => AccountConnect(arg) },
                 { new string[2] { "account", "disconnect" }, (arg) => AccountDisconnect(arg) },
+                { new string[2] { "account", "list" }, (arg) => AccountList(arg) },
                 //TODO need to retrieve account info on login
 
                 { new string[2] { "friend", "add" }, (arg) => AddFriend(arg) },
@@ -386,6 +387,13 @@ namespace Playground
             SendWithValidation(new PD_AccountDisconnect { email = session.account.email });
         }
 
+        static void AccountList(string[] args)
+        {
+            if (!AssureConnected()) return;
+
+            LOG.Print("Online players : {0}", string.Join(", ", session.onlineAccountNames));
+        }
+
         static void Chat(string[] args)
         {
             if (!AssureConnected()) return;
@@ -494,18 +502,7 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            string inputName = "default name";
-
-            foreach (string arg in args)
-            {
-                string[] parameter = arg.Split('=');
-                switch (parameter[0])
-                {
-                    case "name":
-                        inputName = parameter[1];
-                        break;
-                }
-            }
+            string inputName = args.Length > 0 ? args[0] : "default_deck";
 
             SendWithValidation(new PD_AccountNewDeck
             {
@@ -526,7 +523,7 @@ namespace Playground
                 string[] parameter = arg.Split('=');
                 switch (parameter[0])
                 {
-                    case "name":
+                    case "card":
                         card = cards.Find(c => c.name == parameter[1]);
                         break;
                     case "deck":
@@ -603,7 +600,8 @@ namespace Playground
 
             SendWithValidation(new PD_ServerMakeRoom
             {
-                name = args[0]
+                roomName = args[0],
+                creatorName = session.account.name
             });
         }
 

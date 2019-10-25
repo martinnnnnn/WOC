@@ -174,7 +174,6 @@ namespace WOC_Core
     public class PD_AccountNewDeck : IPacketData
     {
         public string name;
-        public List<string> cardNames;
     }
     public class PD_AccountAddCard : IPacketData
     {
@@ -218,7 +217,8 @@ namespace WOC_Core
 
     public class PD_ServerMakeRoom : IPacketData
     {
-        public string name;
+        public string roomName;
+        public string creatorName;
         public int randomSeed;
     }
 

@@ -239,5 +239,17 @@ namespace WOC_Server
 
             await Task.WhenAll(tasks);
         }
+
+        public async Task Broadcast(IPacketData data, IEnumerable<ServerSession> sessions)
+        {
+            List<Task> tasks = new List<Task>();
+
+            foreach (Session session in sessions)
+            {
+                 tasks.Add(session.SendAsync(data));
+            }
+
+            await Task.WhenAll(tasks);
+        }
     }
 }
