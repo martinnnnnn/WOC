@@ -74,7 +74,9 @@ namespace Playground
                 { new string[1] { "help" }, (arg) => Help() },
                 { new string[1] { "exit" }, (arg) => exit = true },
 
-                { new string[1] { "/" }, (arg) => Chat(arg) },
+                { new string[1] { "/" }, (arg) => Chat(arg, PD_ServerChat.Type.LOCAL) },
+                { new string[1] { "/f" }, (arg) => Chat(arg, PD_ServerChat.Type.FRIENDS) },
+                { new string[1] { "/all" }, (arg) => Chat(arg, PD_ServerChat.Type.GLOBAL) },
                 { new string[1] { "info" }, (arg) => Info(arg) },
 
                 //PD_UserMake
@@ -394,14 +396,15 @@ namespace Playground
             LOG.Print("Online players : {0}", string.Join(", ", session.onlineAccountNames));
         }
 
-        static void Chat(string[] args)
+        static void Chat(string[] args, PD_ServerChat.Type t)
         {
             if (!AssureConnected()) return;
 
             session.SendAsync(new PD_ServerChat
             {
                 senderName = session.account.name,
-                message = string.Join(" ", args)
+                message = string.Join(" ", args),
+                type = t
             }).Wait();
         }
 

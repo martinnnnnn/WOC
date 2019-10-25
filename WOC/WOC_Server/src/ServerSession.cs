@@ -333,23 +333,28 @@ namespace WOC_Server
         {
             try
             {
-                if (data.message.StartsWith("f "))
+                switch (data.type)
                 {
-                    data.message = data.message.Remove(0, 2);
-                    server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected)).Wait();
-                }
-                if (data.message.StartsWith("all "))
-                {
-                    data.message = data.message.Remove(0, 4);
-                    server.Broadcast(data, this, true).Wait();
-                }
-                else if (room == null)
-                {
-                    server.Broadcast(data, this).Wait();
-                }
-                else
-                {
-                    room.Broadcast(data, this).Wait();
+                    case PD_ServerChat.Type.LOCAL:
+                        if (room == null)
+                        {
+                            server.Broadcast(data, this).Wait();
+                        }
+                        else
+                        {
+                            room.Broadcast(data, this).Wait();
+                        }
+                        break;
+                    case PD_ServerChat.Type.FRIENDS:
+                        //data.message = data.message.Remove(0, 4);
+                        server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected)).Wait();
+                        break;
+                    case PD_ServerChat.Type.GLOBAL:
+                        server.Broadcast(data, this, true).Wait();
+                        break;
+                    default:
+                        LOG.Print("Message type not supported");
+                        break;
                 }
             }
             catch (Exception)

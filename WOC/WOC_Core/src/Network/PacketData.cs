@@ -205,10 +205,10 @@ namespace WOC_Core
     {
         public enum Type
         {
-            ALL,
+            GLOBAL,
             FRIENDS,
             FRIEND,
-            ROOM
+            LOCAL
         }
         public string senderName;
         public Type type;
