@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="screen" style="flex-grow: 1; align-items: center; justify-content: center; flex-direction: column;">
+        <Style src="GameUI.uss" />
+        <ui:VisualElement name="signing" style="height: 398px; width: 473px;">
+            <ui:TextField picking-mode="Ignore" label="Email:" name="email-field1" class="signing-field" />
+            <ui:TextField picking-mode="Ignore" label="Password:" name="password-field1" class="signing-field" />
+            <ui:Button text="Sign in" name="signin" style="font-size: 30px; margin-left: 35px; margin-right: 35px; margin-bottom: 69px;" />
+            <ui:TextField picking-mode="Ignore" label="Email:" name="email-field2" class="signing-field" />
+            <ui:TextField picking-mode="Ignore" label="Name:" name="name-field2" class="signing-field" />
+            <ui:TextField picking-mode="Ignore" label="Password:" name="password-field2" class="signing-field" />
+            <ui:Button text="Sign up" name="signup" style="font-size: 30px; margin-left: 35px; margin-right: 35px; margin-bottom: 69px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
