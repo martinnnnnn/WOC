@@ -15,12 +15,14 @@ namespace WOC_Server
         TCPServer server;
         SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
 
-        public void Add(ServerSession session)
+        public bool Add(ServerSession session)
         {
             if (!locked)
             {
                 sessions.Add(session);
+                return true;
             }
+            return false;
         }
 
         public void Clear() => sessions.Clear();
@@ -42,6 +44,11 @@ namespace WOC_Server
             Initiative.Max = 50;
             Hand.Max = 3;
 
+            if (Card.Count() == 0)
+            {
+                server.cards.ForEach(c => Card.Add(c));
+            }
+
             //PNJS
             List<Actor> actors = new List<Actor>()
             {
@@ -58,33 +65,15 @@ namespace WOC_Server
         {
             LOG.Print("[ROOM] Battle initialization...");
 
-            //ForEach(s =>
-            //{
-            //    s.account.actor = new PlayerActor(s.account.name, 0, 0);
-            //    var actor = s.account.actor;
-            //    if (battle.Add(actor))
-            //    {
-            //        actor.AddCards(player.cardsName);
-            //        room.Broadcast(player, this).Wait();
-            //    }
-            //});
-            
-            //account.actor = new PlayerActor(
-            //           new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-            //           player.handStartCount,
-            //           player.name,
-            //           player.aggroIncrement,
-            //           player.manaMax);
-
-            //    if (room != null)
-            //    {
-            //        if (room.battle.Add(actor))
-            //        {
-            //            actor.AddCards(player.cardsName);
-            //            room.Broadcast(player, this).Wait();
-            //        }
-            //    }
-
+            ForEach(s =>
+            {
+                s.account.actor = new PlayerActor(s.account.name, 5, 20);
+                var actor = s.account.actor;
+                if (battle.Add(actor))
+                {
+                    actor.AddCards(s.account.defaultDeck.cardNames);
+                }
+            });
         }
 
         bool locked = false;

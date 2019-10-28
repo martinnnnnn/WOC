@@ -185,11 +185,15 @@ namespace WOC_Server
             rooms.Add(room);
             return room;
         }
-        public void MoveToRoom(Room room, ServerSession session)
+        public bool MoveToRoom(Room room, ServerSession session)
         {
-            Debug.Assert(rooms.Find(r => r == room) != null);
-            sessions.Remove(session);
-            room.Add(session);
+            Debug.Assert(rooms.Find(r => r == room) != null && sessions.FirstOrDefault(s => s == session) != null);
+            if (room.Add(session))
+            {
+                sessions.Remove(session);
+                return true;
+            }
+            return false;
         }
 
         public void LeaveRoom(ServerSession session)

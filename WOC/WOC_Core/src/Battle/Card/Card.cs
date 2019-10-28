@@ -20,6 +20,11 @@ namespace WOC_Core
     {
         static Dictionary<string, Card> list = new Dictionary<string, Card>();
 
+        public static int Count()
+        {
+            return list.Count;
+        }
+
         public static Card Get(string cardName)
         {
             return new Card(list[cardName]);
@@ -81,6 +86,14 @@ namespace WOC_Core
                 }
             }
             return result;
+        }
+
+        public static void Init(List<Card> cards)
+        {
+            if (list.Count == 0)
+            {
+                cards.ForEach(c => Add(c));
+            }
         }
     }
 }

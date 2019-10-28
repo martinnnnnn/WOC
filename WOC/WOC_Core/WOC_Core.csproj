@@ -73,4 +73,9 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)..\Assets\$(ProjectName).dll"
+copy /Y "$(TargetDir)Newtonsoft.Json.dll" "$(SolutionDir)..\Assets\Newtonsoft.Json.dll"
+</PostBuildEvent>
+  </PropertyGroup>
 </Project>

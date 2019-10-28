@@ -11,7 +11,8 @@ namespace Playground
     {
         public string name;
         public Battle battle;
-
+        
+       
         public Room(string name, int randomSeed)
         {
             this.name = name;
@@ -32,6 +33,21 @@ namespace Playground
             };
             LOG.Print("[ROOM] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
+        }
+
+        public void InitBattle()
+        {
+            LOG.Print("[ROOM] Battle initialization...");
+
+            ForEach(s =>
+            {
+                s.account.actor = new PlayerActor(s.account.name, 5, 20);
+                var actor = s.account.actor;
+                if (battle.Add(actor))
+                {
+                    actor.AddCards(s.account.defaultDeck.cardNames);
+                }
+            });
         }
     }
 

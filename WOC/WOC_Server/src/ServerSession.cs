@@ -13,7 +13,6 @@ namespace WOC_Server
     public class ServerSession : Session
     {
         TCPServer server;
-
         public Room room;
 
         public ServerSession(TCPServer s)
@@ -328,7 +327,6 @@ namespace WOC_Server
         }
 
         //TODO send validation for chat
-        //TODO chat with friends / room / all
         public void HandleAPICall(PD_ServerChat data)
         {
             try
@@ -549,8 +547,14 @@ namespace WOC_Server
             Room room = server.rooms.FirstOrDefault(r => data.roomName == r.Name);
             if (room != null)
             {
-                server.MoveToRoom(room, this);
-                server.Broadcast(data, this, true).Wait();
+                if (server.MoveToRoom(room, this))
+                {
+                    server.Broadcast(data, this, true).Wait();
+                }
+                else
+                {
+                    errorMessage = "Unable to join room.";
+                }
             }
             else
             {
