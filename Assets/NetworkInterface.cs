@@ -11,9 +11,15 @@ using System.Threading;
 
 public class NetworkInterface : MonoBehaviour
 {
-    ClientSession session;
+    public ClientSession session;
 
-    ConcurrentQueue<IPacketData> outgoingMessages = new ConcurrentQueue<IPacketData>();
+    struct OutPacket
+    {
+        public IPacketData data;
+        public bool force;
+    }
+
+    ConcurrentQueue<OutPacket> outgoingMessages = new ConcurrentQueue<OutPacket>();
     ConcurrentQueue<IPacketData> incomingMessages = new ConcurrentQueue<IPacketData>();
 
     private void Start()
@@ -28,13 +34,17 @@ public class NetworkInterface : MonoBehaviour
         {
             session = new ClientSession(this);
             var udpClient = new UdpClient();
-            udpClient.Client.ReceiveTimeout = 10000;
+            udpClient.Client.ReceiveTimeout = 3000;
             var RequestData = Encoding.ASCII.GetBytes(Serialization.ToJson(new PD_Discovery { }));
             var ServerEp = new IPEndPoint(IPAddress.Any, 0);
             string serverIp = "";
             bool serverFound = false;
             udpClient.EnableBroadcast = true;
-            while (!serverFound)
+
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+
+            while (!serverFound && sw.ElapsedMilliseconds < 1000 * 60)
             {
                 try
                 {
@@ -58,7 +68,15 @@ public class NetworkInterface : MonoBehaviour
                     Thread.Sleep(2000);
                 }
 
+            }
+
+            if (serverFound)
+            {
                 session.Connect(serverIp, 54001);
+            }
+            else
+            {
+                Console.WriteLine("Could not find a server");
             }
         });
     }
@@ -70,16 +88,16 @@ public class NetworkInterface : MonoBehaviour
             HandleAPICall(packet);
         }
 
-        while (outgoingMessages.TryDequeue(out IPacketData packet))
+        while (outgoingMessages.TryDequeue(out OutPacket packet))
         {
-            session.awaitingValidations.TryAdd(packet.id, packet);
-            session.Send(packet, true);
+            session.awaitingValidations.TryAdd(packet.data.id, packet.data);
+            session.Send(packet.data, packet.force);
         }
     }
 
-    public void SendMessage(IPacketData packet)
+    public void SendMessage(IPacketData packet, bool force = false)
     {
-        outgoingMessages.Enqueue(packet);
+        outgoingMessages.Enqueue(new OutPacket { data = packet, force = force });
     }
 
     public void ReceiveMessage(IPacketData packet)
