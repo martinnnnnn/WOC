@@ -45,7 +45,7 @@ namespace Playground
             {
                 try
                 {
-                    LOG.Print("[DISCOVERY] Looking for a server...");
+                    Console.WriteLine("[DISCOVERY] Looking for a server...");
                     udpClient.Send(RequestData, RequestData.Length, new IPEndPoint(IPAddress.Broadcast, 8888));
 
                     var ServerResponseData = udpClient.Receive(ref ServerEp);
@@ -54,14 +54,14 @@ namespace Playground
 
                     PD_Discovery data = Serialization.FromJson<PD_Discovery>(ServerResponse);
                 
-                    LOG.Print("[DISCOVERY] Found a server : {0}", serverIp);
+                    Console.WriteLine("[DISCOVERY] Found a server : {0}", serverIp);
                     udpClient.Close();
                     serverFound = true;
                 }
                 catch (Exception)
                 {
                     StackTrace stackTrace = new StackTrace();
-                    LOG.Print("[DISCOVERY] Coudln't find a server.");
+                    Console.WriteLine("[DISCOVERY] Coudln't find a server.");
                     Thread.Sleep(2000);
                 }
             }
@@ -110,12 +110,12 @@ namespace Playground
                 { new string[2] { "room", "list" }, (arg) => RoomList(arg) },
 
                 //// NAME
-                //{ new string[1] { "name" }, (arg) => LOG.Print("[CLIENT] Your name is {0}.", session.Name) },
+                //{ new string[1] { "name" }, (arg) => Console.WriteLine("[CLIENT] Your name is {0}.", session.Name) },
                 //{ new string[2] { "name", "change" }, (arg) =>
                 //    {
                 //        if (arg.Length == 0)
                 //        {
-                //            LOG.Print("[PLAYGROUND] You need to specify a name.");
+                //            Console.WriteLine("[PLAYGROUND] You need to specify a name.");
                 //            return;
                 //        }
                 //        session.SendAsync(new PD_NameModify { oldName = session.Name, newName = arg[0] }).Wait();
@@ -143,7 +143,7 @@ namespace Playground
                 //}},
                 //{ new string[2] { "room", "leave" }, (arg) => session.SendAsync(new PD_RoomLeave { name = session.Name }).Wait() },
                 //{ new string[2] { "room", "list" }, (arg) => session.SendAsync(new PD_RoomList { }).Wait() },
-                //{ new string[2] { "room", "delete" }, (arg) => LOG.Print("[CLIENT] Room deletion not supported yet.") },
+                //{ new string[2] { "room", "delete" }, (arg) => Console.WriteLine("[CLIENT] Room deletion not supported yet.") },
 
                 //// PLAYER
                 //{ new string[2] { "player", "list" }, (arg) => session.SendAsync(new PD_PlayerList { roomName = (arg.Length > 0) ? arg[0] : "" }).Wait() },
@@ -158,7 +158,7 @@ namespace Playground
                 //{
                 //    if (session.room == null)
                 //    {
-                //        LOG.Print("[PLAYGROUND] You are not in a room ; starting a battle is not possible.");
+                //        Console.WriteLine("[PLAYGROUND] You are not in a room ; starting a battle is not possible.");
                 //        return;
                 //    }
 
@@ -166,7 +166,7 @@ namespace Playground
                 //    {
                 //        if (session.room.battle.GetCurrentActor() == session.room.actor)
                 //        {
-                //            LOG.Print("[PLAYGROUND] It's my turn !");
+                //            Console.WriteLine("[PLAYGROUND] It's my turn !");
                 //        }
                 //        session.SendAsync(new PD_BattleStart()).Wait();
                 //    }
@@ -182,12 +182,12 @@ namespace Playground
                 //    PlayerActor actor = session.actors.Find(a => a.Chara.Name == arg[0]);
                 //    if (arg.Length == 0 || actor == null)
                 //    {
-                //        LOG.Print("[PLAYGROUND] No character with this name.");
+                //        Console.WriteLine("[PLAYGROUND] No character with this name.");
                 //        return;
                 //    }
                 //    if (session.room == null)
                 //    {
-                //        LOG.Print("[PLAYGROUND] You're not in a room yet.");
+                //        Console.WriteLine("[PLAYGROUND] You're not in a room yet.");
                 //        return;
                 //    }
 
@@ -215,7 +215,7 @@ namespace Playground
                 //        session.room.battle.NextActor().StartTurn();
                 //        if (session.room.battle.GetCurrentActor() == session.room.actor)
                 //        {
-                //            LOG.Print("[PLAYGROUND] It's my turn !");
+                //            Console.WriteLine("[PLAYGROUND] It's my turn !");
                 //        }
                 //        session.SendAsync(new PD_TurnEnd()).Wait();
                 //    }
@@ -242,7 +242,7 @@ namespace Playground
                     }
                     else
                     {
-                        LOG.Print("[PLAYGROUND] Invalid command");
+                        Console.WriteLine("[PLAYGROUND] Invalid command");
                     }
                 }
             }
@@ -258,13 +258,13 @@ namespace Playground
             switch (args[0])
             {
                 case "account":
-                    LOG.Print("Email : {0} | Name : {1}\nStatus : {2}\nFriends count : {3} | Characters count : {4} | Decks count : {5}",
+                    Console.WriteLine("Email : {0} | Name : {1}\nStatus : {2}\nFriends count : {3} | Characters count : {4} | Decks count : {5}",
                         session.account.email, session.account.name,
                         session.account.connected ? "Online" : "Offline",
                         session.account.friends.Count, session.account.characters.Count, session.account.decks.Count);
                     break;
                 case "friends":
-                    LOG.Print("Friends list : {0}", string.Join(", ", session.account.friends));
+                    Console.WriteLine("Friends list : {0}", string.Join(", ", session.account.friends));
                     break;
                 case "characters":
                     string[] charaInfo = new string[session.account.characters.Count];
@@ -274,8 +274,8 @@ namespace Playground
                         charaInfo[index] = string.Format("{0} | {1} | {2} | {3}", c.Name, c.race.ToString(), c.category.ToString(), c.Life);
                         index++;
                     });
-                    LOG.Print("Default Character : {0}", session.account.defaultCharacter?.Name);
-                    LOG.Print("Characters list :\n{0}", string.Join("\n", charaInfo));
+                    Console.WriteLine("Default Character : {0}", session.account.defaultCharacter?.Name);
+                    Console.WriteLine("Characters list :\n{0}", string.Join("\n", charaInfo));
                     break;
                 case "decks":
                     string[] deckInfo = new string[session.account.decks.Count];
@@ -285,8 +285,8 @@ namespace Playground
                         deckInfo[indx] = string.Format("{0} -> {1}", d.name, string.Format(", ", d.cardNames));
                         indx++;
                     });
-                    LOG.Print("Default Deck : {0}", session.account.defaultDeck?.name);
-                    LOG.Print("Decks list :\n{0}", string.Join("\n", deckInfo));
+                    Console.WriteLine("Default Deck : {0}", session.account.defaultDeck?.name);
+                    Console.WriteLine("Decks list :\n{0}", string.Join("\n", deckInfo));
                     break;
             }
         }
@@ -378,7 +378,7 @@ namespace Playground
             }
             else
             {
-                LOG.Print("[PLAYGROUND] You need to create a account first.");
+                Console.WriteLine("[PLAYGROUND] You need to create a account first.");
             }
         }
 
@@ -393,7 +393,7 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            LOG.Print("Online players : {0}", string.Join(", ", session.onlineAccountNames));
+            Console.WriteLine("Online players : {0}", string.Join(", ", session.onlineAccountNames));
         }
 
         static void Chat(string[] args, PD_ServerChat.Type t)
@@ -418,7 +418,7 @@ namespace Playground
             }
             else
             {
-                LOG.Print("You cannot add a friend twice.");
+                Console.WriteLine("You cannot add a friend twice.");
             }
         }
 
@@ -432,7 +432,7 @@ namespace Playground
             }
             else
             {
-                LOG.Print("You cannot delete a friend you don't have.");
+                Console.WriteLine("You cannot delete a friend you don't have.");
             }
         }
 
@@ -476,7 +476,7 @@ namespace Playground
 
         static void CharacterModify(string[] args)
         {
-            LOG.Print("Not supported");
+            Console.WriteLine("Not supported");
         }
 
         static void CharacterDelete(string[] args)
@@ -664,7 +664,7 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            LOG.Print("Live room list : {0}", string.Join(", ", session.liveRooms.Select(lr => lr.name)));
+            Console.WriteLine("Live room list : {0}", string.Join(", ", session.liveRooms.Select(lr => lr.name)));
         }
         
 
@@ -672,7 +672,7 @@ namespace Playground
         //{
         //    if (args.Length == 0)
         //    {
-        //        LOG.Print("[PLAYGROUND] You need to specify a name for the room.");
+        //        Console.WriteLine("[PLAYGROUND] You need to specify a name for the room.");
         //        return;
         //    }
 
@@ -688,7 +688,7 @@ namespace Playground
         {
             if (session.account == null || !session.account.connected)
             {
-                LOG.Print("You need to be connected to do this.");
+                Console.WriteLine("You need to be connected to do this.");
                 return false;
             }
             return true;
@@ -696,28 +696,28 @@ namespace Playground
 
         static void Help()
         {
-            LOG.Print("> help                                : All the help you need.");
-            LOG.Print("> exit                                : Exists the game.");
+            Console.WriteLine("> help                                : All the help you need.");
+            Console.WriteLine("> exit                                : Exists the game.");
                                                              
-            LOG.Print("> name                                : Shows your name.");
-            LOG.Print("> name change <new_name>              : Changes your name to <new_name>.");
+            Console.WriteLine("> name                                : Shows your name.");
+            Console.WriteLine("> name change <new_name>              : Changes your name to <new_name>.");
                                                              
-            LOG.Print("> server connect                      : Connects to the server.");
-            LOG.Print("> server disconnect                   : Disconnects.");
+            Console.WriteLine("> server connect                      : Connects to the server.");
+            Console.WriteLine("> server disconnect                   : Disconnects.");
 
-            LOG.Print("> player list [optional]<room_name>   : The names of players in room <room_name>, or in the lobby if no room name is specified.");
-            LOG.Print("> player add 1|2|3                    : Assigns player 1, 2 or 3 to you.");
+            Console.WriteLine("> player list [optional]<room_name>   : The names of players in room <room_name>, or in the lobby if no room name is specified.");
+            Console.WriteLine("> player add 1|2|3                    : Assigns player 1, 2 or 3 to you.");
 
-            LOG.Print("> battle start                        : Starts the battle.");
-            LOG.Print("> battle add pnj                      : Creates a PNJ. parameters : name, race, category, initiative");
+            Console.WriteLine("> battle start                        : Starts the battle.");
+            Console.WriteLine("> battle add pnj                      : Creates a PNJ. parameters : name, race, category, initiative");
 
-            LOG.Print("> turn play                           : Play a card.");
-            LOG.Print("> turn end                            : End your turn.");
+            Console.WriteLine("> turn play                           : Play a card.");
+            Console.WriteLine("> turn end                            : End your turn.");
 
-            LOG.Print("> room make <name>                    : Creates a room with the name <name>.");
-            LOG.Print("> room join <name>                    : Joins the room called <name>.");
-            LOG.Print("> room leave                          : Leaves the room.");
-            LOG.Print("> room delete                         : {NOT IMPLEMENTED} Deletes the room.");
+            Console.WriteLine("> room make <name>                    : Creates a room with the name <name>.");
+            Console.WriteLine("> room join <name>                    : Joins the room called <name>.");
+            Console.WriteLine("> room leave                          : Leaves the room.");
+            Console.WriteLine("> room delete                         : {NOT IMPLEMENTED} Deletes the room.");
         }
 
         static void InitCards()
@@ -877,7 +877,7 @@ namespace Playground
         //{
         //    if (session.room == null)
         //    {
-        //        LOG.Print("[PLAYGROUND] You need to be in a room to do that");
+        //        Console.WriteLine("[PLAYGROUND] You need to be in a room to do that");
         //        return;
         //    }
 
@@ -912,7 +912,7 @@ namespace Playground
 
         //    if (!session.room.battle.Add(pnj))
         //    {
-        //        LOG.Print("[PLAYGROUND] A PNJ with this name already exists.");
+        //        Console.WriteLine("[PLAYGROUND] A PNJ with this name already exists.");
         //        return;
         //    }
 
@@ -930,13 +930,13 @@ namespace Playground
         //{
         //    if (session.room == null)
         //    {
-        //        LOG.Print("[PLAYGROUND] You need to be in a room to do that.");
+        //        Console.WriteLine("[PLAYGROUND] You need to be in a room to do that.");
         //        return;
         //    }
 
         //    if (session.room.battle.HasStarted)
         //    {
-        //        LOG.Print("[PLAYGROUND] The battle has not started yet.");
+        //        Console.WriteLine("[PLAYGROUND] The battle has not started yet.");
         //        return;
         //    }
 
@@ -945,12 +945,12 @@ namespace Playground
         //    Card card;
         //    if (actor != battle.GetCurrentActor())
         //    {
-        //        LOG.Print("[BATTLE] It's not your turn !");
+        //        Console.WriteLine("[BATTLE] It's not your turn !");
         //        return;
         //    }
         //    if (actor.hand.Count == 0)
         //    {
-        //        LOG.Print("[BATTLE] No more cards left !");
+        //        Console.WriteLine("[BATTLE] No more cards left !");
         //        return;
         //    }
 
@@ -962,7 +962,7 @@ namespace Playground
         //        card = actor.hand.Get(cardIndex);
         //        if (card == null && cardIndex != -1)
         //        {
-        //            LOG.Print("You need to give me a valid index !");
+        //            Console.WriteLine("You need to give me a valid index !");
         //        }
         //    } while (card == null && cardIndex != -1);
 
@@ -978,7 +978,7 @@ namespace Playground
         //        }
         //        if ((targetIndex < 0 || targetIndex >= battle.Actors.Count) && targetIndex != -1)
         //        {
-        //            LOG.Print("You need to give me a valid index !");
+        //            Console.WriteLine("You need to give me a valid index !");
         //        }
         //        else if (targetIndex != -1)
         //        {

@@ -27,7 +27,7 @@ namespace WOC_Core
             discardPile = new CardPile(this);
             aggro.IncrementRatio = 0;
             mana.Max = manaMax;
-            LOG.Print("[PLAYER] mana max : {0}", mana.Max);
+            Console.WriteLine("[PLAYER] mana max : {0}", mana.Max);
         }
 
         public void AddCards(List<string> cardsNames)
@@ -76,7 +76,7 @@ namespace WOC_Core
                 mana.Reset();
                 aggro.StartTurn();
                 DrawCards(Hand.StartingCount);
-                LOG.Print("{0}/{1} mana, {2} life", mana.Value, mana.Max, Chara.Life);
+                Console.WriteLine("{0}/{1} mana, {2} life", mana.Value, mana.Max, Chara.Life);
                 return true;
             }
             return false;
@@ -86,19 +86,19 @@ namespace WOC_Core
         {
             if (turnState == TurnState.NOT_MINE)
             {
-                LOG.Print("[BATTLE] {0} cannot play : not his turn.", Name);
+                Console.WriteLine("[BATTLE] {0} cannot play : not his turn.", Name);
                 return false;
             }
 
             if (!hand.Contains(card))
             {
-                LOG.Print("[BATTLE] {0} cannot play : he doesn't have this card.", Name);
+                Console.WriteLine("[BATTLE] {0} cannot play : he doesn't have this card.", Name);
                 return false;
             }
 
             if (mana.Value < card.manaCost)
             {
-                LOG.Print("[BATTLE] {0} cannot play : not enough mana ({1} < {2}).", Name, mana.Value, card.manaCost);
+                Console.WriteLine("[BATTLE] {0} cannot play : not enough mana ({1} < {2}).", Name, mana.Value, card.manaCost);
                 return false;
             }
 
@@ -108,22 +108,22 @@ namespace WOC_Core
                 hand.Remove(card);
                 discardPile.Push(card);
                 aggro.Increment();
-                LOG.Print("[BATTLE] {0} played {1} on {2}", Name, card.name, target.Name);
+                Console.WriteLine("[BATTLE] {0} played {1} on {2}", Name, card.name, target.Name);
                 card.effects.ForEach(e =>
                 {
                     switch (e)
                     {
                         case CardEffectDamage dmg:
-                            LOG.Print("[CARDEFFECT] [DMG] {0} dmg to {1} who has {2} hp, {3} mana left", dmg.value, target.Name, target.Life, mana.Value);
+                            Console.WriteLine("[CARDEFFECT] [DMG] {0} dmg to {1} who has {2} hp, {3} mana left", dmg.value, target.Name, target.Life, mana.Value);
                             break;
                         case CardEffectHeal heal:
-                            LOG.Print("[CARDEFFECT] [HEAL] {0} heal to {1} who has {2} hp, {3} mana left", heal.value, target.Name, target.Life, mana.Value);
+                            Console.WriteLine("[CARDEFFECT] [HEAL] {0} heal to {1} who has {2} hp, {3} mana left", heal.value, target.Name, target.Life, mana.Value);
                             break;
                         case CardEffectDraw draw:
-                            LOG.Print("[CARDEFFECT] [DRAW] {0} cards drawn by {1} who has {2} cards, {3} mana left", draw.value, this.Name, hand.Count, mana.Value);
+                            Console.WriteLine("[CARDEFFECT] [DRAW] {0} cards drawn by {1} who has {2} cards, {3} mana left", draw.value, this.Name, hand.Count, mana.Value);
                             break;
                         case CardEffectDiscard disc:
-                            LOG.Print("[CARDEFFECT] [DISCARD] {0} cards discarded by {1} who has {2} cards, {3} mana left", disc.value, this.Name, hand.Count, mana.Value);
+                            Console.WriteLine("[CARDEFFECT] [DISCARD] {0} cards discarded by {1} who has {2} cards, {3} mana left", disc.value, this.Name, hand.Count, mana.Value);
                             break;
                     }
                 });

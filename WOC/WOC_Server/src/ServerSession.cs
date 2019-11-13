@@ -351,13 +351,13 @@ namespace WOC_Server
                         server.Broadcast(data, this, true);
                         break;
                     default:
-                        LOG.Print("Message type not supported");
+                        Console.WriteLine("Message type not supported");
                         break;
                 }
             }
             catch (Exception)
             {
-                LOG.Print("[SERVER] Failed to broadcast message.");
+                Console.WriteLine("[SERVER] Failed to broadcast message.");
             }
         }
 

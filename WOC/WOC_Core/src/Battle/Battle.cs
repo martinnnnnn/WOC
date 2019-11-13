@@ -35,7 +35,7 @@ namespace WOC_Core
         {
             if (!HasStarted)
             {
-                LOG.Print("[BATTLE] Starting !");
+                Console.WriteLine("[BATTLE] Starting !");
                 foreach (Actor actor in Actors)
                 {
                     actor.BattleInit();
@@ -46,7 +46,7 @@ namespace WOC_Core
                 HasStarted = true;
                 return true;
             }
-            LOG.Print("[BATTLE] Already started !");
+            Console.WriteLine("[BATTLE] Already started !");
             return false;
         }
 
@@ -73,7 +73,7 @@ namespace WOC_Core
 
         public void OnCharacterDeath(Character character)
         {
-            LOG.Print("{0} died !", character.Name);
+            Console.WriteLine("{0} died !", character.Name);
             int index = Actors.FindIndex(a => a.Name == character.Owner.Name);
             Actor value = Actors[index];
             Actors.RemoveAt(index);
@@ -90,10 +90,10 @@ namespace WOC_Core
             {
                 Actors.Add(actor);
                 actor.Battle = this;
-                LOG.Print("[BATTLE] Actor {0} added.", actor.Name);
+                Console.WriteLine("[BATTLE] Actor {0} added.", actor.Name);
                 return true;
             }
-            LOG.Print("[BATTLE] Actor {0} already exists.", actor.Name);
+            Console.WriteLine("[BATTLE] Actor {0} already exists.", actor.Name);
             return false;
         }
 

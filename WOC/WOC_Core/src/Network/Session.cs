@@ -26,10 +26,10 @@ namespace WOC_Core
 
         public void Connect(TcpClient client)
         {
-            LOG.Print("[NETWORK] Trying to setup client.");
+            Console.WriteLine("[NETWORK] Trying to setup client.");
             if (listening)
             {
-                LOG.Print("[NETWORK] Socket already open, closing it.");
+                Console.WriteLine("[NETWORK] Socket already open, closing it.");
                 Close();
             }
 
@@ -38,17 +38,17 @@ namespace WOC_Core
                 this.client = client;
                 netstream = client.GetStream();
                 Task.Run(() => ListenAsync());
-                LOG.Print("[NETWORK] Setup completed !");
+                Console.WriteLine("[NETWORK] Setup completed !");
             }
             catch (Exception e)
             {
-                LOG.Print("[NETWORK] Failed to connect. {0}", e.Message);
+                Console.WriteLine("[NETWORK] Failed to connect. {0}", e.Message);
             }
         }
 
         public void Connect(string ip, int port)
         {
-            LOG.Print("[NETWORK] Trying to connect to {0}:{1}", ip, port);
+            Console.WriteLine("[NETWORK] Trying to connect to {0}:{1}", ip, port);
             if (listening)
             {
                 SendClose();
@@ -59,18 +59,18 @@ namespace WOC_Core
 
             ServerIP = ip;
             ServerPort = port;
-            LOG.Print("[NETWORK] Connecting...");
+            Console.WriteLine("[NETWORK] Connecting...");
             client = new TcpClient();
             try
             {
                 client.Connect(ip, port);
                 netstream = client.GetStream();
                 Task.Run(() => ListenAsync());
-                LOG.Print("[NETWORK] Connected !");
+                Console.WriteLine("[NETWORK] Connected !");
             }
             catch (Exception e)
             {
-                LOG.Print("[NETWORK] Failed to connect. {0}", e.Message);
+                Console.WriteLine("[NETWORK] Failed to connect. {0}", e.Message);
             }
         }
 
@@ -93,26 +93,26 @@ namespace WOC_Core
                     try
                     {
                         data = Serialization.FromJson<IPacketData>(msg);
-                        LOG.Print("[NETWORK] Received a packet : {0}", data);
+                        Console.WriteLine("[NETWORK] Received a packet : {0}", data);
                         HandleIncomingMessage(data);
                     }
                     catch (Exception e)
                     {
                         StackTrace stackTrace = new StackTrace();
-                        LOG.Print("[NETWORK] Error while handling the message. " + e.Message);
+                        Console.WriteLine("[NETWORK] Error while handling the message. " + e.Message);
                     }
 
                 }
             }
             catch (Exception e)
             {
-                LOG.Print("[NETWORK] Lost connection. " + e.Message);
+                Console.WriteLine("[NETWORK] Lost connection. " + e.Message);
             }
             finally
             {
                 client.Close();
                 listening = false;
-                LOG.Print("[NETWORK] TCP socket closed.");
+                Console.WriteLine("[NETWORK] TCP socket closed.");
             }
         }
 
@@ -133,13 +133,13 @@ namespace WOC_Core
 
         public void SendClose()
         {
-            LOG.Print("[NETWORK] Sending shutdown message socket.");
+            Console.WriteLine("[NETWORK] Sending shutdown message socket.");
             Send(new PD_SessionShutdown());
         }
 
         public void Close()
         {
-            LOG.Print("[NETWORK] Closing socket.");
+            Console.WriteLine("[NETWORK] Closing socket.");
             tokenSource.Cancel();
             OnDisconnect?.Invoke();
             netstream.Close();
@@ -155,7 +155,7 @@ namespace WOC_Core
             }
             catch (Exception e)
             {
-                LOG.Print("Failed to Send message : {0}", e.Message);
+                Console.WriteLine("Failed to Send message : {0}", e.Message);
                 Close();
             }
         }
@@ -164,12 +164,12 @@ namespace WOC_Core
         {
             if ((account != null && account.connected) || force)
             {
-                LOG.Print("[NETWORK] Sending a packet : {0}", data);
+                Console.WriteLine("[NETWORK] Sending a packet : {0}", data);
                 Send(Serialization.ToJson(data));
             }
             else
             {
-                LOG.Print("[NETWORK] Not authorized to send : {0}", data);
+                Console.WriteLine("[NETWORK] Not authorized to send : {0}", data);
             }
         }
         

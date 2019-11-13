@@ -17,7 +17,7 @@ namespace WOC_Client
         {
             this.name = name;
 
-            LOG.Print("[ROOM] Battle construction...");
+            Console.WriteLine("[ROOM] Battle construction...");
             battle = new Battle(randomSeed);
 
             Initiative.Max = 50;
@@ -31,13 +31,13 @@ namespace WOC_Client
                 new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
                 new PNJActor(new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
-            LOG.Print("[ROOM] Adding PNJs");
+            Console.WriteLine("[ROOM] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
         }
 
         public void InitBattle()
         {
-            LOG.Print("[ROOM] Battle initialization...");
+            Console.WriteLine("[ROOM] Battle initialization...");
         }
     }
 }

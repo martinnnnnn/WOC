@@ -37,7 +37,7 @@ namespace WOC_Server
             Name = name;
             this.server = server;
 
-            LOG.Print("[ROOM] Battle construction...");
+            Console.WriteLine("[ROOM] Battle construction...");
             battle = new Battle(randomSeed);
             battle.OnBattleEnd += BattleOver;
 
@@ -57,13 +57,13 @@ namespace WOC_Server
                 new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
                 new PNJActor(new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
-            LOG.Print("[ROOM] Adding PNJs");
+            Console.WriteLine("[ROOM] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
         }
 
         public void InitBattle()
         {
-            LOG.Print("[ROOM] Battle initialization...");
+            Console.WriteLine("[ROOM] Battle initialization...");
 
             ForEach(s =>
             {
@@ -85,7 +85,7 @@ namespace WOC_Server
 
         void BattleOver()
         {
-            LOG.Print("Battle over !!!\n Moving sessions back to the main server.");
+            Console.WriteLine("Battle over !!!\n Moving sessions back to the main server.");
             ForEach(s => server.sessions.Add(s));
             ForEach(s => s.room = null);
             sessions.Clear();

@@ -17,7 +17,7 @@ namespace Playground
         {
             this.name = name;
 
-            LOG.Print("[ROOM] Battle construction...");
+            Console.WriteLine("[ROOM] Battle construction...");
             battle = new Battle(randomSeed);
 
             Initiative.Max = 50;
@@ -31,13 +31,13 @@ namespace Playground
                 new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
                 new PNJActor(new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
             };
-            LOG.Print("[ROOM] Adding PNJs");
+            Console.WriteLine("[ROOM] Adding PNJs");
             actors.ForEach(a => battle.Add(a));
         }
 
         public void InitBattle()
         {
-            LOG.Print("[ROOM] Battle initialization...");
+            Console.WriteLine("[ROOM] Battle initialization...");
 
             //ForEach(s =>
             //{
@@ -96,7 +96,7 @@ namespace Playground
     //        battle.NextActor().StartTurn();
     //        if (battle.GetCurrentActor() == actor)
     //        {
-    //            LOG.Print("[PLAYGROUND] It's my turn !");
+    //            Console.WriteLine("[PLAYGROUND] It's my turn !");
     //        }
     //    }
 
@@ -105,7 +105,7 @@ namespace Playground
     //        battle.Start();
     //        if (battle.GetCurrentActor() == actor)
     //        {
-    //            LOG.Print("[PLAYGROUND] It's my turn !");
+    //            Console.WriteLine("[PLAYGROUND] It's my turn !");
     //        }
     //    }
 
@@ -113,7 +113,7 @@ namespace Playground
     //    {
     //        if (roomJoin.playerName == actor.Name)
     //        {
-    //            LOG.Print("[CLIENT] Welcome to {0}.", roomJoin.roomName);
+    //            Console.WriteLine("[CLIENT] Welcome to {0}.", roomJoin.roomName);
     //            InitBattle(roomJoin.randomSeed);
     //            if (actor != null)
     //            {
@@ -122,7 +122,7 @@ namespace Playground
     //        }
     //        else
     //        {
-    //            LOG.Print("[CLIENT] {0} just joined.", roomJoin.playerName);
+    //            Console.WriteLine("[CLIENT] {0} just joined.", roomJoin.playerName);
     //            if (roomJoin.playerInfo != null)
     //            {
     //                HandlePlayerAdd(roomJoin.playerInfo as PD_PlayerAdd);
@@ -134,18 +134,18 @@ namespace Playground
     //    {
     //        var pnj = new PNJActor(new Character(pnjAdd.race, pnjAdd.category, pnjAdd.life), pnjAdd.name, pnjAdd.initiative);
     //        battle.Add(pnj);
-    //        LOG.Print("[CLIENT] {0} is here to fight !", pnj.Name);
+    //        Console.WriteLine("[CLIENT] {0} is here to fight !", pnj.Name);
     //    }
 
     //    public void InitBattle(int randomSeem)
     //    {
-    //        LOG.Print("[CLIENT] Battle initialization...");
+    //        Console.WriteLine("[CLIENT] Battle initialization...");
     //        battle = new Battle(randomSeem);
     //        battle.OnBattleEnd += () =>
     //        {
     //            if (actor.character.Life > 0)
     //            {
-    //                LOG.Print("You won !!! ");
+    //                Console.WriteLine("You won !!! ");
     //            }
     //        };
 
@@ -169,7 +169,7 @@ namespace Playground
     //                new CardEffectDamage(10)
     //            })
     //        };
-    //        LOG.Print("[ROOM] Adding cards");
+    //        Console.WriteLine("[ROOM] Adding cards");
     //        cardsMap.ForEach(c => Card.Add(c));
 
     //        //PNJS
@@ -180,7 +180,7 @@ namespace Playground
     //            new PNJActor(new Character(Character.Race.OGRE, Character.Category.BARBARIAN, 20), "monstre2", 5),
     //            new PNJActor(new Character(Character.Race.OGRE, Character.Category.CHAMAN, 15), "monstre3", 5)
     //        };
-    //        LOG.Print("[CLIENT] Adding PNJs");
+    //        Console.WriteLine("[CLIENT] Adding PNJs");
     //        actors.ForEach(a => battle.Add(a));
     //    }
     //}

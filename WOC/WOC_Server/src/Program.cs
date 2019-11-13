@@ -50,13 +50,13 @@ namespace WOC_Server
 
             server.Close();
             serverTask?.Wait();
-            LOG.Print("Server closed, any input will end the program");
+            Console.WriteLine("Server closed, any input will end the program");
             Console.ReadLine();
         }
 
         static void StartDiscoveryServer()
         {
-            LOG.Print("[DISCOVERY] Booting discovery server at port {0}", 8888);
+            Console.WriteLine("[DISCOVERY] Booting discovery server at port {0}", 8888);
             var Server = new UdpClient(8888);
 
             while (true)
@@ -65,7 +65,7 @@ namespace WOC_Server
                 var request = Server.Receive(ref ClientEp);
                 var discovery = Serialization.FromJson<PD_Discovery>(Encoding.ASCII.GetString(request));
 
-                LOG.Print("[DISCOVERY] Client looking for a server : {0}", ClientEp.Address.ToString());
+                Console.WriteLine("[DISCOVERY] Client looking for a server : {0}", ClientEp.Address.ToString());
                 Server.Send(request, request.Length, ClientEp);
             }
         }

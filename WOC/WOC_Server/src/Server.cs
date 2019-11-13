@@ -124,11 +124,11 @@ namespace WOC_Server
 
         public async Task StartAsync(IPAddress ip, int port)
         {
-            LOG.Print("[SERVER] Welcome to the WOC Server ! ");
-            LOG.Print("[SERVER] Starting to listen on {0}:{1}", ip, port);
+            Console.WriteLine("[SERVER] Welcome to the WOC Server ! ");
+            Console.WriteLine("[SERVER] Starting to listen on {0}:{1}", ip, port);
             if (listening)
             {
-                LOG.Print("[SERVER] Already started, trying to close first...");
+                Console.WriteLine("[SERVER] Already started, trying to close first...");
                 Close();
             }
 
@@ -139,7 +139,7 @@ namespace WOC_Server
             token = tokenSource.Token;
             listener.Start();
             listening = true;
-            LOG.Print("[SERVER] Server operational.");
+            Console.WriteLine("[SERVER] Server operational.");
 
             try
             {
@@ -158,10 +158,10 @@ namespace WOC_Server
                             sessions.Remove(session);
                             rooms.ForEach(r => r.Remove(session));
                             //Broadcast(new PD_SessionDisconnect { name = session.Name }, null, true).Wait();
-                            LOG.Print("[SERVER] Client closed. {0} clients still connected", sessions.Count);
+                            Console.WriteLine("[SERVER] Client closed. {0} clients still connected", sessions.Count);
                         };
                         sessions.Add(session);
-                        LOG.Print("[SERVER] Client connected. {0} clients connected", sessions.Count);
+                        Console.WriteLine("[SERVER] Client connected. {0} clients connected", sessions.Count);
                     }, token);
                 }
             }
@@ -206,7 +206,7 @@ namespace WOC_Server
         {
             if (listening)
             {
-                LOG.Print("[SERVER] Closing server.");
+                Console.WriteLine("[SERVER] Closing server.");
                 listener.Stop();
                 foreach (Session s in sessions)
                 {
@@ -215,11 +215,11 @@ namespace WOC_Server
                 sessions.Clear();
                 rooms.Clear();
                 listening = false;
-                LOG.Print("[SERVER] Server closed.");
+                Console.WriteLine("[SERVER] Server closed.");
             }
             else
             {
-                LOG.Print("[SERVER] already closed.");
+                Console.WriteLine("[SERVER] already closed.");
             }
         }
 

@@ -31,7 +31,7 @@ namespace WOC_Core
         {
             if (base.StartTurn())
             {
-                LOG.Print("[PNJ] {0} plays his turn", Name);
+                Console.WriteLine("[PNJ] {0} plays his turn", Name);
                 return EndTurn();
             }
             return false;

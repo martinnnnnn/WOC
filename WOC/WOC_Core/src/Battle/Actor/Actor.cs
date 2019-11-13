@@ -75,7 +75,7 @@ namespace WOC_Core
         {
             if (turnState == TurnState.NOT_MINE)
             {
-                LOG.Print("[ACTOR] {0}({1}) turn starts", Name, character.Name);
+                Console.WriteLine("[ACTOR] {0}({1}) turn starts", Name, character.Name);
                 turnState = TurnState.MINE;
                 return true;
             }
@@ -86,7 +86,7 @@ namespace WOC_Core
         {
             if (turnState == TurnState.MINE)
             {
-                LOG.Print("[ACTOR] {0} turn ends", Name);
+                Console.WriteLine("[ACTOR] {0} turn ends", Name);
                 turnState = TurnState.NOT_MINE;
                 return true;
             }
