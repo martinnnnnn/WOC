@@ -51,7 +51,7 @@ namespace WOC_Core
             LOG.Print("[NETWORK] Trying to connect to {0}:{1}", ip, port);
             if (listening)
             {
-                SendClose().Wait();
+                SendClose();
                 Close();
                 listening = false;
                 Thread.Sleep(500);
@@ -116,20 +116,25 @@ namespace WOC_Core
             }
         }
 
-        public virtual void HandleIncomingMessage(IPacketData data)
+        public void HandleIncomingMessage(IPacketData data)
         {
             switch (data)
             {
                 case PD_SessionShutdown sd:
                     Close();
                     break;
+                default:
+                    HandleAPICall(data);
+                    break;
             }
         }
 
-        public async Task SendClose()
+        public virtual void HandleAPICall(IPacketData data) {}
+
+        public void SendClose()
         {
             LOG.Print("[NETWORK] Sending shutdown message socket.");
-            await SendAsync(new PD_SessionShutdown());
+            Send(new PD_SessionShutdown());
         }
 
         public void Close()
@@ -141,12 +146,12 @@ namespace WOC_Core
             client.Close();
         }
 
-        public async Task SendAsync(string message)
+        public void Send(string message)
         {
             try
             {
                 var bytesMessage = Encoding.UTF8.GetBytes(message);
-                await netstream.WriteAsync(bytesMessage, 0, bytesMessage.Length);
+                netstream.Write(bytesMessage, 0, bytesMessage.Length);
             }
             catch (Exception e)
             {
@@ -155,12 +160,12 @@ namespace WOC_Core
             }
         }
 
-        public async Task SendAsync(IPacketData data, bool force = false)
+        public void Send(IPacketData data, bool force = false)
         {
             if ((account != null && account.connected) || force)
             {
                 LOG.Print("[NETWORK] Sending a packet : {0}", data);
-                await SendAsync(Serialization.ToJson(data));
+                Send(Serialization.ToJson(data));
             }
             else
             {
@@ -168,9 +173,9 @@ namespace WOC_Core
             }
         }
         
-        public async Task SendValidation(Guid toValidate, string errMessage = "")
+        public void SendValidation(Guid toValidate, string errMessage = "")
         {
-            await SendAsync(Serialization.ToJson(new PD_Validation(toValidate, errMessage)));
+            Send(Serialization.ToJson(new PD_Validation(toValidate, errMessage)));
         }
     }
 }

@@ -20,7 +20,7 @@ namespace WOC_Server
             server = s;
         }
 
-        public void HandleAPICall(IPacketData data)
+        public override void HandleAPICall(IPacketData data)
         {
             switch (data)
             {
@@ -138,11 +138,11 @@ namespace WOC_Server
                 }
                 else
                 {
-                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true).Wait();
+                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true);
                 }
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage), true).Wait();
+            Send(new PD_Validation(data.id, errorMessage), true);
         }
 
         public void HandleAPICall(PD_AccountModify data)
@@ -177,7 +177,7 @@ namespace WOC_Server
 
                 if (result && data.oldName != data.newName)
                 {
-                    server.Broadcast(new PD_AccountNameModify{ oldName = data.oldName, newName = data.newName}, this, true).Wait();
+                    server.Broadcast(new PD_AccountNameModify{ oldName = data.oldName, newName = data.newName}, this, true);
                 }
             }
             else
@@ -185,7 +185,7 @@ namespace WOC_Server
                 errorMessage = "Could not find the email.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountDelete data)
@@ -198,7 +198,7 @@ namespace WOC_Server
             {
                 if (deletingAccount.password == data.password)
                 {
-                    server.Broadcast(new PD_AccountDeleted { name = account.name }, this, true).Wait();
+                    server.Broadcast(new PD_AccountDeleted { name = account.name }, this, true);
                     account = null;
                 }
                 else
@@ -211,7 +211,7 @@ namespace WOC_Server
                 errorMessage = "Could not find matching email.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountConnect data)
@@ -226,7 +226,7 @@ namespace WOC_Server
                     connectingAccount.connected = true;
                     connectingAccount.session = this;
                     account = connectingAccount;
-                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true).Wait();
+                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true);
                 }
                 else
                 {
@@ -238,7 +238,7 @@ namespace WOC_Server
                 errorMessage = "Could not find matching email.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountDisconnect data)
@@ -249,7 +249,7 @@ namespace WOC_Server
             bool result = server.users.TryGetValue(data.email, out Account disconnectingAccount);
             if (result)
             {
-                server.Broadcast(new PD_AccountDisconnected { name = account.name }, this, true).Wait();
+                server.Broadcast(new PD_AccountDisconnected { name = account.name }, this, true);
                 disconnectingAccount.connected = false;
                 disconnectingAccount.session = null;
                 account = null;
@@ -259,7 +259,7 @@ namespace WOC_Server
                 errorMessage = "Could not find matching email.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage), true).Wait();
+            Send(new PD_Validation(data.id, errorMessage), true);
         }
 
         public void HandleAPICall(PD_AccountAddFriend data)
@@ -283,7 +283,7 @@ namespace WOC_Server
                 {
                     account.friends.Add(newFriend.name);
                     newFriend.friends.Add(account.name);
-                    newFriend.session?.SendAsync(new PD_AccountAddFriend{ name = account.name });
+                    newFriend.session?.Send(new PD_AccountAddFriend{ name = account.name });
                 }
             }
             else
@@ -291,7 +291,7 @@ namespace WOC_Server
                 errorMessage = "You cannot add yourself.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountRemoveFriend data)
@@ -315,7 +315,7 @@ namespace WOC_Server
                 {
                     account.friends.Remove(oldFriend.name);
                     oldFriend.friends.Remove(account.name);
-                    oldFriend.session?.SendAsync(new PD_AccountRemoveFriend { name = account.name });
+                    oldFriend.session?.Send(new PD_AccountRemoveFriend { name = account.name });
                 }
             }
             else
@@ -323,7 +323,7 @@ namespace WOC_Server
                 errorMessage = "You cannot add yourself.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         //TODO send validation for chat
@@ -336,19 +336,19 @@ namespace WOC_Server
                     case PD_ServerChat.Type.LOCAL:
                         if (room == null)
                         {
-                            server.Broadcast(data, this).Wait();
+                            server.Broadcast(data, this);
                         }
                         else
                         {
-                            room.Broadcast(data, this).Wait();
+                            room.Broadcast(data, this);
                         }
                         break;
                     case PD_ServerChat.Type.FRIENDS:
                         //data.message = data.message.Remove(0, 4);
-                        server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected)).Wait();
+                        server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected));
                         break;
                     case PD_ServerChat.Type.GLOBAL:
-                        server.Broadcast(data, this, true).Wait();
+                        server.Broadcast(data, this, true);
                         break;
                     default:
                         LOG.Print("Message type not supported");
@@ -374,7 +374,7 @@ namespace WOC_Server
             {
                 errorMessage = "Character name already exists in your roster.";
             }
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountDeleteCharacter data)
@@ -392,7 +392,7 @@ namespace WOC_Server
                 errorMessage = "Character name could not be found in your roster.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountSetDefaultCharacter data)
@@ -410,7 +410,7 @@ namespace WOC_Server
                 errorMessage = "Character name could not be found in your roster.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountNewDeck data)
@@ -429,7 +429,7 @@ namespace WOC_Server
                 errorMessage = "A deck with the same name already exists.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_AccountAddCard data)
@@ -454,7 +454,7 @@ namespace WOC_Server
                 errorMessage = "Could not find the deck.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
         
 
@@ -473,7 +473,7 @@ namespace WOC_Server
                 errorMessage = "No deck with this name was found.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
         public void HandleAPICall(PD_AccountDeleteDeck data)
         {
@@ -485,7 +485,7 @@ namespace WOC_Server
                 errorMessage = "Wrong deck name.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
         public void HandleAPICall(PD_AccountSetDefaultDeck data)
         {
@@ -502,7 +502,7 @@ namespace WOC_Server
                 errorMessage = "No deck with this name was found.";
             }
 
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_ServerMakeRoom data)
@@ -514,13 +514,13 @@ namespace WOC_Server
                 room = server.CreateRoom(data.roomName);
                 server.MoveToRoom(room, this);
                 data.randomSeed = room.battle.RandomSeed;
-                server.Broadcast(data, this, true).Wait();
+                server.Broadcast(data, this, true);
             }
             else
             {
                 errorMessage = "Room name already exists";
             }
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_ServerRenameRoom data)
@@ -530,13 +530,13 @@ namespace WOC_Server
             if (room != null)
             {
                 room.Name = data.newName;
-                server.Broadcast(data, this, true).Wait();
+                server.Broadcast(data, this, true);
             }
             else
             {
                 errorMessage = "Could not find room.";
             }
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_ServerJoinRoom data)
@@ -549,7 +549,7 @@ namespace WOC_Server
             {
                 if (server.MoveToRoom(room, this))
                 {
-                    server.Broadcast(data, this, true).Wait();
+                    server.Broadcast(data, this, true);
                 }
                 else
                 {
@@ -560,7 +560,7 @@ namespace WOC_Server
             {
                 errorMessage = "Could not find room.";
             }
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_ServerDeleteRoom data)
@@ -575,13 +575,13 @@ namespace WOC_Server
                 room.Clear();
                 server.rooms.Remove(room);
 
-                server.Broadcast(data, this, true).Wait();
+                server.Broadcast(data, this, true);
             }
             else
             {
                 errorMessage = "Could not find room.";
             }
-            SendAsync(new PD_Validation(data.id, errorMessage)).Wait();
+            Send(new PD_Validation(data.id, errorMessage));
         }
 
         public void HandleAPICall(PD_ServerListPlayers data)
@@ -617,181 +617,10 @@ namespace WOC_Server
         {
             if (account == null || !account.connected)
             {
-                SendAsync(new PD_Validation(id, "You need to be connected to do this.")).Wait();
+                Send(new PD_Validation(id, "You need to be connected to do this."));
                 return false;
             }
             return true;
         }
-
-        public override void HandleIncomingMessage(IPacketData data)
-        {
-            base.HandleIncomingMessage(data);
-
-            HandleAPICall(data);
-
-            //switch (data)
-            //{
-            //    case PD_NameModify nameModify:
-            //        Name = nameModify.newName;
-            //        if (room == null)
-            //        {
-            //            server.Broadcast(nameModify, this).Wait();
-            //        }
-            //        else
-            //        {
-            //            room.Broadcast(nameModify, this).Wait();
-            //        }
-            //        break;
-            //    case PD_Chat chat:
-            //        try
-            //        {
-            //            if (chat.message.StartsWith("/all "))
-            //            {
-            //                chat.message = chat.message.Remove(0, 5);
-            //                server.Broadcast(chat, this, true).Wait();
-            //            }
-            //            else if (room == null)
-            //            {
-            //                server.Broadcast(chat, this).Wait();
-            //            }
-            //            else
-            //            {
-            //                room.Broadcast(chat, this).Wait();
-            //            }
-            //        }
-            //        catch (Exception)
-            //        {
-            //            LOG.Print("[SERVER] Failed to broadcast message.");
-            //        }
-            //        break;
-
-            //    case PD_PlayerAdd player:
-            //        HandlePlayerAdd(player);
-            //        break;
-
-            //    case PD_PNJAdd pnjAdd:
-            //        HandlePNJAdd(pnjAdd);
-            //        break;
-
-            //    case PD_RoomJoin roomEnter:
-            //        HandleRoomJoin(roomEnter);
-            //        break;
-
-            //    case PD_RoomLeave roomLeave:
-            //        if (room == null)
-            //        {
-            //            room.Remove(this);
-            //            room.Broadcast(roomLeave, this).Wait();
-            //            room = null;
-            //        }
-            //        server.sessions.Add(this);
-            //        break;
-
-            //    case PD_PlayerList playerList:
-            //        if (string.IsNullOrEmpty(playerList.roomName))
-            //        {
-            //            SendAsync(new PD_PlayerList { players = server.sessions.Select(s => s.Name).ToList() }).Wait();
-            //        }
-            //        else
-            //        {
-            //            var room = server.battleRooms.Find(r => r.Name == playerList.roomName);
-            //            if (room != null)
-            //            {
-            //                SendAsync(new PD_PlayerList { roomName = playerList.roomName, players = room.PlayerList }).Wait();
-            //            }
-            //            else
-            //            {
-            //                SendAsync(new PD_Validation(playerList.id, "Battle name does not exist.")).Wait();
-            //            }
-            //        }
-            //        break;
-
-            //    case PD_BattleStart battleStart:
-            //        if (room.Start())
-            //        {
-            //            room.Broadcast(battleStart, this).Wait();
-            //        }
-            //        break;
-
-            //    case PD_RoomList battleList:
-            //        battleList.rooms = new List<string>();
-            //        battleList.rooms.AddRange(server.battleRooms.Select(r => r.Name));
-            //        SendAsync(battleList).Wait();
-            //        break;
-
-            //    case PD_CardPlayed cardPlayed:
-            //        Card card = actor.hand.Get(cardPlayed.cardIndex);
-            //        Character character = room.battle.Actors.Find(a => a.character.Name == cardPlayed.targetName).character;
-
-            //        room.Broadcast(cardPlayed, this).Wait();
-            //        actor.PlayCard(card, character);
-            //        break;
-
-            //    case PD_TurnEnd turnEnd:
-            //        if (room.battle.GetCurrentActor() == actor)
-            //        {
-            //            actor.EndTurn();
-            //            room.battle.NextActor().StartTurn();
-            //            room.Broadcast(turnEnd, this).Wait();
-            //        }
-            //        break;
-            //}
-        }
-
-        //public void HandlePNJAdd(PD_PNJAdd pnjAdd)
-        //{
-        //    var pnj = new PNJActor(new Character(pnjAdd.race, pnjAdd.category, pnjAdd.life), pnjAdd.name, pnjAdd.initiative);
-
-        //    if (room != null)
-        //    {
-        //        if (room.battle.Add(pnj))
-        //        {
-        //            room.Broadcast(pnjAdd, this).Wait();
-        //        }
-        //    }
-        //}
-
-        //public void HandlePlayerAdd(PD_PlayerAdd player)
-        //{
-        //    actor = new PlayerActor(
-        //               new Character(player.charaRace, player.charaCategory, player.charaLife, player.charaName),
-        //               player.handStartCount,
-        //               player.name,
-        //               player.aggroIncrement,
-        //               player.manaMax);
-        //    LOG.Print("[SERVER] Player created ? {0}", (actor != null) ? "true" : "false");
-
-        //    if (room != null)
-        //    {
-        //        if (room.battle.Add(actor))
-        //        {
-        //            actor.AddCards(player.cardsName);
-        //            room.Broadcast(player, this).Wait();
-        //        }
-        //    }
-        //}
-
-        //public void HandleRoomJoin(PD_RoomJoin roomJoin)
-        //{
-        //    if (!server.Exists(roomJoin.roomName) && roomJoin.create)
-        //    {
-        //        server.CreateBattleRoom(roomJoin.roomName);
-        //    }
-        //    if (server.MoveToBattleRoom(roomJoin.roomName, this))
-        //    {
-        //        room = server.battleRooms.Find(r => r.Name == roomJoin.roomName);
-        //        if (roomJoin.playerInfo != null)
-        //        {
-        //            HandlePlayerAdd(roomJoin.playerInfo as PD_PlayerAdd);
-        //        }
-
-        //        roomJoin.randomSeed = room.battle.RandomSeed;
-        //        room.Broadcast(roomJoin).Wait();
-        //    }
-        //    else
-        //    {
-        //        SendAsync(new PD_Validation(roomJoin.id, "Battle name does not exist.")).Wait();
-        //    }
-        //}
     }
 }

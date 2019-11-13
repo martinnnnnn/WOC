@@ -224,36 +224,28 @@ namespace WOC_Server
         }
 
 
-        public async Task Broadcast(IPacketData data, Session toIgnore = null, bool toAll = false)
+        public void Broadcast(IPacketData data, Session toIgnore = null, bool toAll = false)
         {
-            List<Task> tasks = new List<Task>();
-            
             if (toAll)
             {
-                rooms.ForEach(r => tasks.Add(r.Broadcast(data, toIgnore)));
+                rooms.ForEach(r => r.Broadcast(data, toIgnore));
             }
 
             foreach (Session session in sessions)
             {
                 if (toIgnore == null || session != toIgnore)
                 {
-                    tasks.Add(session.SendAsync(data));
+                    session.Send(data);
                 }
             }
-
-            await Task.WhenAll(tasks);
         }
 
-        public async Task Broadcast(IPacketData data, IEnumerable<ServerSession> sessions)
+        public void Broadcast(IPacketData data, IEnumerable<ServerSession> sessions)
         {
-            List<Task> tasks = new List<Task>();
-
             foreach (Session session in sessions)
             {
-                 tasks.Add(session.SendAsync(data));
+                 session.Send(data);
             }
-
-            await Task.WhenAll(tasks);
         }
     }
 }

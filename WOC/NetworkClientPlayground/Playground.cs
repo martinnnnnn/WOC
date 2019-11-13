@@ -250,7 +250,7 @@ namespace Playground
         static void SendWithValidation(IPacketData data, bool force = false)
         {
             Debug.Assert(session.awaitingValidations.TryAdd(data.id, data));
-            session.SendAsync(data, force).Wait();
+            session.Send(data, force);
         }
 
         static void Info(string[] args)
@@ -400,12 +400,12 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            session.SendAsync(new PD_ServerChat
+            session.Send(new PD_ServerChat
             {
                 senderName = session.account.name,
                 message = string.Join(" ", args),
                 type = t
-            }).Wait();
+            });
         }
 
         static void AddFriend(string[] args)

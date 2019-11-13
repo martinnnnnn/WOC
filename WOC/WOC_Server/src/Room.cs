@@ -92,18 +92,26 @@ namespace WOC_Server
             server.rooms.Remove(this);
         }
 
-        public async Task Broadcast(IPacketData data, Session toIgnore = null)
+        public void Broadcast(IPacketData data, Session toIgnore = null)
         {
-            List<Task> tasks = new List<Task>();
+            //List<Task> tasks = new List<Task>();
+
+            //foreach (Session session in sessions)
+            //{
+            //    if (toIgnore == null || session != toIgnore)
+            //    {
+            //        tasks.Add(session.SendAsync(data));
+            //    }
+            //}
+            //await Task.WhenAll(tasks);
 
             foreach (Session session in sessions)
             {
                 if (toIgnore == null || session != toIgnore)
                 {
-                    tasks.Add(session.SendAsync(data));
+                    session.Send(data);
                 }
             }
-            await Task.WhenAll(tasks);
         }
     }
 }

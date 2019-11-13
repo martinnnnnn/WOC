@@ -39,15 +39,15 @@ namespace Playground
         {
             LOG.Print("[ROOM] Battle initialization...");
 
-            ForEach(s =>
-            {
-                s.account.actor = new PlayerActor(s.account.name, 5, 20);
-                var actor = s.account.actor;
-                if (battle.Add(actor))
-                {
-                    actor.AddCards(s.account.defaultDeck.cardNames);
-                }
-            });
+            //ForEach(s =>
+            //{
+            //    s.account.actor = new PlayerActor(s.account.name, 5, 20);
+            //    var actor = s.account.actor;
+            //    if (battle.Add(actor))
+            //    {
+            //        actor.AddCards(s.account.defaultDeck.cardNames);
+            //    }
+            //});
         }
     }
 

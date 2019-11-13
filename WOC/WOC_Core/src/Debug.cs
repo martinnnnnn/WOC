@@ -9,6 +9,8 @@ namespace WOC_Core
 {
     public class LOG
     {
+        public static Action Output;
+
         public static void Print()
         {
 #if UNITY
