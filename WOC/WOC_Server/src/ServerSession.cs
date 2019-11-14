@@ -348,7 +348,7 @@ namespace WOC_Server
                         server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected));
                         break;
                     case PD_ServerChat.Type.GLOBAL:
-                        server.Broadcast(data, this, true);
+                        server.Broadcast(data, null, true);
                         break;
                     default:
                         Console.WriteLine("Message type not supported");

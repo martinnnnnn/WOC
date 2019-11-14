@@ -17,7 +17,6 @@ namespace WOC_Server
 {
     class Program
     {
-
         static void Main(string[] args)
         {
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.GetCultureInfo("en-US");

@@ -1,0 +1,7 @@
+.signing-field {
+    font-size: 30px;
+    -unity-text-align: upper-center;
+    margin-bottom: 15px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
