@@ -92,11 +92,6 @@ namespace Playground
                 { new string[2] { "friend", "remove" }, (arg) => RemoveFriend(arg) },
                 { new string[2] { "friend", "list" }, (arg) => String.Join(", ", session.account.friends) },
 
-                { new string[2] { "character", "add" }, (arg) => CharacterAdd(arg) },
-                { new string[2] { "character", "modify" }, (arg) => CharacterModify(arg) },
-                { new string[2] { "character", "delete" }, (arg) => CharacterDelete(arg) },
-                { new string[2] { "character", "default" }, (arg) => CharacterSetDefault(arg) },
-
                 { new string[2] { "deck", "new" }, (arg) => DeckNew(arg) },
                 { new string[2] { "deck", "add" }, (arg) => DeckAdd(arg) },
                 { new string[2] { "deck", "rename" }, (arg) => DeckRename(arg) },
@@ -252,24 +247,13 @@ namespace Playground
             switch (args[0])
             {
                 case "account":
-                    Console.WriteLine("Email : {0} | Name : {1}\nStatus : {2}\nFriends count : {3} | Characters count : {4} | Decks count : {5}",
+                    Console.WriteLine("Email : {0} | Name : {1}\nStatus : {2}\nFriends count : {3} | Decks count : {4}",
                         session.account.email, session.account.name,
                         session.account.connected ? "Online" : "Offline",
-                        session.account.friends.Count, session.account.characters.Count, session.account.decks.Count);
+                        session.account.friends.Count, session.account.decks.Count);
                     break;
                 case "friends":
                     Console.WriteLine("Friends list : {0}", string.Join(", ", session.account.friends));
-                    break;
-                case "characters":
-                    string[] charaInfo = new string[session.account.characters.Count];
-                    int index = 0;
-                    session.account.characters.ForEach(c =>
-                    {
-                        charaInfo[index] = string.Format("{0} | {1} | {2} | {3}", c.Name, c.race.ToString(), c.category.ToString(), c.Life);
-                        index++;
-                    });
-                    Console.WriteLine("Default Character : {0}", session.account.defaultCharacter?.Name);
-                    Console.WriteLine("Characters list :\n{0}", string.Join("\n", charaInfo));
                     break;
                 case "decks":
                     string[] deckInfo = new string[session.account.decks.Count];
@@ -279,7 +263,7 @@ namespace Playground
                         deckInfo[indx] = string.Format("{0} -> {1}", d.name, string.Format(", ", d.cardNames));
                         indx++;
                     });
-                    Console.WriteLine("Default Deck : {0}", session.account.defaultDeck?.name);
+                    Console.WriteLine("Current Deck : {0}", session.account.currentDeck?.name);
                     Console.WriteLine("Decks list :\n{0}", string.Join("\n", deckInfo));
                     break;
             }
@@ -430,71 +414,6 @@ namespace Playground
             }
         }
 
-        static void CharacterAdd(string[] args)
-        {
-            if (!AssureConnected()) return;
-
-            string inputName = "default name";
-            int inputLife = 10;
-            Character.Race inputRace = Character.Race.ELFE;
-            Character.Category inputCategory = Character.Category.BARBARIAN;
-
-            foreach (string arg in args)
-            {
-                string[] parameter = arg.Split('=');
-                switch (parameter[0])
-                {
-                    case "name":
-                        inputName = parameter[1];
-                        break;
-                    case "life":
-                        int.TryParse(parameter[1], out inputLife);
-                        break;
-                    case "race":
-                        Enum.TryParse(parameter[1], true, out inputRace);
-                        break;
-                    case "category":
-                        Enum.TryParse(parameter[1], true, out inputCategory);
-                        break;
-                }
-            }
-
-            SendWithValidation(new PD_AccountAddCharacter
-            {
-                name = inputName,
-                race = inputRace,
-                category = inputCategory,
-                life = inputLife
-            });
-        }
-
-        static void CharacterModify(string[] args)
-        {
-            Console.WriteLine("Not supported");
-        }
-
-        static void CharacterDelete(string[] args)
-        {
-            if (!AssureConnected()) return;
-
-            var toRemove = session.account.characters.FirstOrDefault(c => c.Name == args[0]);
-            if (toRemove != null)
-            {
-                SendWithValidation(new PD_AccountDeleteCharacter { name = toRemove.Name });
-            }
-        }
-        
-        static void CharacterSetDefault(string[] args)
-        {
-            if (!AssureConnected()) return;
-
-            var toDefault = session.account.characters.FirstOrDefault(c => c.Name == args[0]);
-            if (toDefault != null)
-            {
-                SendWithValidation(new PD_AccountSetDefaultCharacter { name = toDefault.Name });
-            }
-        }
-
         static void DeckNew(string[] args)
         {
             if (!AssureConnected()) return;
@@ -510,10 +429,10 @@ namespace Playground
         static void DeckAdd(string[] args)
         {
             if (!AssureConnected()) return;
-            Debug.Assert(session.account.defaultDeck != null);
+            Debug.Assert(session.account.currentDeck != null);
 
             Card card = null;
-            string deckName = session.account.defaultDeck.name;
+            string deckName = session.account.currentDeck.name;
 
             foreach (string arg in args)
             {
@@ -542,7 +461,7 @@ namespace Playground
         static void DeckRename(string[] args)
         {
             if (!AssureConnected()) return;
-            Debug.Assert(session.account.defaultDeck != null);
+            Debug.Assert(session.account.currentDeck != null);
 
             string oName = "";
             string nName = "";
@@ -585,7 +504,7 @@ namespace Playground
         {
             if (!AssureConnected()) return;
 
-            SendWithValidation(new PD_AccountSetDefaultDeck
+            SendWithValidation(new PD_AccountSetCurrentDeck
             {
                 name = args[0]
             });

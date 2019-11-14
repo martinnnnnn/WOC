@@ -145,18 +145,6 @@ public class NetworkInterface : MonoBehaviour
             case PD_AccountRemoveFriend accountRemoveFriend:
                 Callback_AccountRemoveFriend?.Invoke(accountRemoveFriend);
                 break;
-            case PD_AccountAddCharacter accountAddCharacter:
-                Callback_AccountAddCharacter?.Invoke(accountAddCharacter);
-                break;
-            case PD_AccountModifyCharacter accountModifyCharacter:
-                Callback_AccountModifyCharacter?.Invoke(accountModifyCharacter);
-                break;
-            case PD_AccountDeleteCharacter accountDeleteCharacter:
-                Callback_AccountDeleteCharacter?.Invoke(accountDeleteCharacter);
-                break;
-            case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
-                Callback_AccountSetDefaultCharacter?.Invoke(accountSetDefaultCharacter);
-                break;
             case PD_AccountNewDeck accountNewDeck:
                 Callback_AccountNewDeck?.Invoke(accountNewDeck);
                 break;
@@ -169,29 +157,14 @@ public class NetworkInterface : MonoBehaviour
             case PD_AccountDeleteDeck accountDeleteDeck:
                 Callback_AccountDeleteDeck?.Invoke(accountDeleteDeck);
                 break;
-            case PD_AccountSetDefaultDeck accountSetDefaultDeck:
-                Callback_AccountSetDefaultDeck?.Invoke(accountSetDefaultDeck);
+            case PD_AccountSetCurrentDeck accountSetCurrentDeck:
+                Callback_AccountSetCurrentDeck?.Invoke(accountSetCurrentDeck);
                 break;
             case PD_ServerListPlayers serverListPlayers:
                 Callback_ServerListPlayers?.Invoke(serverListPlayers);
                 break;
-            case PD_RoomAddPNJ roomAddPNJ:
-                Callback_RoomAddPNJ?.Invoke(roomAddPNJ);
-                break;
-            case PD_RoomInitBattle roomBattleInit:
-                Callback_RoomInitBattle?.Invoke(roomBattleInit);
-                break;
-            case PD_RoomStartBattle roomBattleStart:
-                Callback_RoomStartBattle?.Invoke(roomBattleStart);
-                break;
             case PD_BattlePlayCard battleCardPlayed:
                 Callback_BattlePlayCard?.Invoke(battleCardPlayed);
-                break;
-            case PD_BattleEndTurn battleEndTurn:
-                Callback_BattleEndTurn?.Invoke(battleEndTurn);
-                break;
-            case PD_BattleState battleState:
-                Callback_BattleState?.Invoke(battleState);
                 break;
             default:
                 System.Diagnostics.Debug.Assert(false, "API call not implemented !!");
@@ -213,20 +186,11 @@ public class NetworkInterface : MonoBehaviour
     public Action<PD_AccountDisconnect> Callback_AccountDisconnect;
     public Action<PD_AccountAddFriend> Callback_AccountAddFriend;
     public Action<PD_AccountRemoveFriend> Callback_AccountRemoveFriend;
-    public Action<PD_AccountAddCharacter> Callback_AccountAddCharacter;
-    public Action<PD_AccountModifyCharacter> Callback_AccountModifyCharacter;
-    public Action<PD_AccountDeleteCharacter> Callback_AccountDeleteCharacter;
-    public Action<PD_AccountSetDefaultCharacter> Callback_AccountSetDefaultCharacter;
     public Action<PD_AccountNewDeck> Callback_AccountNewDeck;
     public Action<PD_AccountAddCard> Callback_AccountAddCard;
     public Action<PD_AccountRenameDeck> Callback_AccountRenameDeck;
     public Action<PD_AccountDeleteDeck> Callback_AccountDeleteDeck;
-    public Action<PD_AccountSetDefaultDeck> Callback_AccountSetDefaultDeck;
+    public Action<PD_AccountSetCurrentDeck> Callback_AccountSetCurrentDeck;
     public Action<PD_ServerListPlayers> Callback_ServerListPlayers;
-    public Action<PD_RoomAddPNJ> Callback_RoomAddPNJ;
-    public Action<PD_RoomInitBattle> Callback_RoomInitBattle;
-    public Action<PD_RoomStartBattle> Callback_RoomStartBattle;
     public Action<PD_BattlePlayCard> Callback_BattlePlayCard;
-    public Action<PD_BattleEndTurn> Callback_BattleEndTurn;
-    public Action<PD_BattleState> Callback_BattleState;
 }

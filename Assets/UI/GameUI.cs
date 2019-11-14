@@ -18,16 +18,16 @@ public class GameUI : MonoBehaviour
     NetworkInterface network;
 
     VisualElement signing;
-    //VisualElement ingame;
     VisualElement chat;
+    Button disconnect;
 
     private void Start()
     {
         network = FindObjectOfType<NetworkInterface>();
         network.Callback_AccountMake += HandleAPICall;
         network.Callback_AccountConnect += HandleAPICall;
+        network.Callback_AccountDisconnect += HandleAPICall;
         network.Callback_ServerChat += HandleAPICall;
-
     }
 
     private void Init()
@@ -53,7 +53,7 @@ public class GameUI : MonoBehaviour
         });
         signing.visible = true;
 
-        // Ingame panel
+        // chat
         chat = panelRenderer.visualTree.Q("chat");
         TextField chat_textfield = chat.Q<VisualElement>("bottom").Q<TextField>("chat-textfield");
         chat.Q<VisualElement>("bottom").Q<Button>("chat-send").clicked += (() =>
@@ -65,8 +65,17 @@ public class GameUI : MonoBehaviour
                 type = PD_ServerChat.Type.GLOBAL
             }, false);
         });
+        chat.visible = false;
 
-        chat.visible = true;
+        disconnect = panelRenderer.visualTree.Q<Button>("disconnect");
+        disconnect.visible = false;
+        disconnect.clicked += (() =>
+        {
+            network.SendMessage(new PD_AccountDisconnect
+            {
+                email = network.session.account.email
+            }, false);
+        });
     }
 
     public void HandleAPICall(PD_AccountMake data)
@@ -80,6 +89,7 @@ public class GameUI : MonoBehaviour
         };
         signing.visible = false;
         chat.visible = true;
+        disconnect.visible = true;
     }
 
     public void HandleAPICall(PD_AccountConnect data)
@@ -87,6 +97,7 @@ public class GameUI : MonoBehaviour
         network.session.account.connected = true;
         signing.visible = false;
         chat.visible = true;
+        disconnect.visible = true;
     }
 
     public void HandleAPICall(PD_ServerChat data)
@@ -95,6 +106,13 @@ public class GameUI : MonoBehaviour
         chat.Q<VisualElement>("bottom").Q<TextField>("chat-textfield").value = "";
     }
 
+    public void HandleAPICall(PD_AccountDisconnect data)
+    {
+        network.session.account.connected = false;
+        signing.visible = true;
+        chat.visible = false;
+        disconnect.visible = false;
+    }
 
     static bool initdone = false;
     void Update()

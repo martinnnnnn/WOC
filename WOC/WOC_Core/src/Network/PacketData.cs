@@ -145,32 +145,6 @@ namespace WOC_Core
         public string name;
     }
 
-    public class PD_AccountAddCharacter : IPacketData
-    {
-        public string name;
-        public Character.Race race;
-        public Character.Category category;
-        public int life;
-    }
-
-    public class PD_AccountModifyCharacter : IPacketData
-    {
-        public string name;
-        public Character.Race race;
-        public Character.Category category;
-        public int life;
-    }
-
-    public class PD_AccountDeleteCharacter : IPacketData
-    {
-        public string name;
-    }
-
-    public class PD_AccountSetDefaultCharacter : IPacketData
-    {
-        public string name;
-    }
-
     public class PD_AccountNewDeck : IPacketData
     {
         public string name;
@@ -192,7 +166,7 @@ namespace WOC_Core
         public string name;
     }
 
-    public class PD_AccountSetDefaultDeck : IPacketData
+    public class PD_AccountSetCurrentDeck : IPacketData
     {
         public string name;
     }
@@ -221,26 +195,8 @@ namespace WOC_Core
 
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    ///                                         ROOM
+    ///                                         GROUP 
     /// ///////////////////////////////////////////////////////////////////////////////////////
-
-    public class PD_RoomAddPNJ : IPacketData
-    {
-        public string name;
-        public int life;
-        public Character.Race race;
-        public Character.Category category;
-        public int initiative;
-    }
-
-    public class PD_RoomInitBattle : IPacketData { }
-    public class PD_RoomStartBattle : IPacketData { }
-
-
-    /// ///////////////////////////////////////////////////////////////////////////////////////
-    ///                                         BATTLE
-    /// ///////////////////////////////////////////////////////////////////////////////////////
-
     public class PD_BattlePlayCard : IPacketData
     {
         public string ownerName;
@@ -249,9 +205,56 @@ namespace WOC_Core
         public string cardName;
     }
 
-    public class PD_BattleEndTurn : IPacketData { }
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    ///                                         BATTLE
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    /*
+     * Delete group
+     * 
+     * */
+    public class PD_GroupCreate : IPacketData
+    {
+        public int groupId;
+        public string accountName;
+    }
 
-    public class PD_BattleState : IPacketData { }
+    public class PD_GroupAdd : IPacketData
+    {
+        public int groupId;
+        public string accountName;
+    }
+
+    public class PD_GroupRemove : IPacketData
+    {
+        public int groupId;
+        public string accountName;
+    }
+    public class PD_GroupPromote : IPacketData
+    {
+        public int groupId;
+        public string newLeaderName;
+    }
+    public class PD_GroupDelete : IPacketData
+    {
+        public int groupId;
+    }
+
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    ///                                         WorldPlayerInfo
+    /// ///////////////////////////////////////////////////////////////////////////////////////
+    public class PD_WorldPlayerPosition : IPacketData
+    {
+        public int accountName;
+        public Vector2 position;
+        public Vector2 velocity;
+    }
+    public class PD_WorldPlayerInfo : IPacketData
+    {
+        public int accountName;
+        public string info;
+    }
+
+
 
     public class PD_SessionShutdown : IPacketData { }
 

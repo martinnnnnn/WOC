@@ -24,27 +24,38 @@ namespace WOC_Core
         public bool connected = false;
         public PlayerActor actor = null;
 
-        public Character defaultCharacter = null;
-        public List<Character> characters = new List<Character>();
-
-        public Deck defaultDeck = null;
+        public Deck currentDeck = null;
         public List<Deck> decks = new List<Deck>();
 
         public Session session = null;
-
-        //TODO game history stats
-
-        public void SetDefaultCharacter(string name)
+        
+        public bool SetCurrentDeck(string name)
         {
-            defaultCharacter = characters.Find(c => c.Name == name);
-            Debug.Assert(defaultCharacter != null);
+            currentDeck = decks.Find(c => c.name == name);
+            return currentDeck != null;
         }
-
-        public void SetDefaultDeck(string name)
-        {
-            defaultDeck = decks.Find(c => c.name == name);
-            Debug.Assert(defaultDeck != null);
-        }
-
     }
+
+
+
+    public class Group
+    {
+        public string leaderName;
+        public List<Account> accounts = new List<Account>();
+    }
+
+    public struct Vector2
+    {
+        public float X;
+        public float Y;
+    }
+
+    public class WorldPlayer
+    {
+        public Vector2 position;
+        public Vector2 velocity;
+        public int life;
+        public int lifeMax;
+    }
+        
 }

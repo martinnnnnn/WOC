@@ -43,15 +43,6 @@ namespace WOC_Server
                 case PD_AccountRemoveFriend accountRemoveFriend:
                     HandleAPICall(accountRemoveFriend);
                     break;
-                case PD_AccountAddCharacter accountAddCharacter:
-                    HandleAPICall(accountAddCharacter);
-                    break;
-                case PD_AccountDeleteCharacter accountDeleteCharacter:
-                    HandleAPICall(accountDeleteCharacter);
-                    break;
-                case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
-                    HandleAPICall(accountSetDefaultCharacter);
-                    break;
                 case PD_AccountNewDeck accountNewDeck:
                     HandleAPICall(accountNewDeck);
                     break;
@@ -64,32 +55,14 @@ namespace WOC_Server
                 case PD_AccountDeleteDeck accountDeleteDeck:
                     HandleAPICall(accountDeleteDeck);
                     break;
-                case PD_AccountSetDefaultDeck accountSetDefaultDeck:
-                    HandleAPICall(accountSetDefaultDeck);
+                case PD_AccountSetCurrentDeck accountSetCurrentDeck:
+                    HandleAPICall(accountSetCurrentDeck);
                     break;
                 case PD_ServerChat serverChat:
                     HandleAPICall(serverChat);
                     break;
                 case PD_ServerListPlayers serverListPlayers:
                     HandleAPICall(serverListPlayers);
-                    break;
-                case PD_RoomAddPNJ roomAddPNJ:
-                    HandleAPICall(roomAddPNJ);
-                    break;
-                case PD_RoomInitBattle roomBattleInit:
-                    HandleAPICall(roomBattleInit);
-                    break;
-                case PD_RoomStartBattle roomBattleStart:
-                    HandleAPICall(roomBattleStart);
-                    break;
-                case PD_BattlePlayCard battleCardPlayed:
-                    HandleAPICall(battleCardPlayed);
-                    break;
-                case PD_BattleEndTurn battleEndTurn:
-                    HandleAPICall(battleEndTurn);
-                    break;
-                case PD_BattleState battleState:
-                    HandleAPICall(battleState);
                     break;
             }
         }
@@ -340,58 +313,6 @@ namespace WOC_Server
             }
         }
 
-        public void HandleAPICall(PD_AccountAddCharacter data)
-        {
-            if (!AssureConnected(data.id)) return;
-
-            string errorMessage = "";
-            if (account.characters.FirstOrDefault(c => c.Name == data.name) == null)
-            {
-                account.characters.Add(new Character(data.race, data.category, data.life, data.name));
-            }
-            else
-            {
-                errorMessage = "Character name already exists in your roster.";
-            }
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
-        public void HandleAPICall(PD_AccountDeleteCharacter data)
-        {
-            if (!AssureConnected(data.id)) return;
-
-            string errorMessage = "";
-            var toRemove = account.characters.FirstOrDefault(c => c.Name == data.name);
-            if (toRemove != null)
-            {
-                account.characters.Remove(toRemove);
-            }
-            else
-            {
-                errorMessage = "Character name could not be found in your roster.";
-            }
-
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
-        public void HandleAPICall(PD_AccountSetDefaultCharacter data)
-        {
-            if (!AssureConnected(data.id)) return;
-            string errorMessage = "";
-
-            var toDefault = account.characters.FirstOrDefault(c => c.Name == data.name);
-            if (toDefault != null)
-            {
-                account.defaultCharacter = toDefault;
-            }
-            else
-            {
-                errorMessage = "Character name could not be found in your roster.";
-            }
-
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
         public void HandleAPICall(PD_AccountNewDeck data)
         {
             if (!AssureConnected(data.id)) return;
@@ -401,7 +322,7 @@ namespace WOC_Server
             {
                 Deck newDeck = new Deck() { name = data.name };
                 account.decks.Add(newDeck);
-                account.defaultDeck = account.defaultDeck ?? newDeck;
+                account.currentDeck = account.currentDeck ?? newDeck;
             }
             else
             {
@@ -466,20 +387,15 @@ namespace WOC_Server
 
             Send(new PD_Validation(data.id, errorMessage));
         }
-        public void HandleAPICall(PD_AccountSetDefaultDeck data)
+        public void HandleAPICall(PD_AccountSetCurrentDeck data)
         {
             if (!AssureConnected(data.id)) return;
             string errorMessage = "";
 
-            Deck deck = account.decks.Find(d => d.name == data.name);
-            if (deck != null)
-            {
-                account.defaultDeck = deck;
-            }
-            else
+            if (!account.SetCurrentDeck(data.name))
             {
                 errorMessage = "No deck with this name was found.";
-            }
+            };
 
             Send(new PD_Validation(data.id, errorMessage));
         }
@@ -488,31 +404,6 @@ namespace WOC_Server
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
-        public void HandleAPICall(PD_RoomAddPNJ data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_RoomInitBattle data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_RoomStartBattle data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_BattlePlayCard data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_BattleEndTurn data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_BattleState data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-
         public bool AssureConnected(Guid id)
         {
             if (account == null || !account.connected)

@@ -58,18 +58,6 @@ namespace Playground
                 case PD_AccountRemoveFriend accountRemoveFriend:
                     HandleAPICall(accountRemoveFriend);
                     break;
-                case PD_AccountAddCharacter accountAddCharacter:
-                    HandleAPICall(accountAddCharacter);
-                    break;
-                case PD_AccountModifyCharacter accountModifyCharacter:
-                    HandleAPICall(accountModifyCharacter);
-                    break;
-                case PD_AccountDeleteCharacter accountDeleteCharacter:
-                    HandleAPICall(accountDeleteCharacter);
-                    break;
-                case PD_AccountSetDefaultCharacter accountSetDefaultCharacter:
-                    HandleAPICall(accountSetDefaultCharacter);
-                    break;
                 case PD_AccountNewDeck accountNewDeck:
                     HandleAPICall(accountNewDeck);
                     break;
@@ -82,29 +70,11 @@ namespace Playground
                 case PD_AccountDeleteDeck accountDeleteDeck:
                     HandleAPICall(accountDeleteDeck);
                     break;
-                case PD_AccountSetDefaultDeck accountSetDefaultDeck:
-                    HandleAPICall(accountSetDefaultDeck);
+                case PD_AccountSetCurrentDeck accountSetCurrentDeck:
+                    HandleAPICall(accountSetCurrentDeck);
                     break;
                 case PD_ServerListPlayers serverListPlayers:
                     HandleAPICall(serverListPlayers);
-                    break;
-                case PD_RoomAddPNJ roomAddPNJ:
-                    HandleAPICall(roomAddPNJ);
-                    break;
-                case PD_RoomInitBattle roomBattleInit:
-                    HandleAPICall(roomBattleInit);
-                    break;
-                case PD_RoomStartBattle roomBattleStart:
-                    HandleAPICall(roomBattleStart);
-                    break;
-                case PD_BattlePlayCard battleCardPlayed:
-                    HandleAPICall(battleCardPlayed);
-                    break;
-                case PD_BattleEndTurn battleEndTurn:
-                    HandleAPICall(battleEndTurn);
-                    break;
-                case PD_BattleState battleState:
-                    HandleAPICall(battleState);
                     break;
                 default:
                     Debug.Assert(false, "API call not implemented !!");
@@ -218,30 +188,11 @@ namespace Playground
             account.connected = false;
             Console.WriteLine("[CLIENT] Disconnected");
         }
-        public void HandleAPICall(PD_AccountAddCharacter data)
-        {
-            account.characters.Add(new Character(data.race, data.category, data.life, data.name));
-            Console.WriteLine("Character {0} added successfuly.", data.name);
-        }
-        public void HandleAPICall(PD_AccountModifyCharacter data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
 
-        public void HandleAPICall(PD_AccountDeleteCharacter data)
-        {
-            account.characters.RemoveAll(c => c.Name == data.name);
-            Console.WriteLine("Character {0} deleted successfuly.", data.name);
-
-        }
-        public void HandleAPICall(PD_AccountSetDefaultCharacter data)
-        {
-            account.SetDefaultCharacter(data.name);
-        }
         public void HandleAPICall(PD_AccountNewDeck data)
         {
             Deck deck = new Deck() { name = data.name };
-            account.defaultDeck = account.defaultDeck ?? deck;
+            account.currentDeck = account.currentDeck ?? deck;
             account.decks.Add(deck);
             Console.WriteLine("Deck {0} created.", data.name);
         }
@@ -260,38 +211,14 @@ namespace Playground
             account.decks.RemoveAll(d => d.name == data.name);
             Console.WriteLine("Deck {0} deleted.", data.name);
         }
-        public void HandleAPICall(PD_AccountSetDefaultDeck data)
+        public void HandleAPICall(PD_AccountSetCurrentDeck data)
         {
             Deck deck = account.decks.Find(d => d.name == data.name);
-            account.defaultDeck = deck;
+            account.currentDeck = deck;
             Console.WriteLine("Deck {0} i now default.", data.name);
         }
 
         public void HandleAPICall(PD_ServerListPlayers data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_RoomAddPNJ data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_RoomInitBattle data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_RoomStartBattle data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_BattlePlayCard data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_BattleEndTurn data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-        public void HandleAPICall(PD_BattleState data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
