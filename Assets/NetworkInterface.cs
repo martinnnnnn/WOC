@@ -172,18 +172,6 @@ public class NetworkInterface : MonoBehaviour
             case PD_AccountSetDefaultDeck accountSetDefaultDeck:
                 Callback_AccountSetDefaultDeck?.Invoke(accountSetDefaultDeck);
                 break;
-            case PD_ServerMakeRoom serverMakeRoom:
-                Callback_ServerMakeRoom?.Invoke(serverMakeRoom);
-                break;
-            case PD_ServerRenameRoom serverRenameRoom:
-                Callback_ServerRenameRoom?.Invoke(serverRenameRoom);
-                break;
-            case PD_ServerJoinRoom serverJoinRoom:
-                Callback_ServerJoinRoom?.Invoke(serverJoinRoom);
-                break;
-            case PD_ServerDeleteRoom serverRemoveRoom:
-                Callback_ServerDeleteRoom?.Invoke(serverRemoveRoom);
-                break;
             case PD_ServerListPlayers serverListPlayers:
                 Callback_ServerListPlayers?.Invoke(serverListPlayers);
                 break;
@@ -234,10 +222,6 @@ public class NetworkInterface : MonoBehaviour
     public Action<PD_AccountRenameDeck> Callback_AccountRenameDeck;
     public Action<PD_AccountDeleteDeck> Callback_AccountDeleteDeck;
     public Action<PD_AccountSetDefaultDeck> Callback_AccountSetDefaultDeck;
-    public Action<PD_ServerMakeRoom> Callback_ServerMakeRoom;
-    public Action<PD_ServerRenameRoom> Callback_ServerRenameRoom;
-    public Action<PD_ServerJoinRoom> Callback_ServerJoinRoom;
-    public Action<PD_ServerDeleteRoom> Callback_ServerDeleteRoom;
     public Action<PD_ServerListPlayers> Callback_ServerListPlayers;
     public Action<PD_RoomAddPNJ> Callback_RoomAddPNJ;
     public Action<PD_RoomInitBattle> Callback_RoomInitBattle;

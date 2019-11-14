@@ -119,9 +119,6 @@ namespace WOC_Server
             };
         }
 
-
-        public List<Room> rooms = new List<Room>();
-
         public async Task StartAsync(IPAddress ip, int port)
         {
             Console.WriteLine("[SERVER] Welcome to the WOC Server ! ");
@@ -156,7 +153,6 @@ namespace WOC_Server
                         session.OnDisconnect += () =>
                         {
                             sessions.Remove(session);
-                            rooms.ForEach(r => r.Remove(session));
                             //Broadcast(new PD_SessionDisconnect { name = session.Name }, null, true).Wait();
                             Console.WriteLine("[SERVER] Client closed. {0} clients still connected", sessions.Count);
                         };
@@ -171,37 +167,6 @@ namespace WOC_Server
             }
         }
 
-        public bool Exists(string roomName)
-        {
-            return (rooms.Find(r => r.Name == roomName) != null);
-        }
-
-        public Room CreateRoom(string roomName)
-        {
-            Debug.Assert(rooms.Find(r => r.Name == roomName) == null);
-
-            Random random = new Random();
-            Room room = new Room(roomName, this, random.Next());
-            rooms.Add(room);
-            return room;
-        }
-        public bool MoveToRoom(Room room, ServerSession session)
-        {
-            Debug.Assert(rooms.Find(r => r == room) != null && sessions.FirstOrDefault(s => s == session) != null);
-            if (room.Add(session))
-            {
-                sessions.Remove(session);
-                return true;
-            }
-            return false;
-        }
-
-        public void LeaveRoom(ServerSession session)
-        {
-
-        }
-
-
         public void Close()
         {
             if (listening)
@@ -213,7 +178,6 @@ namespace WOC_Server
                     s?.Close();
                 }
                 sessions.Clear();
-                rooms.Clear();
                 listening = false;
                 Console.WriteLine("[SERVER] Server closed.");
             }
@@ -223,14 +187,8 @@ namespace WOC_Server
             }
         }
 
-
-        public void Broadcast(IPacketData data, Session toIgnore = null, bool toAll = false)
+        public void Broadcast(IPacketData data, Session toIgnore = null)
         {
-            if (toAll)
-            {
-                rooms.ForEach(r => r.Broadcast(data, toIgnore));
-            }
-
             foreach (Session session in sessions)
             {
                 if (toIgnore == null || session != toIgnore)
@@ -240,7 +198,7 @@ namespace WOC_Server
             }
         }
 
-        public void Broadcast(IPacketData data, IEnumerable<ServerSession> sessions)
+        public void BroadcastTo(IPacketData data, IEnumerable<ServerSession> sessions)
         {
             foreach (Session session in sessions)
             {

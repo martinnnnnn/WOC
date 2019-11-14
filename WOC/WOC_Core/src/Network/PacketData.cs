@@ -208,41 +208,16 @@ namespace WOC_Core
             GLOBAL,
             FRIENDS,
             FRIEND,
-            LOCAL
+            LOCAL,
+            GROUP,
+            CLAN
         }
         public string senderName;
         public Type type;
         public string message;
     }
 
-    public class PD_ServerMakeRoom : IPacketData
-    {
-        public string roomName;
-        public string creatorName;
-        public int randomSeed;
-    }
-
-    public class PD_ServerRenameRoom : IPacketData
-    {
-        public string oldName;
-        public string newName;
-    }
-
-    public class PD_ServerJoinRoom : IPacketData
-    {
-        public string roomName;
-        public string userName;
-    }
-
-    public class PD_ServerDeleteRoom : IPacketData
-    {
-        public string name;
-    }
-
-    public class PD_ServerListPlayers : IPacketData
-    {
-        public string roomName;
-    }
+    public class PD_ServerListPlayers : IPacketData {}
 
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
@@ -278,95 +253,6 @@ namespace WOC_Core
 
     public class PD_BattleState : IPacketData { }
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public class PD_SessionShutdown : IPacketData { }
 
-
-    //public class PD_SessionConnect : IPacketData
-    //{
-    //    public string name;
-    //}
-    //public class PD_SessionDisconnect : IPacketData
-    //{
-    //    public string name;
-    //}
-
-    //public class PD_NameModify : IPacketData
-    //{
-    //    public string oldName;
-    //    public string newName;
-    //}
-    //public class PD_Chat : IPacketData
-    //{
-    //    public string senderName;
-    //    public string message;
-    //}
-
-    //public class PD_RoomJoin : IPacketData
-    //{
-    //    public string playerName;
-    //    public string roomName;
-    //    public int randomSeed;
-    //    public bool create;
-    //}
-    //public class PD_RoomLeave : IPacketData
-    //{
-    //    public string name;
-    //}
-    //public class PD_BattleStart : IPacketData { }
-
-    //public class PD_RoomList : IPacketData
-    //{
-    //    public List<string> rooms;
-    //}
-    
-    //public class PD_PlayerList : IPacketData
-    //{
-    //    public string roomName;
-    //    public List<string> players;
-    //}
-    //public class PD_TurnEnd : IPacketData { }
-
-    //public class PD_PNJAdd : IPacketData
-    //{
-    //    public string name;
-    //    public int life;
-    //    public Character.Race race;
-    //    public Character.Category category;
-    //    public int initiative;
-    //}
-
-    //public class PD_BattlePlayerAdd : IPacketData
-    //{
-    //    public string playerName;
-    //    public string oldCharacterName;
-    //    public string newCharacterName;
-    //}
-
-    //public class PD_SessionPlayerAdd : IPacketData
-    //{
-    //    public string               name;
-    //    public Character.Race       charaRace;
-    //    public Character.Category   charaCategory;
-    //    public int                  charaLife;
-    //    public string               charaName;
-    //    public int                  handStartCount;
-    //    public List<string>         cardsName;
-    //    public int                  aggroIncrement;
-    //    public int                  manaMax;
-    //}
-
-
-    //public class PD_CardPlayed : IPacketData
-    //{
-    //    public string ownerName;
-    //    public string targetName;
-    //    public int cardIndex;
-    //    public string cardName;
-    //}
 }

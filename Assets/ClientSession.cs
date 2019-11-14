@@ -15,15 +15,9 @@ namespace WOC_Client
     {
         NetworkInterface network = null;
 
-        //public PlayerActor currentActor;
-        //public List<PlayerActor> actors = new List<PlayerActor>();
-        public List<Room> liveRooms = new List<Room>();
         public List<string> onlineAccountNames = new List<string>();
 
         public ConcurrentDictionary<Guid, IPacketData> awaitingValidations = new ConcurrentDictionary<Guid, IPacketData>();
-
-        public Room room = null;
-        //public Battle battle;
 
         public ClientSession(NetworkInterface network)
         {

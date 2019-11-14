@@ -13,8 +13,6 @@ namespace WOC_Server
     public class ServerSession : Session
     {
         TCPServer server;
-        public Room room;
-
         public ServerSession(TCPServer s)
         {
             server = s;
@@ -72,18 +70,6 @@ namespace WOC_Server
                 case PD_ServerChat serverChat:
                     HandleAPICall(serverChat);
                     break;
-                case PD_ServerMakeRoom serverMakeRoom:
-                    HandleAPICall(serverMakeRoom);
-                    break;
-                case PD_ServerRenameRoom serverRenameRoom:
-                    HandleAPICall(serverRenameRoom);
-                    break;
-                case PD_ServerJoinRoom serverJoinRoom:
-                    HandleAPICall(serverJoinRoom);
-                    break;
-                case PD_ServerDeleteRoom serverListRoom:
-                    HandleAPICall(serverListRoom);
-                    break;
                 case PD_ServerListPlayers serverListPlayers:
                     HandleAPICall(serverListPlayers);
                     break;
@@ -138,7 +124,7 @@ namespace WOC_Server
                 }
                 else
                 {
-                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true);
+                    server.Broadcast(new PD_AccountConnected { name = account.name }, this);
                 }
             }
 
@@ -177,7 +163,7 @@ namespace WOC_Server
 
                 if (result && data.oldName != data.newName)
                 {
-                    server.Broadcast(new PD_AccountNameModify{ oldName = data.oldName, newName = data.newName}, this, true);
+                    server.Broadcast(new PD_AccountNameModify{ oldName = data.oldName, newName = data.newName}, this);
                 }
             }
             else
@@ -198,7 +184,7 @@ namespace WOC_Server
             {
                 if (deletingAccount.password == data.password)
                 {
-                    server.Broadcast(new PD_AccountDeleted { name = account.name }, this, true);
+                    server.Broadcast(new PD_AccountDeleted { name = account.name }, this);
                     account = null;
                 }
                 else
@@ -226,7 +212,7 @@ namespace WOC_Server
                     connectingAccount.connected = true;
                     connectingAccount.session = this;
                     account = connectingAccount;
-                    server.Broadcast(new PD_AccountConnected { name = account.name }, this, true);
+                    server.Broadcast(new PD_AccountConnected { name = account.name }, this);
                 }
                 else
                 {
@@ -249,7 +235,7 @@ namespace WOC_Server
             bool result = server.users.TryGetValue(data.email, out Account disconnectingAccount);
             if (result)
             {
-                server.Broadcast(new PD_AccountDisconnected { name = account.name }, this, true);
+                server.Broadcast(new PD_AccountDisconnected { name = account.name }, this);
                 disconnectingAccount.connected = false;
                 disconnectingAccount.session = null;
                 account = null;
@@ -334,21 +320,14 @@ namespace WOC_Server
                 switch (data.type)
                 {
                     case PD_ServerChat.Type.LOCAL:
-                        if (room == null)
-                        {
-                            server.Broadcast(data, this);
-                        }
-                        else
-                        {
-                            room.Broadcast(data, this);
-                        }
+                        server.Broadcast(data, null);
                         break;
                     case PD_ServerChat.Type.FRIENDS:
                         //data.message = data.message.Remove(0, 4);
-                        server.Broadcast(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected));
+                        server.BroadcastTo(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected));
                         break;
                     case PD_ServerChat.Type.GLOBAL:
-                        server.Broadcast(data, null, true);
+                        server.Broadcast(data, null);
                         break;
                     default:
                         Console.WriteLine("Message type not supported");
@@ -502,85 +481,6 @@ namespace WOC_Server
                 errorMessage = "No deck with this name was found.";
             }
 
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
-        public void HandleAPICall(PD_ServerMakeRoom data)
-        {
-            string errorMessage = "";
-
-            if (!server.Exists(data.roomName))
-            {
-                room = server.CreateRoom(data.roomName);
-                server.MoveToRoom(room, this);
-                data.randomSeed = room.battle.RandomSeed;
-                server.Broadcast(data, this, true);
-            }
-            else
-            {
-                errorMessage = "Room name already exists";
-            }
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
-        public void HandleAPICall(PD_ServerRenameRoom data)
-        {
-            string errorMessage = "";
-            room = server.rooms.FirstOrDefault(r => data.oldName == r.Name);
-            if (room != null)
-            {
-                room.Name = data.newName;
-                server.Broadcast(data, this, true);
-            }
-            else
-            {
-                errorMessage = "Could not find room.";
-            }
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
-        public void HandleAPICall(PD_ServerJoinRoom data)
-        {
-            Debug.Assert(data.userName == account.name);
-            string errorMessage = "";
-
-            Room room = server.rooms.FirstOrDefault(r => data.roomName == r.Name);
-            if (room != null)
-            {
-                if (server.MoveToRoom(room, this))
-                {
-                    server.Broadcast(data, this, true);
-                }
-                else
-                {
-                    errorMessage = "Unable to join room.";
-                }
-            }
-            else
-            {
-                errorMessage = "Could not find room.";
-            }
-            Send(new PD_Validation(data.id, errorMessage));
-        }
-
-        public void HandleAPICall(PD_ServerDeleteRoom data)
-        {
-            string errorMessage = "";
-
-            Room room = server.rooms.FirstOrDefault(r => data.name == r.Name);
-            if (room != null)
-            {
-                room.ForEach(s => server.sessions.Add(s));
-                room.ForEach(s => s.room = null);
-                room.Clear();
-                server.rooms.Remove(room);
-
-                server.Broadcast(data, this, true);
-            }
-            else
-            {
-                errorMessage = "Could not find room.";
-            }
             Send(new PD_Validation(data.id, errorMessage));
         }
 

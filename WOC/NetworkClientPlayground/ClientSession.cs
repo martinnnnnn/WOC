@@ -11,15 +11,9 @@ namespace Playground
 {
     public class ClientSession : Session
     {
-        //public PlayerActor currentActor;
-        //public List<PlayerActor> actors = new List<PlayerActor>();
-        public List<Room> liveRooms = new List<Room>();
         public List<string> onlineAccountNames = new List<string>();
 
         public ConcurrentDictionary<Guid, IPacketData> awaitingValidations = new ConcurrentDictionary<Guid, IPacketData>();
-
-        public Room room = null;
-        //public Battle battle;
 
         public override void HandleAPICall(IPacketData data)
         {
@@ -90,18 +84,6 @@ namespace Playground
                     break;
                 case PD_AccountSetDefaultDeck accountSetDefaultDeck:
                     HandleAPICall(accountSetDefaultDeck);
-                    break;
-                case PD_ServerMakeRoom serverMakeRoom:
-                    HandleAPICall(serverMakeRoom);
-                    break;
-                case PD_ServerRenameRoom serverRenameRoom:
-                    HandleAPICall(serverRenameRoom);
-                    break;
-                case PD_ServerJoinRoom serverJoinRoom:
-                    HandleAPICall(serverJoinRoom);
-                    break;
-                case PD_ServerDeleteRoom serverRemoveRoom:
-                    HandleAPICall(serverRemoveRoom);
                     break;
                 case PD_ServerListPlayers serverListPlayers:
                     HandleAPICall(serverListPlayers);
@@ -285,52 +267,6 @@ namespace Playground
             Console.WriteLine("Deck {0} i now default.", data.name);
         }
 
-        public void HandleAPICall(PD_ServerMakeRoom data)
-        {
-            Room newRoom = new Room(data.roomName, data.randomSeed);
-            liveRooms.Add(newRoom);
-            Console.WriteLine("Room {0} created.", data.roomName);
-            if (data.creatorName == account.name)
-            {
-                room = newRoom;
-                Console.WriteLine("Room {0} joined.", data.roomName);
-            }
-        }
-        public void HandleAPICall(PD_ServerRenameRoom data)
-        {
-            Room renamedRoom = liveRooms.FirstOrDefault(r => r.name == data.oldName);
-            if (renamedRoom != null)
-            {
-                renamedRoom.name = data.newName;
-                Console.WriteLine("Room {0} renamed to {1}.", data.oldName, data.newName);
-            }
-        }
-        public void HandleAPICall(PD_ServerJoinRoom data)
-        {
-            if (data.userName == account.name)
-            {
-                room = liveRooms.Find(r => r.name == data.roomName);
-                Console.WriteLine("Room {0} joined", data.roomName);
-            }
-            else if (room != null && room.name == data.roomName)
-            {
-                Console.WriteLine("{0} just joined!", data.userName);
-            }
-        }
-        public void HandleAPICall(PD_ServerDeleteRoom data)
-        {
-            if (room != null && room.name == data.name)
-            {
-                Console.WriteLine("Your room just got deleted!");
-                room = null;
-            }
-            else
-            {
-                Console.WriteLine("Room {0} got deleted.", data.name);
-            }
-
-            liveRooms.RemoveAll(r => r.name == data.name);
-        }
         public void HandleAPICall(PD_ServerListPlayers data)
         {
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
