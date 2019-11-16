@@ -152,6 +152,9 @@ namespace WOC_Client
                 case PD_AccountDisconnect accountDisconnect:
                     Callback_AccountDisconnect?.Invoke(accountDisconnect);
                     break;
+                case PD_InfoOnlineList infoOnlineList:
+                    Callback_InfoOnlineList?.Invoke(infoOnlineList);
+                    break;
                 case PD_AccountAddFriend accountAddFriend:
                     Callback_AccountAddFriend?.Invoke(accountAddFriend);
                     break;
@@ -189,6 +192,10 @@ namespace WOC_Client
         public Action<PD_Validation> Callback_Validation;
         public Action<PD_AccountNameModify> Callback_AccountNameModify;
         public Action<PD_ServerChat> Callback_ServerChat;
+        public Action<PD_PartyInvite> Callback_PartyInvite;
+        public Action<PD_PartyMemberNew> Callback_PartyMemberNew;
+        public Action<PD_PartyMemberLeave> Callback_PartyMemberLeave;
+        public Action<PD_InfoOnlineList> Callback_InfoOnlineList;
         public Action<PD_AccountConnected> Callback_AccountConnected;
         public Action<PD_AccountDisconnected> Callback_AccountDisconnected;
         public Action<PD_AccountDeleted> Callback_AccountDeleted;

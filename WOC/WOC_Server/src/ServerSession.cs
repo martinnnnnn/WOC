@@ -64,9 +64,18 @@ namespace WOC_Server
                 case PD_ServerListPlayers serverListPlayers:
                     HandleAPICall(serverListPlayers);
                     break;
+                case PD_InfoOnlineList infoOnlineList:
+                    HandleAPICall(infoOnlineList);
+                    break;
             }
         }
 
+        public void HandleAPICall(PD_InfoOnlineList data)
+        {
+            if (!AssureConnected(data.id)) return;
+
+            Send(new PD_InfoOnlineList { names = server.sessions.Select(s => s.account.name).Where(n => n != account.name).ToList() });
+        }
 
         public void HandleAPICall(PD_AccountMake data)
         {

@@ -20,6 +20,7 @@ namespace WOC_Core
         public string name;
         public List<string> friends = new List<string>();
 
+        public List<string> partyAccounts = new List<string>();
 
         public bool connected = false;
         public PlayerActor actor = null;

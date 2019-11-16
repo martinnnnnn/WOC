@@ -115,7 +115,6 @@ namespace WOC_Core
 
     public class PD_AccountConnect : IPacketData
     {
-        //public string name;
         public string email;
         public string password;
     }
@@ -206,37 +205,23 @@ namespace WOC_Core
     }
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    ///                                         BATTLE
+    ///                                         PARTY
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    /*
-     * Delete group
-     * 
-     * */
-    public class PD_GroupCreate : IPacketData
+    public class PD_PartyInvite : IPacketData
     {
-        public int groupId;
-        public string accountName;
+        public string inviter;
+        public string invity;
+        public List<string> partyAccounts;
     }
 
-    public class PD_GroupAdd : IPacketData
+    public class PD_PartyMemberNew : IPacketData
     {
-        public int groupId;
-        public string accountName;
+        public string memberName;
     }
 
-    public class PD_GroupRemove : IPacketData
+    public class PD_PartyMemberLeave : IPacketData
     {
-        public int groupId;
-        public string accountName;
-    }
-    public class PD_GroupPromote : IPacketData
-    {
-        public int groupId;
-        public string newLeaderName;
-    }
-    public class PD_GroupDelete : IPacketData
-    {
-        public int groupId;
+        public string memberName;
     }
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
@@ -258,4 +243,9 @@ namespace WOC_Core
 
     public class PD_SessionShutdown : IPacketData { }
 
+
+    public class PD_InfoOnlineList : IPacketData
+    {
+        public List<string> names;
+    }
 }
