@@ -146,7 +146,7 @@ namespace WOC_Core
             }
         }
 
-        public interface ICombatant { }
+        public interface ICombatant {}
 
         public class BattlePlayer : ICombatant
         {

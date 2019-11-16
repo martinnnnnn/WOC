@@ -134,7 +134,7 @@ namespace WOC_Core
         public void SendClose()
         {
             Console.WriteLine("[NETWORK] Sending shutdown message socket.");
-            Send(new PD_SessionShutdown());
+            Send(new PD_SessionShutdown(), true);
         }
 
         public void Close()

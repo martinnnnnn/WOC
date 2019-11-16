@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.UIElements.Runtime;
-using UnityEngine.UIElements;
 using WOC_Core;
 using WOC_Client;
 using System.Threading.Tasks;
@@ -12,115 +10,126 @@ using System.Net.Sockets;
 using System.Text;
 using System.Net;
 using UnityEditor;
+using UnityEngine.UI;
+using TMPro;
 
-public class GameUI : MonoBehaviour
+namespace WOC_Client
 {
-    NetworkInterface network;
-
-    VisualElement signing;
-    VisualElement chat;
-    Button disconnect;
-
-    private void Start()
+    public class GameUI : MonoBehaviour
     {
-        network = FindObjectOfType<NetworkInterface>();
-        network.Callback_AccountMake += HandleAPICall;
-        network.Callback_AccountConnect += HandleAPICall;
-        network.Callback_AccountDisconnect += HandleAPICall;
-        network.Callback_ServerChat += HandleAPICall;
-    }
+        NetworkInterface network;
 
-    private void Init()
-    {
-        PanelRenderer panelRenderer = GetComponent<PanelRenderer>();
+        public GameObject ConnectPanel;
+        public TMP_InputField textfieldEmail;
+        public TMP_InputField textfieldPassword;
+        public TMP_InputField textfieldName;
+        public Button signin;
+        public Button signup;
 
-        // Signin panel
-        signing = panelRenderer.visualTree.Q("signing");
+        public GameObject MainPanel;
+        public TMP_InputField textFieldChat;
+        public Button disconnect;
 
-        TextField email1 = signing.Q<TextField>("email-field1");
-        TextField password1 = signing.Q<TextField>("password-field1");
-        signing.Q<Button>("signin").clicked += (() =>
+        private void Start()
         {
-            network.SendMessage(new PD_AccountConnect { email = email1.text, password = password1.text }, true);
-        });
+            network = FindObjectOfType<NetworkInterface>();
+            network.Callback_AccountMake += HandleAPICall;
+            network.Callback_AccountConnect += HandleAPICall;
+            network.Callback_AccountDisconnect += HandleAPICall;
+            network.Callback_ServerChat += HandleAPICall;
 
-        TextField email2 = signing.Q<TextField>("email-field2");
-        TextField password2 = signing.Q<TextField>("password-field2");
-        TextField name2 = signing.Q<TextField>("name-field2");
-        signing.Q<Button>("signup").clicked += (() =>
-        {
-            network.SendMessage(new PD_AccountMake { email = email2.text, password = password2.text, name = name2.text }, true);
-        });
-        signing.visible = true;
+            ConnectPanel.SetActive(true);
+            MainPanel.SetActive(false);
 
-        // chat
-        chat = panelRenderer.visualTree.Q("chat");
-        TextField chat_textfield = chat.Q<VisualElement>("bottom").Q<TextField>("chat-textfield");
-        chat.Q<VisualElement>("bottom").Q<Button>("chat-send").clicked += (() =>
-        {
-            network.SendMessage(new PD_ServerChat
+            signin.onClick.AddListener(() =>
             {
-                senderName = network.session.account.name,
-                message = chat_textfield.text,
-                type = PD_ServerChat.Type.GLOBAL
-            }, false);
-        });
-        chat.visible = false;
+                network.SendMessage(new PD_AccountConnect { email = textfieldEmail.text, password = textfieldPassword.text }, true);
+            });
 
-        disconnect = panelRenderer.visualTree.Q<Button>("disconnect");
-        disconnect.visible = false;
-        disconnect.clicked += (() =>
-        {
-            network.SendMessage(new PD_AccountDisconnect
+            signup.onClick.AddListener(() =>
             {
-                email = network.session.account.email
-            }, false);
-        });
-    }
+                network.SendMessage(new PD_AccountMake { email = textfieldEmail.text, password = textfieldPassword.text, name = textfieldName.text }, true);
+            });
 
-    public void HandleAPICall(PD_AccountMake data)
-    {
-        network.session.account = new Account()
+            //disconnect.onClick.AddListener(() =>
+            //{
+            //    network.SendMessage(new PD_AccountDisconnect
+            //    {
+            //        email = network.session.account.email
+            //    }, false);
+            //});
+
+            textFieldChat.onSubmit.AddListener((string msg) =>
+            {
+                network.SendMessage(new PD_ServerChat
+                {
+                    senderName = network.session.account.name,
+                    message = msg,
+                    type = PD_ServerChat.Type.GLOBAL
+                }, false);
+                textFieldChat.text = "";
+            });
+        }
+
+        private void Update()
         {
-            email = data.email,
-            password = data.password,
-            name = data.name,
-            connected = true
-        };
-        signing.visible = false;
-        chat.visible = true;
-        disconnect.visible = true;
-    }
+           
+        }
 
-    public void HandleAPICall(PD_AccountConnect data)
-    {
-        network.session.account.connected = true;
-        signing.visible = false;
-        chat.visible = true;
-        disconnect.visible = true;
-    }
-
-    public void HandleAPICall(PD_ServerChat data)
-    {
-        chat.Q<Label>("chat-messages").text += "\n" + data.senderName + " : " + data.message;
-        chat.Q<VisualElement>("bottom").Q<TextField>("chat-textfield").value = "";
-    }
-
-    public void HandleAPICall(PD_AccountDisconnect data)
-    {
-        network.session.account.connected = false;
-        signing.visible = true;
-        chat.visible = false;
-        disconnect.visible = false;
-    }
-
-    static bool initdone = false;
-    void Update()
-    {
-        if (!initdone)
+        public void HandleAPICall(PD_AccountMake data)
         {
-            Init();
-            initdone = true;
+            network.session.account = new Account()
+            {
+                email = data.email,
+                password = data.password,
+                name = data.name,
+                connected = true
+            };
+            ConnectPanel.SetActive(false);
+            MainPanel.SetActive(true);
+        }
+
+        public void HandleAPICall(PD_AccountConnect data)
+        {
+            network.session.account.connected = true;
+            ConnectPanel.SetActive(false);
+            MainPanel.SetActive(true);
+        }
+
+
+        public GameObject chatPanel;
+        public GameObject textObject;
+        public List<GameObject> chatMessages = new List<GameObject>();
+
+        public void HandleAPICall(PD_ServerChat data)
+        {
+            if (chatMessages.Count > 100)
+            {
+                Destroy(chatMessages[0]);
+                chatMessages.RemoveAt(0);
+            }
+
+            GameObject newText = Instantiate(textObject, chatPanel.transform);
+            newText.GetComponent<TMP_Text>().text = data.senderName + " : " + data.message;
+            chatMessages.Add(newText);
+        }
+
+
+
+        public void HandleAPICall(PD_AccountDisconnect data)
+        {
+            network.session.account.connected = false;
+            ConnectPanel.SetActive(true);
+            MainPanel.SetActive(false);
         }
     }
+
+    [Serializable]
+    public class ChatMessage
+    {
+        //public string content;
+        public TMP_Text textObject;
+    }
 }
+
+
