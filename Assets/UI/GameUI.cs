@@ -52,6 +52,9 @@ namespace WOC_Client
         public Button addPlayerToParty;
         public Button refusePlayerToParty;
 
+        public Button startBattle;
+        public Button endTurn;
+        
         private void Start()
         {
             network = FindObjectOfType<NetworkInterface>();
@@ -113,14 +116,24 @@ namespace WOC_Client
                 }
             });
 
-            refusePlayerToParty.onClick.AddListener(() =>
+            //refusePlayerToParty.onClick.AddListener(() =>
+            //{
+            //    addPlayerToParty.onClick.RemoveAllListeners();
+            //    addPlayerToParty.onClick.AddListener(() =>
+            //    {
+            //        invitePlayerModal.SetActive(false);
+            //    });
+            //    invitePlayerModal.SetActive(false);
+            //});
+
+            startBattle.onClick.AddListener(() =>
             {
-                addPlayerToParty.onClick.RemoveAllListeners();
-                addPlayerToParty.onClick.AddListener(() =>
-                {
-                    invitePlayerModal.SetActive(false);
-                });
-                invitePlayerModal.SetActive(false);
+                network.SendMessage(new PD_BattleStart {}, validate : false);
+            });
+
+            endTurn.onClick.AddListener(() =>
+            {
+                network.SendMessage(new PD_BattlePlayerTurnEnd { name = network.session.account.name });
             });
         }
 

@@ -40,6 +40,11 @@ namespace WOC_Core
                 return newCards;
             }
 
+            public Card Pop()
+            {
+                return cards.Dequeue();
+            }
+
             public void Shuffle()
             {
                 Card[] tmp = cards.ToArray();
@@ -150,6 +155,7 @@ namespace WOC_Core
 
         public class BattlePlayer : ICombatant
         {
+            public string name;
             // objets
             public Deck deck;
             public Hand hand;
@@ -159,10 +165,11 @@ namespace WOC_Core
             // battle utils
             public float timeRemaining;
             // actions callbacks
-            public Action<float, List<Card>> TurnStarted;
+            public Action<Card> CardDrawn;
 
-            public BattlePlayer(Battle battle, Deck deck)
+            public BattlePlayer(Battle battle, string name, Deck deck)
             {
+                this.name = name;
                 this.battle = battle;
                 this.deck = deck;
                 hand = new Hand(this);
@@ -173,25 +180,44 @@ namespace WOC_Core
                 drawPile.Shuffle();
             }
 
-            internal void InitTurn(float newTimeRemaining)
+            public void Update(float dt)
+            {
+                timeRemaining -= dt;
+                if (timeRemaining <= 0)
+                {
+                    battle.PlayerTurnEnd(this);
+                }
+            }
+
+            public void InitTurn(float newTimeRemaining)
             {
                 timeRemaining = newTimeRemaining;
                 DrawCards(5);
-                TurnStarted?.Invoke(timeRemaining, hand.Cards);
             }
 
-            public bool PlayCard(int index)
+            public bool PlayCard(int index, string targetName, bool force = false)
             {
                 Card card = hand.Get(index);
 
-                if (card.timeCost >= timeRemaining)
+                if (card.timeCost >= timeRemaining || force)
                 {
                     timeRemaining -= card.timeCost;
                     hand.Remove(index);
                     discardPile.Push(card);
                     return true;
                 }
+                
+                return false;
+            }
 
+            public bool PlayCard(string cardName, string targetName, bool force = false)
+            {
+                Card card = hand.Cards.Find(c => c.name == cardName);
+                if (card != null)
+                {
+                    int index = hand.Cards.IndexOf(card);
+                    return PlayCard(index, targetName, force);
+                }
                 return false;
             }
 
@@ -210,7 +236,9 @@ namespace WOC_Core
                         MoveDiscardToDraw();
                     }
 
-                    hand.Add(drawPile.Pop(1));
+                    Card newCard = drawPile.Pop();
+                    hand.Add(newCard);
+                    CardDrawn?.Invoke(newCard);
                 }
             }
         }
@@ -218,11 +246,20 @@ namespace WOC_Core
         public class Monster : ICombatant
         {
             public string name;
+            public float baseTime;
+
+            public Monster(string name, float baseTime)
+            {
+                this.name = name;
+                this.baseTime = baseTime;
+            }
         }
 
         public class Battle
         {
-            List<ICombatant> combatants = new List<ICombatant>();
+            List<BattlePlayer> players = new List<BattlePlayer>();
+            List<Monster> monsters = new List<Monster>();
+
             public float timeRemaining = 60;
             public Action MonsterTurnStarted;
 
@@ -231,10 +268,15 @@ namespace WOC_Core
 
             public Battle(List<BattlePlayer> players, List<Monster> monsters, int randomSeed)
             {
-                combatants.AddRange(players);
-                combatants.AddRange(monsters);
+                this.players.AddRange(players);
+                this.monsters.AddRange(monsters);
                 this.randomSeed = randomSeed;
                 random = new Random(this.randomSeed);
+            }
+
+            public void Update(float dt)
+            {
+                playingPlayers.ForEach(p => p.Update(dt));
             }
 
             public void MonstersTurnStart()
@@ -246,9 +288,9 @@ namespace WOC_Core
             List<BattlePlayer> playingPlayers = new List<BattlePlayer>();
             public void PlayersTurnStart()
             {
-                foreach (var player in combatants.Where(c => c is BattlePlayer) as IEnumerable<BattlePlayer>)
+                foreach (var player in players)
                 {
-                    player.InitTurn(timeRemaining);
+                    player.InitTurn(monsters[0].baseTime);
                     playingPlayers.Add(player);
                 }
             }
@@ -260,6 +302,22 @@ namespace WOC_Core
                 {
                     MonstersTurnStart();
                 }
+            }
+
+            public void PlayerTurnEnd(string playerName)
+            {
+                PlayerTurnEnd(playingPlayers.Find(p => p.name == playerName));
+            }
+
+            public bool PlayCard(string playerName, int cardIndex, string targetName, bool force = false)
+            {
+                var player = playingPlayers.Find(p => p.name == playerName);
+                if (player != null)
+                {
+                    return player.PlayCard(cardIndex, targetName, force);
+                }
+
+                return false;
             }
         }
     }

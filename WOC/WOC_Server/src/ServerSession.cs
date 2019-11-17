@@ -13,6 +13,8 @@ namespace WOC_Server
     public class ServerSession : Session
     {
         TCPServer server;
+
+
         public ServerSession(TCPServer s)
         {
             server = s;
@@ -67,6 +69,15 @@ namespace WOC_Server
                 case PD_InfoOnlineList infoOnlineList:
                     HandleAPICall(infoOnlineList);
                     break;
+                case PD_BattleStart battleStart:
+                    HandleAPICall(battleStart);
+                    break;
+                case PD_BattlePlayerTurnEnd battlePlayerTurnEnd:
+                    HandleAPICall(battlePlayerTurnEnd);
+                    break;
+                case PD_BattlePlayCard battlePlayCard:
+                    HandleAPICall(battlePlayCard);
+                    break;
             }
         }
 
@@ -75,6 +86,41 @@ namespace WOC_Server
             if (!AssureConnected(data.id)) return;
 
             Send(new PD_InfoOnlineList { names = server.sessions.Select(s => s.account.name).Where(n => n != account.name).ToList() });
+        }
+
+        public void HandleAPICall(PD_BattleStart data)
+        {
+            if (!AssureConnected(data.id)) return;
+            data.randomSeed = new Random().Next();
+
+            server.InitBattle(data.randomSeed);
+
+            server.Broadcast(data, null);
+        }
+
+        public void HandleAPICall(PD_BattlePlayerTurnEnd data)
+        {
+            if (!AssureConnected(data.id)) return;
+            
+            server.battle.PlayerTurnEnd(data.name);
+            server.Broadcast(data, null);
+        }
+
+        public void HandleAPICall(PD_BattlePlayCard data)
+        {
+            if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
+
+            if (server.battle.PlayCard(data.ownerName, data.cardIndex, data.targetName))
+            {
+                server.Broadcast(data, null);
+            }
+            else
+            {
+                errorMessage = "Could not play this card";
+            }
+
+            Send(new PD_Validation(data.id, errorMessage), true);
         }
 
         public void HandleAPICall(PD_AccountMake data)
@@ -346,22 +392,22 @@ namespace WOC_Server
             if (!AssureConnected(data.id)) return;
             string errorMessage = "";
 
-            Deck deck = account.decks.Find(d => d.name == data.deckName);
-            if (deck != null)
-            {
-                if (server.cards.Find(c => c.name == data.cardName) != null)
-                {
-                    deck.cardNames.Add(data.cardName);
-                }
-                else
-                {
-                    errorMessage = "Wrong card name.";
-                }
-            }
-            else
-            {
-                errorMessage = "Could not find the deck.";
-            }
+            //Deck deck = account.decks.Find(d => d.name == data.deckName);
+            //if (deck != null)
+            //{
+            //    if (server.cards.Find(c => c.name == data.cardName) != null)
+            //    {
+            //        deck.cardNames.Add(data.cardName);
+            //    }
+            //    else
+            //    {
+            //        errorMessage = "Wrong card name.";
+            //    }
+            //}
+            //else
+            //{
+            //    errorMessage = "Could not find the deck.";
+            //}
 
             Send(new PD_Validation(data.id, errorMessage));
         }

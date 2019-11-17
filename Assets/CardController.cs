@@ -11,6 +11,9 @@ namespace WOC_Client
         public float moveSpeed = 0.1f;
         public bool isSelected = false;
         Vector3 restPos;
+        public WOC_Core.RTTS.Card card;
+        public AvatarController owner;
+        public int index;
 
         private void Start()
         {
@@ -29,6 +32,7 @@ namespace WOC_Client
             {
                 targetPosition = restPos;
             }
+
             transform.position = Vector2.Lerp(transform.position, targetPosition, moveSpeed);
         }
     }

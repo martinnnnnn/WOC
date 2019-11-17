@@ -196,12 +196,39 @@ namespace WOC_Core
     /// ///////////////////////////////////////////////////////////////////////////////////////
     ///                                         GROUP 
     /// ///////////////////////////////////////////////////////////////////////////////////////
+
+    /*
+     * init battle
+     * start battle
+     * drawpile info
+     * discardpile info
+     * hand info
+     * battlestate info
+     * cardplayed
+     * */
+
+    public class PD_BattleInit : IPacketData
+    {
+        public List<string> playerList;
+        public List<string> monsterList;
+        public List<string> monsterList;
+    }
+
+    public class PD_BattleStart : IPacketData
+    {
+        public int randomSeed;
+    }
+
     public class PD_BattlePlayCard : IPacketData
     {
         public string ownerName;
         public string targetName;
         public int cardIndex;
-        public string cardName;
+    }
+
+    public class PD_BattlePlayerTurnEnd : IPacketData
+    {
+        public string name;
     }
 
     /// ///////////////////////////////////////////////////////////////////////////////////////

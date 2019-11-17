@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using WOC_Core;
 using WOC_Client;
 using System.Threading.Tasks;
@@ -19,15 +20,21 @@ namespace WOC_Client
         {
             public IPacketData data;
             public bool force;
+            public bool validate;
         }
 
         ConcurrentQueue<OutPacket> outgoingMessages = new ConcurrentQueue<OutPacket>();
         ConcurrentQueue<IPacketData> incomingMessages = new ConcurrentQueue<IPacketData>();
 
+        public List<string> accountNames = new List<string>();
+
         private void Start()
         {
             UnitySystemConsoleRedirector.Redirect();
             Connect();
+            Callback_InfoOnlineList += HandleAPICall;
+            Callback_AccountConnected += HandleAPICall;
+            Callback_AccountDisconnected += HandleAPICall;
         }
 
 
@@ -103,19 +110,38 @@ namespace WOC_Client
 
             while (outgoingMessages.TryDequeue(out OutPacket packet))
             {
-                session.awaitingValidations.TryAdd(packet.data.id, packet.data);
+                if (packet.validate)
+                {
+                    session.awaitingValidations.TryAdd(packet.data.id, packet.data);
+                }
                 session.Send(packet.data, packet.force);
             }
         }
 
-        public void SendMessage(IPacketData packet, bool force = false)
+        public void SendMessage(IPacketData packet, bool force = false, bool validate = true)
         {
-            outgoingMessages.Enqueue(new OutPacket { data = packet, force = force });
+            outgoingMessages.Enqueue(new OutPacket { data = packet, force = force, validate = validate });
         }
 
         public void ReceiveMessage(IPacketData packet)
         {
             incomingMessages.Enqueue(packet);
+        }
+
+        public void HandleAPICall(PD_InfoOnlineList data)
+        {
+            accountNames.Clear();
+            accountNames.AddRange(data.names);
+        }
+
+        public void HandleAPICall(PD_AccountConnected data)
+        {
+            accountNames.Add(data.name);
+        }
+
+        public void HandleAPICall(PD_AccountDisconnected data)
+        {
+            accountNames.Remove(data.name);
         }
 
         public void HandleAPICall(IPacketData data)
@@ -179,6 +205,9 @@ namespace WOC_Client
                 case PD_ServerListPlayers serverListPlayers:
                     Callback_ServerListPlayers?.Invoke(serverListPlayers);
                     break;
+                case PD_BattleStart battleStart:
+                    Callback_BattleStart?.Invoke(battleStart);
+                    break;
                 case PD_BattlePlayCard battleCardPlayed:
                     Callback_BattlePlayCard?.Invoke(battleCardPlayed);
                     break;
@@ -187,7 +216,6 @@ namespace WOC_Client
                     break;
             }
         }
-
 
         public Action<PD_Validation> Callback_Validation;
         public Action<PD_AccountNameModify> Callback_AccountNameModify;
@@ -212,6 +240,9 @@ namespace WOC_Client
         public Action<PD_AccountDeleteDeck> Callback_AccountDeleteDeck;
         public Action<PD_AccountSetCurrentDeck> Callback_AccountSetCurrentDeck;
         public Action<PD_ServerListPlayers> Callback_ServerListPlayers;
+        public Action<PD_BattleStart> Callback_BattleStart;
         public Action<PD_BattlePlayCard> Callback_BattlePlayCard;
+        public Action<PD_BattlePlayerTurnEnd> Callback_BattlePlayerTurnEnd;
     }
 }
+

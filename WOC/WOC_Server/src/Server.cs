@@ -22,101 +22,55 @@ namespace WOC_Server
 
         private CancellationToken token;
         public SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
-
-
         public ConcurrentDictionary<string, WOC_Core.Account> users = new ConcurrentDictionary<string, WOC_Core.Account>();
-        public List<Card> cards = new List<Card>();
+
+        public WOC_Core.RTTS.Battle battle = null;
+
 
         public TCPServer()
         {
-            cards = new List<Card>()
+
+        }
+
+        public void InitBattle(int randomSeed)
+        {
+            List<WOC_Core.RTTS.BattlePlayer> players =
+                new List<WOC_Core.RTTS.BattlePlayer>(users.Select(n =>
+                new WOC_Core.RTTS.BattlePlayer(battle, n.Key, new WOC_Core.RTTS.Deck()
+                {
+                    name = "defaultDeck",
+                    cards = new List<WOC_Core.RTTS.Card>()
+                    {
+                                    new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
+                                    new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
+                                    new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
+                                    new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
+                                    new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
+                                    new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
+                                    new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
+                                    new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
+                                    new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
+                                    new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
+                                    new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
+                                    new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
+                                    new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
+                                    new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
+                                    new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
+                                    new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
+                                    new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
+                                    new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
+                                    new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
+                                    new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
+                                    new WOC_Core.RTTS.Card() { name = "card6", timeCost = 6 },
+                    }
+                })));
+
+            List<WOC_Core.RTTS.Monster> monsters = new List<WOC_Core.RTTS.Monster>()
             {
-                // name | mana cost | exhaust | effects list
-                new Card("smol_dmg", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
-                new Card("smol_dmg2", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek2", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg2", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
-                    new Card("smol_dmg3", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek3", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg3", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
-                new Card("smol_dmg4", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek4", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg4", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
-                new Card("smol_dmg5", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek5", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg5", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
-                new Card("smol_dmg6", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek6", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg6", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
-                new Card("smol_dmg7", 1, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(5)
-                }),
-                new Card("hek7", 2, false, new List<CardEffect>
-                {
-                    new CardEffectHeal(2)
-                }),
-                new Card("big_dmg7", 3, false, new List<CardEffect>
-                {
-                    new CardEffectDamage(10)
-                }),
+                new WOC_Core.RTTS.Monster("monster", 15)
             };
+
+            battle = new WOC_Core.RTTS.Battle(players, monsters, randomSeed);
         }
 
         public async Task StartAsync(IPAddress ip, int port)
