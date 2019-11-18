@@ -6,35 +6,35 @@
 
 namespace WOC_Client
 {
-    public class CardController : MonoBehaviour
-    {
-        public float moveSpeed = 0.1f;
-        public bool isSelected = false;
-        Vector3 restPos;
-        public WOC_Core.RTTS.Card card;
-        public AvatarController owner;
-        public int index;
+    //public class CardController : MonoBehaviour
+    //{
+    //    public float moveSpeed = 0.1f;
+    //    public bool isSelected = false;
+    //    Vector3 restPos;
+    //    public WOC_Core.RTTS.Card card;
+    //    public AvatarController owner;
+    //    public int index;
 
-        private void Start()
-        {
-            restPos = transform.position;
-        }
+    //    private void Start()
+    //    {
+    //        restPos = transform.position;
+    //    }
 
-        private void Update()
-        {
-            Vector2 targetPosition = transform.position;
+    //    private void Update()
+    //    {
+    //        Vector2 targetPosition = transform.position;
 
-            if (isSelected)
-            {
-                targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            }
-            else
-            {
-                targetPosition = restPos;
-            }
+    //        if (isSelected)
+    //        {
+    //            targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //        }
+    //        else
+    //        {
+    //            targetPosition = restPos;
+    //        }
 
-            transform.position = Vector2.Lerp(transform.position, targetPosition, moveSpeed);
-        }
-    }
+    //        transform.position = Vector2.Lerp(transform.position, targetPosition, moveSpeed);
+    //    }
+    //}
 }
 

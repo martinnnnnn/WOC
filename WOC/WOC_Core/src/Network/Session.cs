@@ -74,7 +74,7 @@ namespace WOC_Core
             }
         }
 
-        public async Task ListenAsync()
+        public void ListenAsync()
         {
             tokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
             token = tokenSource.Token;
@@ -82,11 +82,12 @@ namespace WOC_Core
             var stringBuilder = new StringBuilder();
             try
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[2048];
                 int byteCount = 1;
                 while (!token.IsCancellationRequested && byteCount > 0)
                 {
-                    byteCount = await netstream.ReadAsync(buffer, 0, buffer.Length, token);
+
+                    byteCount = netstream.Read(buffer, 0, buffer.Length);
                     var msg = Encoding.UTF8.GetString(buffer, 0, byteCount);
 
                     IPacketData data = null;

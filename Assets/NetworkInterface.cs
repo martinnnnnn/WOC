@@ -208,8 +208,32 @@ namespace WOC_Client
                 case PD_BattleStart battleStart:
                     Callback_BattleStart?.Invoke(battleStart);
                     break;
-                case PD_BattlePlayCard battleCardPlayed:
-                    Callback_BattlePlayCard?.Invoke(battleCardPlayed);
+                case PD_BattleStatePlayer battleStatePlayer:
+                    Callback_BattleStatePlayer?.Invoke(battleStatePlayer);
+                    break;
+                case PD_BattleStateMainPlayer battleStateMainPlayer:
+                    Callback_BattleStateMainPlayer?.Invoke(battleStateMainPlayer);
+                    break;
+                case PD_BattleStateMonster battleStateMonster:
+                    Callback_BattleStateMonster?.Invoke(battleStateMonster);
+                    break;
+                case PD_BattleState battleState:
+                    Callback_BattleState?.Invoke(battleState);
+                    break;
+                case PD_BattlePlayerTurnStart battlePlayerTurnStart:
+                    Callback_BattlePlayerTurnStart?.Invoke(battlePlayerTurnStart);
+                    break;
+                case PD_BattleCardPlayed battleCardPlayed:
+                    Callback_BattleCardPlayed?.Invoke(battleCardPlayed);
+                    break;
+                case PD_BattleCardDrawn battleCardDrawn:
+                    Callback_BattleCardDrawn?.Invoke(battleCardDrawn);
+                    break;
+                case PD_BattleEndTurn battleEndTurn:
+                    Callback_BattleEndTurn?.Invoke(battleEndTurn);
+                    break;
+                case PD_BattlePlayerTurnEnd battlePlayerTurnEnd:
+                    Callback_BattlePlayerTurnEnd?.Invoke(battlePlayerTurnEnd);
                     break;
                 default:
                     System.Diagnostics.Debug.Assert(false, "API call not implemented !!");
@@ -241,7 +265,14 @@ namespace WOC_Client
         public Action<PD_AccountSetCurrentDeck> Callback_AccountSetCurrentDeck;
         public Action<PD_ServerListPlayers> Callback_ServerListPlayers;
         public Action<PD_BattleStart> Callback_BattleStart;
-        public Action<PD_BattlePlayCard> Callback_BattlePlayCard;
+        public Action<PD_BattleStatePlayer> Callback_BattleStatePlayer;
+        public Action<PD_BattleStateMainPlayer> Callback_BattleStateMainPlayer;
+        public Action<PD_BattleStateMonster> Callback_BattleStateMonster;
+        public Action<PD_BattleState> Callback_BattleState;
+        public Action<PD_BattlePlayerTurnStart> Callback_BattlePlayerTurnStart;
+        public Action<PD_BattleCardPlayed> Callback_BattleCardPlayed;
+        public Action<PD_BattleCardDrawn> Callback_BattleCardDrawn;
+        public Action<PD_BattleEndTurn> Callback_BattleEndTurn;
         public Action<PD_BattlePlayerTurnEnd> Callback_BattlePlayerTurnEnd;
     }
 }

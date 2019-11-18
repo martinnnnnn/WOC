@@ -207,23 +207,65 @@ namespace WOC_Core
      * cardplayed
      * */
 
-    public class PD_BattleInit : IPacketData
+    public class PD_BattleStart : IPacketData {}
+
+    public class PD_BattleStatePlayer : IPacketData
     {
-        public List<string> playerList;
-        public List<string> monsterList;
-        public List<string> monsterList;
+        public int location;
+        public string name;
+        public int life;
+        public int handCount;
+        public int drawPileCount;
+        public int discardPileCount;
     }
 
-    public class PD_BattleStart : IPacketData
+    public class PD_BattleStateMainPlayer : IPacketData
     {
-        public int randomSeed;
+        public int location;
+        public int life;
+        public List<string> hand;
+        public int drawPileCount;
+        public int discardPileCount;
     }
 
-    public class PD_BattlePlayCard : IPacketData
+    public class PD_BattleStateMonster : IPacketData
     {
+        public int location;
+        public string name;
+    }
+
+    public class PD_BattleState : IPacketData
+    {
+        public List<PD_BattleStateMonster> monsters;
+        public List<PD_BattleStatePlayer> players;
+        public PD_BattleStateMainPlayer mainPlayer;
+    }
+
+
+
+    public class PD_BattlePlayerTurnStart : IPacketData
+    {
+        public DateTime startTime;
+    }
+
+    public class PD_BattleCardPlayed : IPacketData
+    {
+        public DateTime eventTime;
         public string ownerName;
         public string targetName;
         public int cardIndex;
+    }
+
+    public class PD_BattleCardDrawn : IPacketData
+    {
+        public string playerName;
+        public string cardName;
+    }
+
+    public class PD_BattleEndTurn : IPacketData
+    {
+        public DateTime eventTime;
+        public string playerName;
     }
 
     public class PD_BattlePlayerTurnEnd : IPacketData
@@ -238,7 +280,7 @@ namespace WOC_Core
     {
         public string inviter;
         public string invity;
-        public List<string> partyAccounts;
+        public List<string> partyAccounts; 
     }
 
     public class PD_PartyMemberNew : IPacketData

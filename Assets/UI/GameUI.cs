@@ -68,6 +68,8 @@ namespace WOC_Client
             network.Callback_PartyMemberNew += HandleAPICall;
             network.Callback_PartyMemberLeave += HandleAPICall;
             network.Callback_InfoOnlineList += HandleAPICall;
+            // battle
+            network.Callback_BattleStart += HandleAPICall;
 
             ConnectPanel.SetActive(true);
             MainPanel.SetActive(false);
@@ -128,13 +130,13 @@ namespace WOC_Client
 
             startBattle.onClick.AddListener(() =>
             {
-                network.SendMessage(new PD_BattleStart {}, validate : false);
+                network.SendMessage(new PD_BattleStart {}, validate: false);
             });
 
-            endTurn.onClick.AddListener(() =>
-            {
-                network.SendMessage(new PD_BattlePlayerTurnEnd { name = network.session.account.name });
-            });
+            //endTurn.onClick.AddListener(() =>
+            //{
+            //    network.SendMessage(new PD_BattlePlayerTurnEnd { name = network.session.account.name });
+            //});
         }
 
         private void Update()
@@ -279,6 +281,12 @@ namespace WOC_Client
             ConnectPanel.SetActive(true);
             MainPanel.SetActive(false);
         }
+
+        public void HandleAPICall(PD_BattleStart data)
+        {
+            startBattle.gameObject.SetActive(false);
+        }
+
     }
 
     [Serializable]

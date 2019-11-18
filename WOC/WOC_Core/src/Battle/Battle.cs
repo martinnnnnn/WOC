@@ -44,7 +44,7 @@ namespace WOC_Core
             {
                 return cards.Dequeue();
             }
-
+            
             public void Shuffle()
             {
                 Card[] tmp = cards.ToArray();
@@ -167,16 +167,20 @@ namespace WOC_Core
             // actions callbacks
             public Action<Card> CardDrawn;
 
-            public BattlePlayer(Battle battle, string name, Deck deck)
+            public BattlePlayer(string name, Deck deck)
             {
                 this.name = name;
-                this.battle = battle;
                 this.deck = deck;
                 hand = new Hand(this);
                 drawPile = new CardPile(this);
                 discardPile = new CardPile(this);
 
                 drawPile.Push(deck.cards.ToArray());
+            }
+
+            public void Init(Battle battle)
+            {
+                this.battle = battle;
                 drawPile.Shuffle();
             }
 
@@ -257,21 +261,25 @@ namespace WOC_Core
 
         public class Battle
         {
-            List<BattlePlayer> players = new List<BattlePlayer>();
-            List<Monster> monsters = new List<Monster>();
+            public List<BattlePlayer> players = new List<BattlePlayer>();
+            public List<Monster> monsters = new List<Monster>();
 
             public float timeRemaining = 60;
             public Action MonsterTurnStarted;
 
-            public int randomSeed = 0;
             public Random random;
-
-            public Battle(List<BattlePlayer> players, List<Monster> monsters, int randomSeed)
+            public bool hasStarted = false;
+            public Battle(List<BattlePlayer> players, List<Monster> monsters)
             {
                 this.players.AddRange(players);
                 this.monsters.AddRange(monsters);
-                this.randomSeed = randomSeed;
-                random = new Random(this.randomSeed);
+                random = new Random();
+                hasStarted = true;
+                this.players.ForEach(p =>
+                {
+                    p.Init(this);
+                });
+
             }
 
             public void Update(float dt)
