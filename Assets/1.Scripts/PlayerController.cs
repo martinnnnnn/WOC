@@ -11,25 +11,23 @@ namespace WOC_Client
     public class PlayerController : MonoBehaviour
     {
         NetworkInterface network;
-        public BattleManager battle;
+        BattleManager battle;
 
+        public TMP_Text nameText;
         public TMP_Text lifeText;
-
-        private void Start()
-        {
-            network = FindObjectOfType<NetworkInterface>();
-            network.Callback_BattleStatePlayer += HandleAPICall;
-        }
 
         public void Init(BattleManager battle, PD_BattleStatePlayer data)
         {
             this.battle = battle;
+            network = FindObjectOfType<NetworkInterface>();
+            network.Callback_BattleStatePlayer += HandleAPICall;
             HandleAPICall(data);
         }
 
         private void HandleAPICall(PD_BattleStatePlayer data)
         {
             transform.position = this.battle.playersLocations[data.location].position;
+            nameText.text = data.name;
             lifeText.text = data.life.ToString();
         }
     }

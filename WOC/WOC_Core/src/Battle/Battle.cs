@@ -156,6 +156,7 @@ namespace WOC_Core
         public class BattlePlayer : ICombatant
         {
             public string name;
+            public int location;
             // objets
             public Deck deck;
             public Hand hand;
@@ -165,11 +166,12 @@ namespace WOC_Core
             // battle utils
             public float timeRemaining;
             // actions callbacks
-            public Action<Card> CardDrawn;
+            public Action<string, Card> CardDrawn;
 
-            public BattlePlayer(string name, Deck deck)
+            public BattlePlayer(string name, int location, Deck deck)
             {
                 this.name = name;
+                this.location = location;
                 this.deck = deck;
                 hand = new Hand(this);
                 drawPile = new CardPile(this);
@@ -242,7 +244,7 @@ namespace WOC_Core
 
                     Card newCard = drawPile.Pop();
                     hand.Add(newCard);
-                    CardDrawn?.Invoke(newCard);
+                    CardDrawn?.Invoke(name, newCard);
                 }
             }
         }

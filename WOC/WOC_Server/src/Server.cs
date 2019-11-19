@@ -34,44 +34,10 @@ namespace WOC_Server
 
         public void InitBattle()
         {
-            //List<WOC_Core.RTTS.BattlePlayer> players = new List<WOC_Core.RTTS.BattlePlayer>();
-            //foreach (var user in users)
-            //{
-            //    WOC_Core.RTTS.Deck deck = new WOC_Core.RTTS.Deck()
-            //    {
-            //        name = "defaultDeck",
-            //        cards = new List<WOC_Core.RTTS.Card>()
-            //        {
-            //            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-            //            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-            //            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-            //            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-            //            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-            //            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-            //            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-            //            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-            //            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-            //            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-            //            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-            //            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-            //            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-            //            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-            //            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-            //            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-            //            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-            //            new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
-            //            new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
-            //            new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
-            //            new WOC_Core.RTTS.Card() { name = "card6", timeCost = 6 }
-            //        }
-            //    };
-            //    players.Add(new WOC_Core.RTTS.BattlePlayer(user.Key, deck));
-            //}
-
             List<WOC_Core.RTTS.BattlePlayer> players =
-                new List<WOC_Core.RTTS.BattlePlayer>(users.Select(n =>
+                new List<WOC_Core.RTTS.BattlePlayer>(users.Select((n, i) =>
                 {
-                    return new WOC_Core.RTTS.BattlePlayer(n.Key, new WOC_Core.RTTS.Deck()
+                    return new WOC_Core.RTTS.BattlePlayer(n.Key, i, new WOC_Core.RTTS.Deck()
                     {
                         name = "defaultDeck",
                         cards = new List<WOC_Core.RTTS.Card>()
@@ -107,13 +73,13 @@ namespace WOC_Server
             };
 
             battle = new WOC_Core.RTTS.Battle(players, monsters);
+            
         }
 
         public PD_BattleState GetBattleState(string playerName)
         {
             WOC_Core.RTTS.BattlePlayer mainPlayer = battle.players.Find(p => p.name == playerName);
 
-            int currentLocation = -1;
             return new PD_BattleState()
             {
                 monsters = battle.monsters.Select(m =>
@@ -129,7 +95,7 @@ namespace WOC_Server
                 {
                     return new PD_BattleStatePlayer()
                     {
-                        location = currentLocation++,
+                        location = p.location,
                         name = p.name,
                         life = 12,
                         handCount = p.hand.Count,
@@ -140,7 +106,7 @@ namespace WOC_Server
 
                 mainPlayer = new PD_BattleStateMainPlayer()
                 {
-                    location = currentLocation++,
+                    location = mainPlayer.location,
                     life = 12,
                     hand = mainPlayer.hand.Cards.Select(c => c.name).ToList(),
                     drawPileCount = mainPlayer.drawPile.Count,

@@ -23,11 +23,6 @@ namespace WOC_Client
         public TMP_Text drawPileCountText;
         public TMP_Text discardPileCountText;
 
-        private void Start()
-        {
-
-        }
-
         public void Init(BattleManager battle, PD_BattleStateMainPlayer data)
         {
             this.battle = battle;
@@ -43,7 +38,6 @@ namespace WOC_Client
 
         private void HandleAPICall(PD_BattleStateMainPlayer data)
         {
-            Debug.Log("location " + data.location + " : " + this.battle.playersLocations[data.location].position);
             transform.position = this.battle.playersLocations[data.location].position;
             lifeText.text = data.life.ToString();
             //public List<string> hand;

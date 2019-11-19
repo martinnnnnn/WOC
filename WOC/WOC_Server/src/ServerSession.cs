@@ -457,7 +457,6 @@ namespace WOC_Server
                 // TODO : init battle here
                 server.Broadcast(data, null);
                 server.InitBattle();
-                server.Broadcast(server.GetBattleState(account.name), null);
             }
         }
 
@@ -479,7 +478,8 @@ namespace WOC_Server
         public void HandleAPICall(PD_BattleState data)
         {
             if (!AssureConnected(data.id)) return;
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+
+            Send(server.GetBattleState(account.name));
         }
 
         public void HandleAPICall(PD_BattlePlayerTurnStart data)

@@ -241,13 +241,6 @@ namespace WOC_Core
         public PD_BattleStateMainPlayer mainPlayer;
     }
 
-
-
-    public class PD_BattlePlayerTurnStart : IPacketData
-    {
-        public DateTime startTime;
-    }
-
     public class PD_BattleCardPlayed : IPacketData
     {
         public DateTime eventTime;
@@ -266,6 +259,11 @@ namespace WOC_Core
     {
         public DateTime eventTime;
         public string playerName;
+    }
+
+    public class PD_BattlePlayerTurnStart : IPacketData
+    {
+        public DateTime startTime;
     }
 
     public class PD_BattlePlayerTurnEnd : IPacketData

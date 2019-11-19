@@ -33,7 +33,7 @@ namespace WOC_Client
 
         public void HandleAPICall(PD_BattleStart data)
         {
-
+            network.SendMessage(new PD_BattleState(), validate: false);
         }
 
         public void HandleAPICall(PD_BattleState data)
