@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace WOC_Server
 {
-    public class TCPServer
+    public class GameServer
     {
         public IPAddress IP;
         public int Port;
@@ -24,61 +24,66 @@ namespace WOC_Server
         public SynchronizedCollection<ServerSession> sessions = new SynchronizedCollection<ServerSession>();
         public ConcurrentDictionary<string, WOC_Core.Account> users = new ConcurrentDictionary<string, WOC_Core.Account>();
 
-        public WOC_Core.RTTS.Battle battle;
+        public Battle battle;
 
 
-        public TCPServer()
+        public GameServer()
         {
 
         }
 
         public void InitBattle()
         {
-            List<WOC_Core.RTTS.BattlePlayer> players =
-                new List<WOC_Core.RTTS.BattlePlayer>(users.Select((n, i) =>
+            List<BattlePlayer> players =
+                new List<BattlePlayer>(users.Select((n, i) =>
                 {
-                    return new WOC_Core.RTTS.BattlePlayer(n.Key, i, new WOC_Core.RTTS.Deck()
+                    return new BattlePlayer(n.Key, i, new Deck()
                     {
                         name = "defaultDeck",
-                        cards = new List<WOC_Core.RTTS.Card>()
+                        cards = new List<Card>()
                         {
-                            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-                            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-                            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-                            new WOC_Core.RTTS.Card() { name = "card1", timeCost = 1 },
-                            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-                            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-                            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-                            new WOC_Core.RTTS.Card() { name = "card2", timeCost = 2 },
-                            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-                            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-                            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-                            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-                            new WOC_Core.RTTS.Card() { name = "card3", timeCost = 3 },
-                            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-                            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-                            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-                            new WOC_Core.RTTS.Card() { name = "card4", timeCost = 4 },
-                            new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
-                            new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
-                            new WOC_Core.RTTS.Card() { name = "card5", timeCost = 5 },
-                            new WOC_Core.RTTS.Card() { name = "card6", timeCost = 6 },
+                            new Card() { name = "card1a", timeCost = 1 },
+                            new Card() { name = "card1b", timeCost = 1 },
+                            new Card() { name = "card1c", timeCost = 1 },
+                            new Card() { name = "card1d", timeCost = 1 },
+                            new Card() { name = "card2a", timeCost = 2 },
+                            new Card() { name = "card2b", timeCost = 2 },
+                            new Card() { name = "card2c", timeCost = 2 },
+                            new Card() { name = "card2d", timeCost = 2 },
+                            new Card() { name = "card3a", timeCost = 3 },
+                            new Card() { name = "card3b", timeCost = 3 },
+                            new Card() { name = "card3c", timeCost = 3 },
+                            new Card() { name = "card3d", timeCost = 3 },
+                            new Card() { name = "card3e", timeCost = 3 },
+                            new Card() { name = "card4a", timeCost = 4 },
+                            new Card() { name = "card4b", timeCost = 4 },
+                            new Card() { name = "card4c", timeCost = 4 },
+                            new Card() { name = "card4d", timeCost = 4 },
+                            new Card() { name = "card5a", timeCost = 5 },
+                            new Card() { name = "card5b", timeCost = 5 },
+                            new Card() { name = "card5c", timeCost = 5 },
+                            new Card() { name = "card6a", timeCost = 6 },
                         }
                     });
                 }));
 
-            List<WOC_Core.RTTS.Monster> monsters = new List<WOC_Core.RTTS.Monster>()
+            List<Monster> monsters = new List<Monster>()
             {
-                new WOC_Core.RTTS.Monster("monster", 15)
+                new Monster("monster", 15.0)
             };
 
-            battle = new WOC_Core.RTTS.Battle(players, monsters);
-            
+            battle = new Battle(this, players, monsters);
+
+            Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                battle.PlayersTurnStart();
+            });
         }
 
         public PD_BattleState GetBattleState(string playerName)
         {
-            WOC_Core.RTTS.BattlePlayer mainPlayer = battle.players.Find(p => p.name == playerName);
+            BattlePlayer mainPlayer = battle.players.Find(p => p.name == playerName);
 
             return new PD_BattleState()
             {

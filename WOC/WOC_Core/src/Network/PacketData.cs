@@ -255,20 +255,16 @@ namespace WOC_Core
         public string cardName;
     }
 
-    public class PD_BattleEndTurn : IPacketData
-    {
-        public DateTime eventTime;
-        public string playerName;
-    }
-
     public class PD_BattlePlayerTurnStart : IPacketData
     {
         public DateTime startTime;
+        public double turnDuration;
     }
 
     public class PD_BattlePlayerTurnEnd : IPacketData
     {
-        public string name;
+        public DateTime eventTime;
+        public string playerName;
     }
 
     /// ///////////////////////////////////////////////////////////////////////////////////////

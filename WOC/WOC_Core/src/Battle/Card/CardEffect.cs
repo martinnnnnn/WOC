@@ -14,6 +14,6 @@ namespace WOC_Core
         public CardEffect()
         {
         }
-        public virtual bool Play(PlayInfo info) { return false; }
+        //public virtual bool Play(PlayInfo info) { return false; }
     }
 }

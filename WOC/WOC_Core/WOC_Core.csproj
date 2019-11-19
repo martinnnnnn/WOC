@@ -47,7 +47,7 @@
     <Compile Include="src\Battle\Actor\Actor.cs" />
     <Compile Include="src\Battle\Actor\PlayerActor.cs" />
     <Compile Include="src\Battle\Actor\PNJActor.cs" />
-    <Compile Include="src\Battle\Aggro.cs" />
+    <Compile Include="src\Battle\old\Aggro.cs" />
     <Compile Include="src\Battle\Battle.cs" />
     <Compile Include="src\Battle\CardPile.cs" />
     <Compile Include="src\Battle\Card\Card.cs" />
@@ -56,11 +56,10 @@
     <Compile Include="src\Battle\Card\Effect\CardEffectDiscard.cs" />
     <Compile Include="src\Battle\Card\Effect\CardEffectDraw.cs" />
     <Compile Include="src\Battle\Card\Effect\CardEffectHeal.cs" />
-    <Compile Include="src\Battle\Character.cs" />
+    <Compile Include="src\Battle\old\Character.cs" />
     <Compile Include="src\Battle\Hand.cs" />
-    <Compile Include="src\Battle\Initiative.cs" />
-    <Compile Include="src\Battle\Mana.cs" />
-    <Compile Include="src\Battle\Race.cs" />
+    <Compile Include="src\Battle\old\Initiative.cs" />
+    <Compile Include="src\Battle\old\Mana.cs" />
     <Compile Include="src\Game\Account.cs" />
     <Compile Include="src\Network\PacketData.cs" />
     <Compile Include="src\Network\Session.cs" />

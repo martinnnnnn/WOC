@@ -23,12 +23,19 @@ namespace WOC_Client
         public GameObject mainPlayerPrefab;
 
         MainPlayerController mainPlayerController;
+        public Transform drawPile;
+        public Transform discardPile;
+        public Transform handStartPosition;
+        public Transform handEndPosition;
 
         private void Start()
         {
             network = FindObjectOfType<NetworkInterface>();
             network.Callback_BattleStart += HandleAPICall;
             network.Callback_BattleState += HandleAPICall;
+            network.Callback_BattleCardDrawn += HandleAPICall;
+            network.Callback_BattlePlayerTurnStart += HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd += HandleAPICall;
         }
 
         public void HandleAPICall(PD_BattleStart data)
@@ -49,6 +56,24 @@ namespace WOC_Client
                 newPlayerController.Init(this, player);
             }
         }
+
+        private void HandleAPICall(PD_BattleCardDrawn data)
+        {
+            //Debug.Log("Card drawn by " + data.playerName + " : " + data.cardName);
+        }
+
+        private void HandleAPICall(PD_BattlePlayerTurnStart data)
+        {
+            Debug.Log("Turn starts at " + data.startTime.ToString("HH:mm:ss") + ", time now : " + DateTime.UtcNow.ToString("HH:mm:ss"));
+        }
+
+        private void HandleAPICall(PD_BattlePlayerTurnEnd data)
+        {
+            Debug.Log("Ending turn");
+        }
+
+        
+
     }
 }
 

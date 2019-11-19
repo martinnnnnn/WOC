@@ -79,29 +79,84 @@ namespace WOC_Core
             tokenSource = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
             token = tokenSource.Token;
             listening = true;
-            var stringBuilder = new StringBuilder();
             try
             {
-                byte[] buffer = new byte[2048];
-                int byteCount = 1;
-                while (!token.IsCancellationRequested && byteCount > 0)
+                //byte[] buffer = new byte[2048];
+                //int byteCount = 1;
+                while (!token.IsCancellationRequested/* && byteCount > 0*/)
                 {
+                    byte[] sizeinfo = new byte[4];
 
-                    byteCount = netstream.Read(buffer, 0, buffer.Length);
-                    var msg = Encoding.UTF8.GetString(buffer, 0, byteCount);
+                    //read the size of the message
+                    int totalread = 0, currentread = 0;
 
-                    IPacketData data = null;
+                    currentread = totalread = netstream.Read(sizeinfo, 0, sizeinfo.Length);
+
+                    while (totalread < sizeinfo.Length && currentread > 0)
+                    {
+                        currentread = netstream.Read(sizeinfo,
+                                  totalread, //offset into the buffer
+                                  sizeinfo.Length - totalread); //max amount to read
+
+                        totalread += currentread;
+                    }
+
+                    int messagesize = 0;
+
+
+                    //could optionally call BitConverter.ToInt32(sizeinfo, 0);
+                    messagesize |= sizeinfo[0];
+                    messagesize |= (((int)sizeinfo[1]) << 8);
+                    messagesize |= (((int)sizeinfo[2]) << 16);
+                    messagesize |= (((int)sizeinfo[3]) << 24);
+
+                    byte[] data = new byte[messagesize];
+
+                    //read the first chunk of data
+                    totalread = 0;
+                    currentread = totalread = netstream.Read(data,
+                                 totalread, //offset into the buffer
+                                data.Length - totalread); //max amount to read
+
+                    //if we didn't get the entire message, read some more until we do
+                    while (totalread < messagesize && currentread > 0)
+                    {
+                        currentread = netstream.Read(data,
+                                 totalread, //offset into the buffer
+                                data.Length - totalread); //max amount to read
+                        totalread += currentread;
+                    }
+
+                    var msg = Encoding.UTF8.GetString(data, 0, totalread);
+
                     try
                     {
-                        data = Serialization.FromJson<IPacketData>(msg);
-                        Console.WriteLine("[NETWORK] Received a packet : {0}", data);
-                        HandleIncomingMessage(data);
+                        IPacketData packetData = Serialization.FromJson<IPacketData>(msg);
+                        Console.WriteLine("[NETWORK] Received a packet : {0}", packetData);
+                        HandleIncomingMessage(packetData);
                     }
                     catch (Exception e)
                     {
                         StackTrace stackTrace = new StackTrace();
                         Console.WriteLine("[NETWORK] Error while handling the message. " + e.Message);
                     }
+
+                    //byteCount = netstream.Read(buffer, 0, buffer.Length);
+                    //var msg = Encoding.UTF8.GetString(buffer, 0, byteCount);
+
+                    //Console.WriteLine("{0} : {1}", byteCount, msg);
+                    //IPacketData data = null;
+                    //try
+                    //{
+                    //    data = Serialization.FromJson<IPacketData>(msg);
+                    //    Console.WriteLine("[NETWORK] Received a packet : {0}", data);
+                    //    HandleIncomingMessage(data);
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    StackTrace stackTrace = new StackTrace();
+                    //    Console.WriteLine("[NETWORK] Error while handling the message. " + e.Message);
+                    //}
 
                 }
             }
@@ -151,8 +206,20 @@ namespace WOC_Core
         {
             try
             {
-                var bytesMessage = Encoding.UTF8.GetBytes(message);
-                netstream.Write(bytesMessage, 0, bytesMessage.Length);
+                byte[] data = Encoding.UTF8.GetBytes(message);
+                byte[] sizeInfo = new byte[4];
+
+                //could optionally call BitConverter.GetBytes(data.length);
+                sizeInfo[0] = (byte)data.Length;
+                sizeInfo[1] = (byte)(data.Length >> 8);
+                sizeInfo[2] = (byte)(data.Length >> 16);
+                sizeInfo[3] = (byte)(data.Length >> 24);
+
+                netstream.Write(sizeInfo, 0, sizeInfo.Length);
+                netstream.Write(data, 0, data.Length);
+
+                //var bytesMessage = Encoding.UTF8.GetBytes(message);
+                //netstream.Write(bytesMessage, 0, bytesMessage.Length);
             }
             catch (Exception e)
             {

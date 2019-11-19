@@ -23,7 +23,7 @@ namespace WOC_Server
 
             Task.Run(() => StartDiscoveryServer());
 
-            TCPServer server = new TCPServer();
+            GameServer server = new GameServer();
             Task serverTask = server.StartAsync(IPAddress.Any, 54001);
 
             bool exit = false;

@@ -12,10 +12,10 @@ namespace WOC_Server
 {
     public class ServerSession : Session
     {
-        TCPServer server;
+        GameServer server;
 
 
-        public ServerSession(TCPServer s)
+        public ServerSession(GameServer s)
         {
             server = s;
         }
@@ -90,9 +90,6 @@ namespace WOC_Server
                 case PD_BattleCardPlayed battleCardPlayed:
                     HandleAPICall(battleCardPlayed);
                     break;
-                case PD_BattleEndTurn battleEndTurn:
-                    HandleAPICall(battleEndTurn);
-                    break;
                 case PD_BattlePlayerTurnEnd battlePlayerTurnEnd:
                     HandleAPICall(battlePlayerTurnEnd);
                     break;
@@ -103,6 +100,35 @@ namespace WOC_Server
             }
         }
 
+        #region SERVER
+        // TODO : send validation for chat
+        public void HandleAPICall(PD_ServerChat data)
+        {
+            try
+            {
+                switch (data.type)
+                {
+                    case PD_ServerChat.Type.LOCAL:
+                        server.Broadcast(data, null);
+                        break;
+                    case PD_ServerChat.Type.FRIENDS:
+                        //data.message = data.message.Remove(0, 4);
+                        server.BroadcastTo(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected));
+                        break;
+                    case PD_ServerChat.Type.GLOBAL:
+                        server.Broadcast(data, null);
+                        break;
+                    default:
+                        Console.WriteLine("Message type not supported");
+                        break;
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("[SERVER] Failed to broadcast message.");
+            }
+        }
+
         public void HandleAPICall(PD_InfoOnlineList data)
         {
             if (!AssureConnected(data.id)) return;
@@ -110,6 +136,15 @@ namespace WOC_Server
             Send(new PD_InfoOnlineList { names = server.sessions.Select(s => s.account.name).Where(n => n != account.name).ToList() });
         }
 
+        public void HandleAPICall(PD_ServerListPlayers data)
+        {
+            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+        }
+
+
+        #endregion
+
+        #region ACCOUNT
         public void HandleAPICall(PD_AccountMake data)
         {
             Debug.Assert(account == null);
@@ -327,34 +362,6 @@ namespace WOC_Server
             Send(new PD_Validation(data.id, errorMessage));
         }
 
-        //TODO send validation for chat
-        public void HandleAPICall(PD_ServerChat data)
-        {
-            try
-            {
-                switch (data.type)
-                {
-                    case PD_ServerChat.Type.LOCAL:
-                        server.Broadcast(data, null);
-                        break;
-                    case PD_ServerChat.Type.FRIENDS:
-                        //data.message = data.message.Remove(0, 4);
-                        server.BroadcastTo(data, server.sessions.Where(s => account.friends.Contains(s.account.name) && s.account.connected));
-                        break;
-                    case PD_ServerChat.Type.GLOBAL:
-                        server.Broadcast(data, null);
-                        break;
-                    default:
-                        Console.WriteLine("Message type not supported");
-                        break;
-                }
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("[SERVER] Failed to broadcast message.");
-            }
-        }
-
         public void HandleAPICall(PD_AccountNewDeck data)
         {
             if (!AssureConnected(data.id)) return;
@@ -441,11 +448,8 @@ namespace WOC_Server
 
             Send(new PD_Validation(data.id, errorMessage));
         }
+        #endregion
 
-        public void HandleAPICall(PD_ServerListPlayers data)
-        {
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
 
         #region BATTLE
         public void HandleAPICall(PD_BattleStart data)
@@ -487,30 +491,23 @@ namespace WOC_Server
             if (!AssureConnected(data.id)) return;
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
+        public void HandleAPICall(PD_BattlePlayerTurnEnd data)
+        {
+            if (!AssureConnected(data.id)) return;
+            SendValidation(data.id);
+        }
 
         public void HandleAPICall(PD_BattleCardPlayed data)
         {
             if (!AssureConnected(data.id)) return;
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
 
-        public void HandleAPICall(PD_BattleEndTurn data)
-        {
-            if (!AssureConnected(data.id)) return;
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
-        }
-
-        public void HandleAPICall(PD_BattlePlayerTurnEnd data)
-        {
-            if (!AssureConnected(data.id)) return;
-            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+            SendValidation(data.id);
         }
 
         public void HandleAPICall(PD_BattleCardDrawn data)
         {
             if (!AssureConnected(data.id)) return;
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
-
         }
 
         #endregion

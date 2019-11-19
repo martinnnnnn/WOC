@@ -2,7 +2,8 @@
 using TMPro;
 using UnityEngine;
 using WOC_Core;
-
+using DG.Tweening;
+using System;
 
 namespace WOC_Client
 {
@@ -10,13 +11,10 @@ namespace WOC_Client
     {
         NetworkInterface network;
         BattleManager battle;
+        string playerName;
 
         public GameObject cardPrefab;
-
-        public Transform drawPile;
-        public Transform discardPile;
-        public Transform handStartPosition;
-        public Transform handEndPosition;
+        List<CardController> hand = new List<CardController>();
 
         public TMP_Text nameText;
         public TMP_Text lifeText;
@@ -29,10 +27,12 @@ namespace WOC_Client
             network = FindObjectOfType<NetworkInterface>();
             network.Callback_BattleStateMainPlayer += HandleAPICall;
             network.Callback_BattlePlayerTurnStart += HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd += HandleAPICall;
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattleCardPlayed += HandleAPICall;
 
-            nameText.text = this.network.session.account.name;
+            playerName = network.session.account.name;
+            nameText.text = playerName;
             HandleAPICall(data);
         }
 
@@ -49,63 +49,78 @@ namespace WOC_Client
         {
 
         }
+        private void HandleAPICall(PD_BattlePlayerTurnEnd data)
+        {
+            for (int i = 0; i < hand.Count; ++i)
+            {
+                CardController current = hand[i];
+                current.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+                {
+                    hand.Remove(current);
+                    Destroy(current.gameObject);
+                });
+            }
+        }
 
         private void HandleAPICall(PD_BattleCardDrawn data)
         {
+            if (data.playerName == playerName)
+            {
+                //CardController
+                GameObject newCard = Instantiate(cardPrefab, this.transform);
+                CardController newCardController = newCard.GetComponent<CardController>();
+                newCardController.Init(this, battle.drawPile.position);
+                newCardController.index = hand.Count;
+                hand.Add(newCardController);
+                UpdateHandPositions();
 
+                int newDrawnPileCount = int.Parse(drawPileCountText.text);
+                newDrawnPileCount--;
+                drawPileCountText.text = newDrawnPileCount.ToString();
+            }
         }
 
         private void HandleAPICall(PD_BattleCardPlayed data)
         {
-
+            Debug.Log("hand before : " + hand.Count);
+            CardController played = hand[data.cardIndex];
+            played.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+            {
+                hand.Remove(played);
+                UpdateHandIndexes();
+                UpdateHandPositions();
+                Destroy(played.gameObject);
+                Debug.Log("hand after : " + hand.Count);
+            });
         }
 
-        //public void SetPlayer(WOC_Core.RTTS.BattlePlayer battlePlayer)
-        //{
-        //    player = battlePlayer;
-        //    GetComponentInChildren<TMP_Text>().text = this.player.name;
+        private void UpdateHandIndexes()
+        {
+            for (int i = 0; i < hand.Count; ++i)
+            {
+                hand[i].index = i;
+            }
+        }
 
-        //    foreach (var card in player.drawPile.cards)
-        //    {
-        //        GameObject newCardObj = Instantiate(cardPrefab, drawPile.transform);
-        //        newCardObj.transform.position = drawPile.transform.position;
-        //        CardController newCardController = newCardObj.GetComponent<CardController>();
-        //        newCardController.owner = this;
-        //        newCardController.card = card;
-        //        newCardController.index = -1;
-        //        cardControllersDrawPile.Add(newCardController);
-        //    }
+        
+        private void UpdateHandPositions()
+        {
+            for (int i = 0; i < hand.Count; ++i)
+            {
+                Vector3 endPosition = 
+                    battle.handStartPosition.position + (((float) i / hand.Count) * (battle.handEndPosition.position - battle.handStartPosition.position));
 
-        //    player.CardDrawn += HandleCardDrawn;
-        //}
-
-        //public void HandleCardDrawn(WOC_Core.RTTS.Card card)
-        //{
-        //    CardController drawnCard = cardControllersDrawPile.Find(controller => controller.card.name == card.name);
-        //    if (drawnCard != null)
-        //    {
-        //        cardControllersDrawPile.Remove(drawnCard);
-        //        cardControllersHand.Add(drawnCard);
-        //    }
-
-        //    GameObject newCardObj = Instantiate(cardPrefab, drawPile.transform);
-        //    newCardObj.transform.position = drawPile.transform.position;
-        //    CardController newCardController = newCardObj.GetComponent<CardController>();
-        //    newCardController.owner = this;
-        //    newCardController.card = card;
-        //    newCardController.index = -1;
-        //    cardControllersDrawPile.Add(newCardController);
-
-        //    RepositionCards();
-        //}
-
-        //public void RepositionCards()
-        //{
-        //    foreach (CardController c in cardControllersDrawPile)
-        //    {
-        //        c.transform.position = Vector2.Lerp(handStartPosition.position, handEndPosition.position, (float)c.index / (float)cardControllersDrawPile.Count);
-        //    }
-        //}
+                // this seems useless but it needed for the callback to work :
+                // i keeps incrementing and is going to be == handCount when OnComplete is called.
+                CardController current = hand[i];
+                current.transform.DOMove(endPosition, 1).OnComplete(() =>
+                {
+                    current.restPosition = endPosition;
+                    current.useRestPos = true;
+                });
+                
+            }
+        }
     }
 }
 

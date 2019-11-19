@@ -10,7 +10,7 @@ namespace WOC_Core
     public class Deck
     {
         public string name;
-        public List<string> cardNames = new List<string>();
+        public List<Card> cards = new List<Card>();
     }
 
     public class Account
@@ -23,7 +23,6 @@ namespace WOC_Core
         public List<string> partyAccounts = new List<string>();
 
         public bool connected = false;
-        public PlayerActor actor = null;
 
         public Deck currentDeck = null;
         public List<Deck> decks = new List<Deck>();

@@ -133,10 +133,10 @@ namespace WOC_Client
                 network.SendMessage(new PD_BattleStart {}, validate: false);
             });
 
-            //endTurn.onClick.AddListener(() =>
-            //{
-            //    network.SendMessage(new PD_BattlePlayerTurnEnd { name = network.session.account.name });
-            //});
+            endTurn.onClick.AddListener(() =>
+            {
+                network.SendMessage(new PD_BattlePlayerTurnEnd { playerName = network.session.account.name });
+            });
         }
 
         private void Update()

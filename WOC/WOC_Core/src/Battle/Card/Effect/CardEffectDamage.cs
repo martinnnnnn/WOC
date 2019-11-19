@@ -1,30 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using System.Xml.Linq;
-using System;
+﻿//using System.Collections;
+//using System.Collections.Generic;
+//using Newtonsoft.Json;
+//using System.Xml.Linq;
+//using System;
 
-namespace WOC_Core
-{
-    public class CardEffectDamage : CardEffect
-    {
-        public int value = 0;
+//namespace WOC_Core
+//{
+//    public class CardEffectDamage : CardEffect
+//    {
+//        public int value = 0;
 
-        public CardEffectDamage(int value)
-        {
-            this.value = value;
-        }
+//        public CardEffectDamage(int value)
+//        {
+//            this.value = value;
+//        }
 
-        public override bool Play(PlayInfo info)
-        {
-            (Actor owner, Character target) = info;
+//        public override bool Play(PlayInfo info)
+//        {
+//            (Actor owner, Character target) = info;
 
-            if (target != null && owner != target.Owner)
-            {
-                target.ChangeLife(-value);
-                return true;
-            }
-            return false;
-        }
-    }
-}
+//            if (target != null && owner != target.Owner)
+//            {
+//                target.ChangeLife(-value);
+//                return true;
+//            }
+//            return false;
+//        }
+//    }
+//}

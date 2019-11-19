@@ -47,6 +47,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Game\CardPile.cs" />
+    <Compile Include="src\Game\CardEffect.cs" />
+    <Compile Include="src\Game\Hand.cs" />
+    <Compile Include="src\Game\Monster.cs" />
+    <Compile Include="src\Game\BattlePlayer.cs" />
+    <Compile Include="src\Game\Combatant.cs" />
     <Compile Include="src\Game\Battle.cs" />
     <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
