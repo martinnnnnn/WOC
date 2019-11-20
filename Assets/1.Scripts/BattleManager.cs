@@ -35,6 +35,7 @@ namespace WOC_Client
 
 
         [HideInInspector] public bool turnStarted = false;
+        [HideInInspector] public bool turnBootStarted = false;
         float turnStartTime;
         [HideInInspector] public float turnEndTime;
         public TMP_Text timeRemainingText;
@@ -55,16 +56,18 @@ namespace WOC_Client
 
         private void Update()
         {
-            if (turnStarted)
+            if (turnBootStarted)
             {
                 if (Time.time >= turnStartTime)
                 {
+                    turnStarted = true;
                     timeRemainingText.gameObject.SetActive(true);
                     timeRemainingText.text = String.Format("{0:0.00}", turnEndTime - Time.time);
                 }
                 if (Time.time >= turnEndTime)
                 {
                     turnStarted = false;
+                    turnBootStarted = false;
                     timeRemainingText.gameObject.SetActive(false);
                     network.SendMessage(new PD_BattlePlayerTurnEnd
                     {
@@ -114,7 +117,7 @@ namespace WOC_Client
             Debug.Log("Turn starts in " + data.startTime.Subtract(DateTime.UtcNow).TotalSeconds + " seconds");
             turnStartTime = Time.time + (float)data.startTime.Subtract(DateTime.UtcNow).TotalSeconds;
             turnEndTime = turnStartTime + (float)data.turnDuration;
-            turnStarted = true;
+            turnBootStarted = true;
         }
 
         private void HandleAPICall(PD_BattleMonsterTurnStart data)

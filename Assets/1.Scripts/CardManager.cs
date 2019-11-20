@@ -41,17 +41,20 @@ namespace WOC_Client
 
             if (Input.GetMouseButtonUp(0))
             {
-                if (current != null && battleManager.turnStarted && Time.time + current.timeCost < battleManager.turnEndTime)
+                if (current != null)
                 {
-                    network.SendMessage(new PD_BattleCardPlayed
+                    if (battleManager.turnStarted && Time.time + current.timeCost < battleManager.turnEndTime)
                     {
-                        eventTime = DateTime.UtcNow,
-                        ownerName = current.owner.playerName,
-                        targetName = battleManager.monstersControllers[0].monsterName,
-                        cardIndex = current.index
-                    });
+                        network.SendMessage(new PD_BattleCardPlayed
+                        {
+                            eventTime = DateTime.UtcNow,
+                            ownerName = current.owner.playerName,
+                            targetName = battleManager.monstersControllers[0].monsterName,
+                            cardIndex = current.index
+                        });
+                        current.useRestPos = false;
+                    }
                     current.isSelected = false;
-                    current.useRestPos = false;
                 }
                 current = null;
                 //if (current != null)
