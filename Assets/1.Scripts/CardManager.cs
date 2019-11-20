@@ -43,16 +43,36 @@ namespace WOC_Client
             {
                 if (current != null)
                 {
-                    if (battleManager.turnStarted && Time.time + current.timeCost < battleManager.turnEndTime)
+                    RaycastHit hitInfo = new RaycastHit();
+                    bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, mask);
+
+                    if (battleManager.turnStarted
+                        && Time.time + current.timeCost < battleManager.turnEndTime
+                        && hit)
                     {
-                        network.SendMessage(new PD_BattleCardPlayed
+                        MonsterController monsterController = hitInfo.transform.gameObject.GetComponent<MonsterController>();
+                        if (monsterController != null)
                         {
-                            eventTime = DateTime.UtcNow,
-                            ownerName = current.owner.playerName,
-                            targetName = battleManager.monstersControllers[0].monsterName,
-                            cardIndex = current.index
-                        });
-                        current.useRestPos = false;
+                            network.SendMessage(new PD_BattleCardPlayed
+                            {
+                                eventTime = DateTime.UtcNow,
+                                ownerName = current.owner.playerName,
+                                targetName = monsterController.monsterName,
+                                cardIndex = current.index
+                            }, validate: false);
+                        }
+
+                        PlayerController playerController = hitInfo.transform.gameObject.GetComponent<PlayerController>();
+                        if (playerController != null)
+                        {
+                            network.SendMessage(new PD_BattleCardPlayed
+                            {
+                                eventTime = DateTime.UtcNow,
+                                ownerName = current.owner.playerName,
+                                targetName = playerController.playerName,
+                                cardIndex = current.index
+                            }, validate: false);
+                        }
                     }
                     current.isSelected = false;
                 }

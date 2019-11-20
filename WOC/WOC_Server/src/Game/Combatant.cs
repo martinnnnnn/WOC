@@ -15,5 +15,10 @@ using WOC_Core;
 
 namespace WOC_Server
 {
-    public interface ICombatant { }
+    public class Combatant
+    {
+        public string name;
+        public int life;
+        public int location;
+    }
 }

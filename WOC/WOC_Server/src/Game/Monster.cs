@@ -15,12 +15,9 @@ using WOC_Core;
 
 namespace WOC_Server
 {
-    public class Monster : ICombatant
+    public class Monster : Combatant
     {
-        public string name;
         public double baseTime;
-        public int location;
-        public int life;
 
         public Monster(string name, int life, int location, double baseTime)
         {

@@ -93,7 +93,7 @@ namespace WOC_Client
             {
                 CardController played = hand[data.cardIndex];
                 battle.turnEndTime -= played.timeCost;
-
+                played.useRestPos = false;
                 played.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
                 {
                     hand.Remove(played);

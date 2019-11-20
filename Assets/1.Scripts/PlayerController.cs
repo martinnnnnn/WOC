@@ -16,8 +16,9 @@ namespace WOC_Client
         [HideInInspector] public string playerName;
 
         public TMP_Text nameText;
+        [HideInInspector] public int life;
         public TMP_Text lifeText;
-        [HideInInspector] int handCount;
+        [HideInInspector] public int handCount;
         public TMP_Text handCountText;
         
         public void Init(BattleManager battle, PD_BattleStatePlayer data)
@@ -37,7 +38,8 @@ namespace WOC_Client
             transform.position = this.battle.playersLocations[data.location].position;
             playerName = data.name;
             nameText.text = playerName;
-            lifeText.text = data.life.ToString();
+            life = data.life;
+            lifeText.text = life.ToString();
             handCount = data.handCount;
             handCountText.text = handCount.ToString();
         }

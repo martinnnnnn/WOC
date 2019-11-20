@@ -41,35 +41,46 @@ namespace WOC_Server
                 {
                     return new Player(n.Key, rand.Next(20, 30), i, new Deck()
                     {
-                        name = "defaultDeck",
-                        cards = new List<Card>()
-                        {
-                            new Card() { name = "card1a", timeCost = 1 },
-                            new Card() { name = "card1b", timeCost = 1 },
-                            new Card() { name = "card1c", timeCost = 1 },
-                            new Card() { name = "card1d", timeCost = 1 },
-                            new Card() { name = "card2a", timeCost = 2 },
-                            new Card() { name = "card2b", timeCost = 2 },
-                            new Card() { name = "card2c", timeCost = 2 },
-                            new Card() { name = "card2d", timeCost = 2 },
-                            new Card() { name = "card3a", timeCost = 3 },
-                            new Card() { name = "card3b", timeCost = 3 },
-                            new Card() { name = "card3c", timeCost = 3 },
-                            new Card() { name = "card3d", timeCost = 3 },
-                            new Card() { name = "card3e", timeCost = 3 },
-                            new Card() { name = "card4a", timeCost = 4 },
-                            new Card() { name = "card4b", timeCost = 4 },
-                            new Card() { name = "card4c", timeCost = 4 },
-                            new Card() { name = "card4d", timeCost = 4 },
-                            new Card() { name = "card5a", timeCost = 5 },
-                            new Card() { name = "card5b", timeCost = 5 },
-                            new Card() { name = "card5c", timeCost = 5 },
-                            new Card() { name = "card6a", timeCost = 6 },
-                        }
+                        name = "defaultDeck"
                     });
                 }));
 
-            List<Monster> monsters = new List<Monster>()
+            players.ForEach(p => p.deck.cards = new List<Card>()
+            {
+                new Card() { name = "small attack", timeCost = 1, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 3 }} },
+                new Card() { name = "small attack", timeCost = 1, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 3 }} },
+                new Card() { name = "small attack", timeCost = 1, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 3 }} },
+                new Card() { name = "small attack", timeCost = 1, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 3 }} },
+                new Card() { name = "attack", timeCost = 2, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 5 }} },
+                new Card() { name = "attack", timeCost = 2, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 5 }} },
+                new Card() { name = "small heal", timeCost = 2, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 1 }} },
+                new Card() { name = "small heal", timeCost = 2, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 1 }} },
+                new Card() { name = "heal", timeCost = 3, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 3 }} },
+                new Card() { name = "heal", timeCost = 3, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 3 }} },
+                new Card() { name = "heal", timeCost = 3, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 3 }} },
+                new Card() { name = "heal", timeCost = 3, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 3 }} },
+                new Card() { name = "heal", timeCost = 3, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 3 }} },
+                new Card() { name = "draw", timeCost = 4, effects = new List<ICardEffect>() { new CardEffectDraw(p, null) { value = 3 }} },
+                new Card() { name = "draw", timeCost = 4, effects = new List<ICardEffect>() { new CardEffectDraw(p, null) { value = 3 }} },
+                new Card() { name = "draw", timeCost = 4, effects = new List<ICardEffect>() { new CardEffectDraw(p, null) { value = 3 }} },
+                new Card() { name = "draw", timeCost = 4, effects = new List<ICardEffect>() { new CardEffectDraw(p, null) { value = 3 }} },
+                new Card() { name = "big attack", timeCost = 5, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 10 }} },
+                new Card() { name = "big attack", timeCost = 5, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 10 }} },
+                new Card() { name = "grosse attaque", timeCost = 5, effects = new List<ICardEffect>() { new CardEffectDamage(p, null) { value = 10 }} },
+                new Card() { name = "super heal", timeCost = 10, effects = new List<ICardEffect>() { new CardEffectHeal(p, null) { value = 10 }} },
+            });
+
+            players.ForEach(p =>
+            {
+                p.deck.cards.ForEach(c => c.effects.ForEach(e =>
+                {
+                    CardEffect effect = e as CardEffect;
+                    effect.card = c;
+                }));
+                p.drawPile.Push(p.deck.cards.ToArray());
+            });
+
+            List <Monster> monsters = new List<Monster>()
             {
                 new Monster("monster", 40, 0, 15.0)
             };
@@ -87,7 +98,7 @@ namespace WOC_Server
         {
             Player mainPlayer = battle.players.Find(p => p.name == playerName);
 
-            return new PD_BattleState()
+            var lol = new PD_BattleState()
             {
                 monsters = battle.monsters.Select(m =>
                 {
@@ -121,6 +132,7 @@ namespace WOC_Server
                     discardPileCount = mainPlayer.discardPile.Count
                 }
             };
+            return lol;
         }
 
         public async Task StartAsync(IPAddress ip, int port)

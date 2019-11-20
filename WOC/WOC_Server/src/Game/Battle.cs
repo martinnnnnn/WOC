@@ -84,15 +84,19 @@ namespace WOC_Server
             PlayerTurnEnd(playingPlayers.Find(p => p.name == playerName));
         }
 
-        public bool PlayCard(string playerName, int cardIndex, string targetName, bool force = false)
+        public Card PlayCard(string playerName, int cardIndex, string targetName, bool force = false)
         {
             var player = playingPlayers.Find(p => p.name == playerName);
             if (player != null)
             {
-                return player.PlayCard(cardIndex, targetName, force);
+                Card card = player.hand.Get(cardIndex);
+                if (player.PlayCard(cardIndex, targetName, force))
+                {
+                    return card;
+                }
             }
 
-            return false;
+            return null;
         }
     }
 

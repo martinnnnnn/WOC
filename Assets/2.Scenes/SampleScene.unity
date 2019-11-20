@@ -2113,6 +2113,7 @@ MonoBehaviour:
   playersControllers: []
   monstersControllers: []
   turnStarted: 0
+  turnBootStarted: 0
   turnEndTime: 0
   timeRemainingText: {fileID: 1231779538}
 --- !u!4 &605990022
@@ -2149,7 +2150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 55
   battleManager: {fileID: 605990021}
 --- !u!1 &610382291
 GameObject:
@@ -2232,7 +2233,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2041836859}
   m_HandleRect: {fileID: 2041836858}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

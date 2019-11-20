@@ -519,18 +519,42 @@ namespace WOC_Server
         public void HandleAPICall(PD_BattleCardPlayed data)
         {
             if (!AssureConnected(data.id)) return;
-            string errorMessage = "";
+            //string errorMessage = "";
 
-            if (server.battle.PlayCard(data.ownerName, data.cardIndex, data.targetName, true))
+            Card card = server.battle.PlayCard(data.ownerName, data.cardIndex, data.targetName, true);
+            if (card != null)
             {
+                card.effects.ForEach(e =>
+                {
+                    CardEffect effect = e as CardEffect;
+                    PD_BattleCardEffect effectMessage = null;
+
+                    switch (e)
+                    {
+                        case CardEffectDamage damage:
+                            effectMessage = new PD_BattleCardEffectDamage { value = damage.value };
+                            break;
+                        case CardEffectHeal heal:
+                            effectMessage = new PD_BattleCardEffectHeal { value = heal.value };
+                            break;
+                        case CardEffectDraw draw:
+                            effectMessage = new PD_BattleCardEffectDraw { value = draw.value };
+                            break;
+                        //case CardEffectDiscard damage:
+                            //    break;
+                    }
+
+                    data.effects.Add(effectMessage);
+                });
+
                 server.Broadcast(data, this);
             }
             else
             {
-                errorMessage = "Could not play this card";
+                //errorMessage = "Could not play this card";
             }
 
-            SendValidation(data.id, errorMessage);
+            //SendValidation(data.id, errorMessage);
         }
 
         public void HandleAPICall(PD_BattleCardDrawn data)

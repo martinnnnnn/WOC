@@ -237,8 +237,8 @@ namespace WOC_Core
 
     public class PD_BattleState : IPacketData
     {
-        public List<PD_BattleStateMonster> monsters;
-        public List<PD_BattleStatePlayer> players;
+        public List<PD_BattleStateMonster> monsters = new List<PD_BattleStateMonster>();
+        public List<PD_BattleStatePlayer> players = new List<PD_BattleStatePlayer>();
         public PD_BattleStateMainPlayer mainPlayer;
     }
 
@@ -248,6 +248,7 @@ namespace WOC_Core
         public string ownerName;
         public string targetName;
         public int cardIndex;
+        public List<PD_BattleCardEffect> effects = new List<PD_BattleCardEffect>();
     }
 
     public class PD_BattleCardDrawn : IPacketData
@@ -282,9 +283,33 @@ namespace WOC_Core
         public int newDrawPileCount;
     }
 
-    /// ///////////////////////////////////////////////////////////////////////////////////////
-    ///                                         PARTY
-    /// ///////////////////////////////////////////////////////////////////////////////////////
+    #region Card Effects
+
+    public class PD_BattleCardEffect : IPacketData { }
+    public class PD_BattleCardEffectDamage : PD_BattleCardEffect
+    {
+        public int value;
+    }
+
+    public class PD_BattleCardEffectHeal : PD_BattleCardEffect
+    {
+        public int value;
+    }
+
+    public class PD_BattleCardEffectDraw : PD_BattleCardEffect
+    {
+        public int value;
+    }
+
+    public class PD_BattleCardEffectDiscard : PD_BattleCardEffect
+    {
+        public bool choose;
+        public int amount;
+    }
+
+    #endregion
+
+    #region Party
     public class PD_PartyInvite : IPacketData
     {
         public string inviter;
@@ -302,6 +327,8 @@ namespace WOC_Core
         public string memberName;
     }
 
+    #endregion
+
     /// ///////////////////////////////////////////////////////////////////////////////////////
     ///                                         WorldPlayerInfo
     /// ///////////////////////////////////////////////////////////////////////////////////////
@@ -311,8 +338,6 @@ namespace WOC_Core
         public int accountName;
         public string info;
     }
-
-
 
     public class PD_SessionShutdown : IPacketData { }
 

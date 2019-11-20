@@ -46,6 +46,7 @@ namespace WOC_Client
             network.Callback_BattleStart += HandleAPICall;
             network.Callback_BattleState += HandleAPICall;
             network.Callback_BattleCardDrawn += HandleAPICall;
+            network.Callback_BattleCardPlayed += HandleAPICall;
             network.Callback_BattlePlayerTurnStart += HandleAPICall;
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
             network.Callback_BattleMonsterTurnStart += HandleAPICall;
@@ -111,7 +112,31 @@ namespace WOC_Client
             //Debug.Log("Card drawn by " + data.playerName + " : " + data.cardName);
         }
 
-        
+        private void HandleAPICall(PD_BattleCardPlayed data)
+        {
+            data.effects.ForEach(e =>
+            {
+                switch (e)
+                {
+                    case PD_BattleCardEffectDamage damage:
+                        MonsterController monster = monstersControllers.Find(m => m.monsterName == data.targetName);
+                        monster.life -= damage.value;
+                        monster.lifeText.text = monster.life.ToString();
+                        break;
+                    case PD_BattleCardEffectHeal heal:
+                        PlayerController player = playersControllers.Find(p => p.playerName == data.targetName);
+                        player.life += heal.value;
+                        player.lifeText.text = player.life.ToString();
+                        break;
+                    case PD_BattleCardEffectDraw draw:
+                        break;
+                }
+
+            });
+            
+        }
+
+
         private void HandleAPICall(PD_BattlePlayerTurnStart data)
         {
             Debug.Log("Turn starts in " + data.startTime.Subtract(DateTime.UtcNow).TotalSeconds + " seconds");

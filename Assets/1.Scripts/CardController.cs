@@ -17,6 +17,8 @@ namespace WOC_Client
         public MainPlayerController owner;
         public int index = -1;
 
+        public TMP_Text nameText;
+
         [HideInInspector] public int timeCost;
         public TMP_Text timeCostText;
 
@@ -24,6 +26,7 @@ namespace WOC_Client
         {
             this.owner = owner;
             transform.position = initPosition;
+            nameText.text = data.cardName;
             timeCost = data.timeCost;
             timeCostText.text = "" + timeCost;
         }

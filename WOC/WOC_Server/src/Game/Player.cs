@@ -15,11 +15,8 @@ using WOC_Core;
 
 namespace WOC_Server
 {
-    public class Player : ICombatant
+    public class Player : Combatant
     {
-        public string name;
-        public int location;
-        public int life;
         // objets
         public Deck deck;
         public Hand hand;
@@ -75,7 +72,7 @@ namespace WOC_Server
         {
             Card card = hand.Get(index);
 
-            if (card.timeCost >= timeRemaining || force)
+            if (card.timeCost <= timeRemaining && card.Play(battle.monsters.Find(m => m.name == targetName)))
             {
                 timeRemaining -= card.timeCost;
                 hand.Remove(index);
