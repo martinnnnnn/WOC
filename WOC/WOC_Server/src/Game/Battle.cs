@@ -18,17 +18,16 @@ namespace WOC_Server
     public class Battle
     {
         public GameServer server;
-        public List<BattlePlayer> players = new List<BattlePlayer>();
+        public List<Player> players = new List<Player>();
         public List<Monster> monsters = new List<Monster>();
 
         public float timeRemaining = 60;
-        public Action MonsterTurnStarted;
 
         public Random random;
         public bool hasStarted = false;
 
 
-        public Battle(GameServer server, List<BattlePlayer> players, List<Monster> monsters)
+        public Battle(GameServer server, List<Player> players, List<Monster> monsters)
         {
             this.server = server;
             this.players.AddRange(players);
@@ -39,7 +38,6 @@ namespace WOC_Server
             {
                 p.Init(this);
             });
-
         }
 
         public void Update(float dt)
@@ -49,22 +47,31 @@ namespace WOC_Server
 
         public void MonstersTurnStart()
         {
-            MonsterTurnStarted?.Invoke();
-            PlayersTurnStart();
+            server.Broadcast(new PD_BattleMonsterTurnStart { startTime = DateTime.UtcNow });
+            Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5));
+                server.Broadcast(new PD_BattleMonsterTurnEnd { });
+                await Task.Delay(TimeSpan.FromSeconds(2));
+                PlayersTurnStart();
+            });
         }
 
-        List<BattlePlayer> playingPlayers = new List<BattlePlayer>();
+        List<Player> playingPlayers = new List<Player>();
+        float turnTimeFactor = 1.0f;
         public void PlayersTurnStart()
         {
             foreach (var player in players)
             {
-                player.InitTurn(monsters[0].baseTime);
+                player.InitTurn(monsters[0].baseTime * turnTimeFactor);
                 playingPlayers.Add(player);
             }
+            turnTimeFactor += 0.5f;
         }
 
-        public void PlayerTurnEnd(BattlePlayer player)
+        public void PlayerTurnEnd(Player player)
         {
+            player.EndTurn();
             playingPlayers.Remove(player);
             if (playingPlayers.Count == 0)
             {

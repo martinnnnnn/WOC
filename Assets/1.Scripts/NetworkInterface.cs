@@ -220,8 +220,17 @@ namespace WOC_Client
                 case PD_BattleState battleState:
                     Callback_BattleState?.Invoke(battleState);
                     break;
+                case PD_BattleMonsterTurnStart battleMonsterTurnStart:
+                    Callback_BattleMonsterTurnStart?.Invoke(battleMonsterTurnStart);
+                    break;
+                case PD_BattleMonsterTurnEnd battleMonsterTurnEnd:
+                    Callback_BattleMonsterTurnEnd?.Invoke(battleMonsterTurnEnd);
+                    break;
                 case PD_BattlePlayerTurnStart battlePlayerTurnStart:
                     Callback_BattlePlayerTurnStart?.Invoke(battlePlayerTurnStart);
+                    break;
+                case PD_BattlePlayerTurnEnd battlePlayerTurnEnd:
+                    Callback_BattlePlayerTurnEnd?.Invoke(battlePlayerTurnEnd);
                     break;
                 case PD_BattleCardPlayed battleCardPlayed:
                     Callback_BattleCardPlayed?.Invoke(battleCardPlayed);
@@ -229,8 +238,8 @@ namespace WOC_Client
                 case PD_BattleCardDrawn battleCardDrawn:
                     Callback_BattleCardDrawn?.Invoke(battleCardDrawn);
                     break;
-                case PD_BattlePlayerTurnEnd battlePlayerTurnEnd:
-                    Callback_BattlePlayerTurnEnd?.Invoke(battlePlayerTurnEnd);
+                case PD_BattleDiscardToDraw battleDiscardToDraw:
+                    Callback_BattleDiscardToDraw?.Invoke(battleDiscardToDraw);
                     break;
                 default:
                     System.Diagnostics.Debug.Assert(false, "API call not implemented !!");
@@ -266,10 +275,14 @@ namespace WOC_Client
         public Action<PD_BattleStateMainPlayer> Callback_BattleStateMainPlayer;
         public Action<PD_BattleStateMonster> Callback_BattleStateMonster;
         public Action<PD_BattleState> Callback_BattleState;
+        public Action<PD_BattleMonsterTurnStart> Callback_BattleMonsterTurnStart;
+        public Action<PD_BattleMonsterTurnEnd> Callback_BattleMonsterTurnEnd;
         public Action<PD_BattlePlayerTurnStart> Callback_BattlePlayerTurnStart;
+        public Action<PD_BattlePlayerTurnEnd> Callback_BattlePlayerTurnEnd;
         public Action<PD_BattleCardPlayed> Callback_BattleCardPlayed;
         public Action<PD_BattleCardDrawn> Callback_BattleCardDrawn;
-        public Action<PD_BattlePlayerTurnEnd> Callback_BattlePlayerTurnEnd;
+        public Action<PD_BattleDiscardToDraw> Callback_BattleDiscardToDraw;
+        
     }
 }
 

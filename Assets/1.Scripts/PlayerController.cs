@@ -13,12 +13,13 @@ namespace WOC_Client
     {
         NetworkInterface network;
         BattleManager battle;
-        string playerName;
+        [HideInInspector] public string playerName;
 
         public TMP_Text nameText;
         public TMP_Text lifeText;
-        public TMP_Text handCount;
-
+        [HideInInspector] int handCount;
+        public TMP_Text handCountText;
+        
         public void Init(BattleManager battle, PD_BattleStatePlayer data)
         {
             this.battle = battle;
@@ -26,34 +27,51 @@ namespace WOC_Client
             network.Callback_BattleStatePlayer += HandleAPICall;
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattleCardPlayed += HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd += HandleAPICall;
 
-            playerName = network.session.account.name;
             HandleAPICall(data);
         }
 
         private void HandleAPICall(PD_BattleStatePlayer data)
         {
             transform.position = this.battle.playersLocations[data.location].position;
-            nameText.text = data.name;
+            playerName = data.name;
+            nameText.text = playerName;
             lifeText.text = data.life.ToString();
-            handCount.text = data.handCount.ToString();
+            handCount = data.handCount;
+            handCountText.text = handCount.ToString();
         }
 
         private void HandleAPICall(PD_BattleCardDrawn data)
         {
             if (data.playerName == playerName)
             {
-                int drawCount = Int32.Parse(handCount.text);
-                int newHandCount = drawCount + 1;
-                handCount.text = newHandCount.ToString();
-
+                handCount++;
+                handCountText.text = handCount.ToString();
             }
         }
 
         private void HandleAPICall(PD_BattleCardPlayed data)
         {
+            if (data.ownerName == playerName)
+            {
+                int newHandCount = handCount - 1;
+                handCountText.text = newHandCount.ToString();
 
+                // TODO apply card effet
+                battle.monstersControllers.Find(m => m.monsterName == data.targetName);
+            }
         }
+
+        private void HandleAPICall(PD_BattlePlayerTurnEnd data)
+        {
+            if (data.playerName == playerName)
+            {
+                handCount = 0;
+                handCountText.text = handCount + "";
+            }
+        }
+
 
     }
 }

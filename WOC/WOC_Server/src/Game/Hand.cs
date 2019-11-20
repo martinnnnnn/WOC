@@ -23,9 +23,9 @@ namespace WOC_Server
             get { return cards; }
         }
 
-        BattlePlayer owner;
+        Player owner;
 
-        public Hand(BattlePlayer owner)
+        public Hand(Player owner)
         {
             this.owner = owner;
         }

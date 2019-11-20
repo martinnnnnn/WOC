@@ -155,7 +155,7 @@ namespace WOC_Client
             };
             ConnectPanel.SetActive(false);
             MainPanel.SetActive(true);
-            network.SendMessage(new PD_InfoOnlineList());
+            network.SendMessage(new PD_InfoOnlineList(), validate: false);
         }
 
         public void HandleAPICall(PD_AccountConnect data)

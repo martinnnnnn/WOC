@@ -34,10 +34,12 @@ namespace WOC_Server
 
         public void InitBattle()
         {
-            List<BattlePlayer> players =
-                new List<BattlePlayer>(users.Select((n, i) =>
+            Random rand = new Random();
+
+            List<Player> players =
+                new List<Player>(users.Select((n, i) =>
                 {
-                    return new BattlePlayer(n.Key, i, new Deck()
+                    return new Player(n.Key, rand.Next(20, 30), i, new Deck()
                     {
                         name = "defaultDeck",
                         cards = new List<Card>()
@@ -69,7 +71,7 @@ namespace WOC_Server
 
             List<Monster> monsters = new List<Monster>()
             {
-                new Monster("monster", 15.0)
+                new Monster("monster", 40, 0, 15.0)
             };
 
             battle = new Battle(this, players, monsters);
@@ -83,7 +85,7 @@ namespace WOC_Server
 
         public PD_BattleState GetBattleState(string playerName)
         {
-            BattlePlayer mainPlayer = battle.players.Find(p => p.name == playerName);
+            Player mainPlayer = battle.players.Find(p => p.name == playerName);
 
             return new PD_BattleState()
             {
@@ -91,8 +93,9 @@ namespace WOC_Server
                 {
                     return new PD_BattleStateMonster()
                     {
-                        location = 0,
-                        name = m.name
+                        location = m.location,
+                        name = m.name,
+                        life = m.life
                     };
                 }).ToList(),
 
@@ -102,7 +105,7 @@ namespace WOC_Server
                     {
                         location = p.location,
                         name = p.name,
-                        life = 12,
+                        life = p.life,
                         handCount = p.hand.Count,
                         drawPileCount = p.drawPile.Count,
                         discardPileCount = p.discardPile.Count
@@ -112,7 +115,7 @@ namespace WOC_Server
                 mainPlayer = new PD_BattleStateMainPlayer()
                 {
                     location = mainPlayer.location,
-                    life = 12,
+                    life = mainPlayer.life,
                     hand = mainPlayer.hand.Cards.Select(c => c.name).ToList(),
                     drawPileCount = mainPlayer.drawPile.Count,
                     discardPileCount = mainPlayer.discardPile.Count

@@ -19,9 +19,9 @@ namespace WOC_Server
     {
         public Queue<Card> cards = new Queue<Card>();
         public int Count => cards.Count;
-        BattlePlayer owner;
+        Player owner;
 
-        public CardPile(BattlePlayer owner)
+        public CardPile(Player owner)
         {
             this.owner = owner;
         }

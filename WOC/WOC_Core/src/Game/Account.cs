@@ -36,26 +36,9 @@ namespace WOC_Core
         }
     }
 
-
-
     public class Group
     {
         public string leaderName;
         public List<Account> accounts = new List<Account>();
     }
-
-    public struct Vector2
-    {
-        public float X;
-        public float Y;
-    }
-
-    public class WorldPlayer
-    {
-        public Vector2 position;
-        public Vector2 velocity;
-        public int life;
-        public int lifeMax;
-    }
-        
 }

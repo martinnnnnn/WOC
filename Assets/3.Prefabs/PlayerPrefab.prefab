@@ -314,9 +314,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a241ea65dee871a468957a39c0dc43c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerName: 
   nameText: {fileID: 4772778229477324428}
   lifeText: {fileID: 1939159411}
-  handCount: {fileID: 3525206027733951423}
+  handCountText: {fileID: 3525206027733951423}
 --- !u!1 &4772778229477324426
 GameObject:
   m_ObjectHideFlags: 0

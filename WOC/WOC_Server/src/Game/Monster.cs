@@ -19,10 +19,14 @@ namespace WOC_Server
     {
         public string name;
         public double baseTime;
+        public int location;
+        public int life;
 
-        public Monster(string name, double baseTime)
+        public Monster(string name, int life, int location, double baseTime)
         {
             this.name = name;
+            this.life = life;
+            this.location = location;
             this.baseTime = baseTime;
         }
     }

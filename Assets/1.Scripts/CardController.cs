@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
-
+using WOC_Core;
 
 
 
@@ -16,10 +17,15 @@ namespace WOC_Client
         public MainPlayerController owner;
         public int index = -1;
 
-        public void Init(MainPlayerController owner, Vector3 initPosition)
+        [HideInInspector] public int timeCost;
+        public TMP_Text timeCostText;
+
+        public void Init(MainPlayerController owner, PD_BattleCardDrawn data, Vector3 initPosition)
         {
             this.owner = owner;
             transform.position = initPosition;
+            timeCost = data.timeCost;
+            timeCostText.text = "" + timeCost;
         }
 
         private void Update()

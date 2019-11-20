@@ -15,10 +15,11 @@ using WOC_Core;
 
 namespace WOC_Server
 {
-    public class BattlePlayer : ICombatant
+    public class Player : ICombatant
     {
         public string name;
         public int location;
+        public int life;
         // objets
         public Deck deck;
         public Hand hand;
@@ -28,9 +29,10 @@ namespace WOC_Server
         // battle utils
         public double timeRemaining;
 
-        public BattlePlayer(string name, int location, Deck deck)
+        public Player(string name, int life, int location, Deck deck)
         {
             this.name = name;
+            this.life = life;
             this.location = location;
             this.deck = deck;
             hand = new Hand(this);
@@ -57,7 +59,6 @@ namespace WOC_Server
 
         public void InitTurn(double turnDuration)
         {
-
             timeRemaining = turnDuration;
             battle.server.sessions.First(s => s.account.name == name)?.Send(
                 new PD_BattlePlayerTurnStart
@@ -100,6 +101,11 @@ namespace WOC_Server
         {
             drawPile.Push(discardPile.Flush());
             drawPile.Shuffle();
+
+            battle.server.BroadcastTo(new PD_BattleDiscardToDraw
+            {
+                newDrawPileCount = drawPile.Count
+            }, battle.server.sessions.Where(s => s.account.name == name));
         }
 
         public void DrawCards(int count)
@@ -117,8 +123,14 @@ namespace WOC_Server
                 {
                     playerName = name,
                     cardName = newCard.name,
+                    timeCost = newCard.timeCost
                 }, null);
             }
+        }
+
+        public void EndTurn()
+        {
+            discardPile.Push(hand.Flush());
         }
     }
 }

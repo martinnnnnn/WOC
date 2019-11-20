@@ -21,6 +21,8 @@ namespace WOC_Client
         public Transform[] playersLocations;
         public GameObject playerPrefab;
         public GameObject mainPlayerPrefab;
+        public Transform[] monstersLocations;
+        public GameObject monsterPrefab;
 
         MainPlayerController mainPlayerController;
         public Transform drawPile;
@@ -28,8 +30,13 @@ namespace WOC_Client
         public Transform handStartPosition;
         public Transform handEndPosition;
 
-        double timeRemaining;
-        DateTime endTurnTime;
+        [HideInInspector] public List<PlayerController> playersControllers = new List<PlayerController>();
+        [HideInInspector] public List<MonsterController> monstersControllers = new List<MonsterController>();
+
+
+        [HideInInspector] public bool turnStarted = false;
+        float turnStartTime;
+        [HideInInspector] public float turnEndTime;
         public TMP_Text timeRemainingText;
 
         private void Start()
@@ -40,12 +47,32 @@ namespace WOC_Client
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattlePlayerTurnStart += HandleAPICall;
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
+            network.Callback_BattleMonsterTurnStart += HandleAPICall;
+            network.Callback_BattleMonsterTurnEnd += HandleAPICall;
+
+            timeRemainingText.gameObject.SetActive(false);
         }
 
         private void Update()
         {
-            //timeRemaining -= Time.deltaTime;
-            //timeRemainingText.text = String.Format("{0:0.00}", timeRemaining);
+            if (turnStarted)
+            {
+                if (Time.time >= turnStartTime)
+                {
+                    timeRemainingText.gameObject.SetActive(true);
+                    timeRemainingText.text = String.Format("{0:0.00}", turnEndTime - Time.time);
+                }
+                if (Time.time >= turnEndTime)
+                {
+                    turnStarted = false;
+                    timeRemainingText.gameObject.SetActive(false);
+                    network.SendMessage(new PD_BattlePlayerTurnEnd
+                    {
+                        playerName = mainPlayerController.playerName,
+                        eventTime = DateTime.UtcNow
+                    });
+                }
+            }
         }
 
         public void HandleAPICall(PD_BattleStart data)
@@ -64,6 +91,15 @@ namespace WOC_Client
                 GameObject newPlayer = Instantiate(playerPrefab, this.transform);
                 PlayerController newPlayerController = newPlayer.GetComponent<PlayerController>();
                 newPlayerController.Init(this, player);
+                playersControllers.Add(newPlayerController);
+            }
+
+            foreach (var monster in data.monsters)
+            {
+                GameObject newMonster = Instantiate(monsterPrefab, this.transform);
+                MonsterController newMonsterController = newMonster.GetComponent<MonsterController>();
+                newMonsterController.Init(this, monster);
+                monstersControllers.Add(newMonsterController);
             }
         }
 
@@ -72,18 +108,28 @@ namespace WOC_Client
             //Debug.Log("Card drawn by " + data.playerName + " : " + data.cardName);
         }
 
+        
         private void HandleAPICall(PD_BattlePlayerTurnStart data)
         {
-            Debug.Log("Turn starts at " + data.startTime.ToString("HH:mm:ss") + ", time now : " + DateTime.UtcNow.ToString("HH:mm:ss"));
-            //endTurnTime = data.startTime.AddSeconds(data.turnDuration);
+            Debug.Log("Turn starts in " + data.startTime.Subtract(DateTime.UtcNow).TotalSeconds + " seconds");
+            turnStartTime = Time.time + (float)data.startTime.Subtract(DateTime.UtcNow).TotalSeconds;
+            turnEndTime = turnStartTime + (float)data.turnDuration;
+            turnStarted = true;
+        }
+
+        private void HandleAPICall(PD_BattleMonsterTurnStart data)
+        {
+            
+        }
+        private void HandleAPICall(PD_BattleMonsterTurnEnd data)
+        {
+
         }
 
         private void HandleAPICall(PD_BattlePlayerTurnEnd data)
         {
-            Debug.Log("Ending turn");
         }
 
-        
 
     }
 }

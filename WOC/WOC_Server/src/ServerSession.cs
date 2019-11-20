@@ -84,19 +84,27 @@ namespace WOC_Server
                 case PD_BattleState battleState:
                     HandleAPICall(battleState);
                     break;
+                case PD_BattleMonsterTurnStart battleMonsterTurnStart:
+                    HandleAPICall(battleMonsterTurnStart);
+                    break;
+                case PD_BattleMonsterTurnEnd battleMonsterTurnEnd:
+                    HandleAPICall(battleMonsterTurnEnd);
+                    break;
                 case PD_BattlePlayerTurnStart battlePlayerTurnStart:
                     HandleAPICall(battlePlayerTurnStart);
-                    break;
-                case PD_BattleCardPlayed battleCardPlayed:
-                    HandleAPICall(battleCardPlayed);
                     break;
                 case PD_BattlePlayerTurnEnd battlePlayerTurnEnd:
                     HandleAPICall(battlePlayerTurnEnd);
                     break;
+                case PD_BattleCardPlayed battleCardPlayed:
+                    HandleAPICall(battleCardPlayed);
+                    break;
                 case PD_BattleCardDrawn battleCardDrawn:
                     HandleAPICall(battleCardDrawn);
                     break;
-                    
+                default:
+                    Debug.Assert(false, "NOT IMPLEMENTED YET.");
+                    break;
             }
         }
 
@@ -463,10 +471,9 @@ namespace WOC_Server
                 server.InitBattle();
             }
         }
-
+        
         public void HandleAPICall(PD_BattleStatePlayer data)
         {
-            if (!AssureConnected(data.id)) return;
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
         public void HandleAPICall(PD_BattleStateMainPlayer data)
@@ -486,27 +493,48 @@ namespace WOC_Server
             Send(server.GetBattleState(account.name));
         }
 
+        public void HandleAPICall(PD_BattleMonsterTurnStart data)
+        {
+            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+        }
+        public void HandleAPICall(PD_BattleMonsterTurnEnd data)
+        {
+            Debug.Assert(false, "NOT IMPLEMENTED YET.");
+        }
+
         public void HandleAPICall(PD_BattlePlayerTurnStart data)
         {
-            if (!AssureConnected(data.id)) return;
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
         public void HandleAPICall(PD_BattlePlayerTurnEnd data)
         {
             if (!AssureConnected(data.id)) return;
+
+            server.battle.PlayerTurnEnd(data.playerName);
+
+            server.Broadcast(data, this);
             SendValidation(data.id);
         }
 
         public void HandleAPICall(PD_BattleCardPlayed data)
         {
             if (!AssureConnected(data.id)) return;
+            string errorMessage = "";
 
-            SendValidation(data.id);
+            if (server.battle.PlayCard(data.ownerName, data.cardIndex, data.targetName, true))
+            {
+                server.Broadcast(data, this);
+            }
+            else
+            {
+                errorMessage = "Could not play this card";
+            }
+
+            SendValidation(data.id, errorMessage);
         }
 
         public void HandleAPICall(PD_BattleCardDrawn data)
         {
-            if (!AssureConnected(data.id)) return;
             Debug.Assert(false, "NOT IMPLEMENTED YET.");
         }
 

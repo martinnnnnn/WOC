@@ -232,6 +232,7 @@ namespace WOC_Core
     {
         public int location;
         public string name;
+        public int life;
     }
 
     public class PD_BattleState : IPacketData
@@ -253,6 +254,7 @@ namespace WOC_Core
     {
         public string playerName;
         public string cardName;
+        public int timeCost;
     }
 
     public class PD_BattlePlayerTurnStart : IPacketData
@@ -265,6 +267,19 @@ namespace WOC_Core
     {
         public DateTime eventTime;
         public string playerName;
+    }
+
+    public class PD_BattleMonsterTurnStart : IPacketData
+    {
+        public DateTime startTime;
+    }
+
+    public class PD_BattleMonsterTurnEnd : IPacketData
+    {
+    }
+    public class PD_BattleDiscardToDraw : IPacketData
+    {
+        public int newDrawPileCount;
     }
 
     /// ///////////////////////////////////////////////////////////////////////////////////////
@@ -290,12 +305,7 @@ namespace WOC_Core
     /// ///////////////////////////////////////////////////////////////////////////////////////
     ///                                         WorldPlayerInfo
     /// ///////////////////////////////////////////////////////////////////////////////////////
-    public class PD_WorldPlayerPosition : IPacketData
-    {
-        public int accountName;
-        public Vector2 position;
-        public Vector2 velocity;
-    }
+
     public class PD_WorldPlayerInfo : IPacketData
     {
         public int accountName;

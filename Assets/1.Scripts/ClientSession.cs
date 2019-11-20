@@ -52,7 +52,14 @@ namespace WOC_Client
                 return;
             }
 
-            Debug.Log("[CLIENT] Applying validation for packet " + validatedPacket.GetType().Name + ", still " + awaitingValidations.Count + " packet awaiting validation.");
+            string awatings = "";
+            foreach (var awating in awaitingValidations.Values)
+            {
+                awatings += awating.GetType().Name + " ";
+            }
+            Debug.Log("[CLIENT] Applying validation for packet " + validatedPacket.GetType().Name 
+                + ", still " + awaitingValidations.Count 
+                + " packet awaiting validation : " + awatings);
             HandleAPICall(validatedPacket);
         }
     }

@@ -11,12 +11,13 @@ namespace WOC_Client
     {
         NetworkInterface network;
         BattleManager battle;
-        string playerName;
 
         public GameObject cardPrefab;
         List<CardController> hand = new List<CardController>();
 
+        [HideInInspector] public string playerName;
         public TMP_Text nameText;
+        [HideInInspector] public int life;
         public TMP_Text lifeText;
         public TMP_Text drawPileCountText;
         public TMP_Text discardPileCountText;
@@ -30,6 +31,7 @@ namespace WOC_Client
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattleCardPlayed += HandleAPICall;
+            network.Callback_BattleDiscardToDraw += HandleAPICall;
 
             playerName = network.session.account.name;
             nameText.text = playerName;
@@ -39,7 +41,8 @@ namespace WOC_Client
         private void HandleAPICall(PD_BattleStateMainPlayer data)
         {
             transform.position = this.battle.playersLocations[data.location].position;
-            lifeText.text = data.life.ToString();
+            life = data.life;
+            lifeText.text = life.ToString();
             //public List<string> hand;
             drawPileCountText.text = data.drawPileCount.ToString();
             discardPileCountText.text = data.discardPileCount.ToString();
@@ -51,14 +54,19 @@ namespace WOC_Client
         }
         private void HandleAPICall(PD_BattlePlayerTurnEnd data)
         {
-            for (int i = 0; i < hand.Count; ++i)
+            if (data.playerName == playerName)
             {
-                CardController current = hand[i];
-                current.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+                for (int i = 0; i < hand.Count; ++i)
                 {
-                    hand.Remove(current);
-                    Destroy(current.gameObject);
-                });
+                    CardController current = hand[i];
+                    current.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+                    {
+                        hand.Remove(current);
+                        Destroy(current.gameObject);
+                        int newDiscardPileCount = int.Parse(discardPileCountText.text) + 1;
+                        discardPileCountText.text = newDiscardPileCount.ToString();
+                    });
+                }
             }
         }
 
@@ -66,10 +74,9 @@ namespace WOC_Client
         {
             if (data.playerName == playerName)
             {
-                //CardController
                 GameObject newCard = Instantiate(cardPrefab, this.transform);
                 CardController newCardController = newCard.GetComponent<CardController>();
-                newCardController.Init(this, battle.drawPile.position);
+                newCardController.Init(this, data, battle.drawPile.position);
                 newCardController.index = hand.Count;
                 hand.Add(newCardController);
                 UpdateHandPositions();
@@ -82,14 +89,21 @@ namespace WOC_Client
 
         private void HandleAPICall(PD_BattleCardPlayed data)
         {
-            CardController played = hand[data.cardIndex];
-            played.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+            if (data.ownerName == playerName)
             {
-                hand.Remove(played);
-                UpdateHandIndexes();
-                UpdateHandPositions();
-                Destroy(played.gameObject);
-            });
+                CardController played = hand[data.cardIndex];
+                battle.turnEndTime -= played.timeCost;
+
+                played.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+                {
+                    hand.Remove(played);
+                    UpdateHandIndexes();
+                    UpdateHandPositions();
+                    Destroy(played.gameObject);
+                    int newDiscardPileCount = int.Parse(discardPileCountText.text) + 1;
+                    discardPileCountText.text = newDiscardPileCount.ToString();
+                });
+            }
         }
 
         private void UpdateHandIndexes()
@@ -116,8 +130,14 @@ namespace WOC_Client
                     current.restPosition = endPosition;
                     current.useRestPos = true;
                 });
-                
             }
+        }
+
+        private void HandleAPICall(PD_BattleDiscardToDraw data)
+        {
+            Debug.Log("draw pile updated : " + data.newDrawPileCount);
+            discardPileCountText.text = "0";
+            drawPileCountText.text = data.newDrawPileCount.ToString();
         }
     }
 }

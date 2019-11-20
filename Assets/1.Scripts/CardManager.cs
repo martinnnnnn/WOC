@@ -12,14 +12,18 @@ namespace WOC_Client
         CardController current = null;
         public LayerMask mask;
         NetworkInterface network;
+        public BattleManager battleManager;
 
         private void Start()
         {
             network = FindObjectOfType<NetworkInterface>();
+            //battleManager.GetComponent<BattleManager>();
         }
 
         private void Update()
         {
+            //if (battleManager == null) battleManager.GetComponent<BattleManager>();
+
             if (Input.GetMouseButtonDown(0))
             {
                 RaycastHit hitInfo = new RaycastHit();
@@ -37,19 +41,19 @@ namespace WOC_Client
 
             if (Input.GetMouseButtonUp(0))
             {
-                if (current != null)
+                if (current != null && battleManager.turnStarted && Time.time + current.timeCost < battleManager.turnEndTime)
                 {
                     network.SendMessage(new PD_BattleCardPlayed
                     {
                         eventTime = DateTime.UtcNow,
-                        ownerName = current.owner.name,
-                        targetName = "",
+                        ownerName = current.owner.playerName,
+                        targetName = battleManager.monstersControllers[0].monsterName,
                         cardIndex = current.index
                     });
                     current.isSelected = false;
                     current.useRestPos = false;
-                    current = null;
                 }
+                current = null;
                 //if (current != null)
                 //{
                 //    RaycastHit hitInfo = new RaycastHit();
