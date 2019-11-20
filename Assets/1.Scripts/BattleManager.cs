@@ -28,6 +28,10 @@ namespace WOC_Client
         public Transform handStartPosition;
         public Transform handEndPosition;
 
+        double timeRemaining;
+        DateTime endTurnTime;
+        public TMP_Text timeRemainingText;
+
         private void Start()
         {
             network = FindObjectOfType<NetworkInterface>();
@@ -36,6 +40,12 @@ namespace WOC_Client
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattlePlayerTurnStart += HandleAPICall;
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
+        }
+
+        private void Update()
+        {
+            //timeRemaining -= Time.deltaTime;
+            //timeRemainingText.text = String.Format("{0:0.00}", timeRemaining);
         }
 
         public void HandleAPICall(PD_BattleStart data)
@@ -65,6 +75,7 @@ namespace WOC_Client
         private void HandleAPICall(PD_BattlePlayerTurnStart data)
         {
             Debug.Log("Turn starts at " + data.startTime.ToString("HH:mm:ss") + ", time now : " + DateTime.UtcNow.ToString("HH:mm:ss"));
+            //endTurnTime = data.startTime.AddSeconds(data.turnDuration);
         }
 
         private void HandleAPICall(PD_BattlePlayerTurnEnd data)

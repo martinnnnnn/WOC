@@ -82,7 +82,6 @@ namespace WOC_Client
 
         private void HandleAPICall(PD_BattleCardPlayed data)
         {
-            Debug.Log("hand before : " + hand.Count);
             CardController played = hand[data.cardIndex];
             played.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
             {
@@ -90,7 +89,6 @@ namespace WOC_Client
                 UpdateHandIndexes();
                 UpdateHandPositions();
                 Destroy(played.gameObject);
-                Debug.Log("hand after : " + hand.Count);
             });
         }
 
