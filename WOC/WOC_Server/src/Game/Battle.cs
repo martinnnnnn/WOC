@@ -24,8 +24,7 @@ namespace WOC_Server
         public float timeRemaining = 60;
 
         public Random random;
-        public bool hasStarted = false;
-
+        public bool isOngoing = false;
 
         public Battle(GameServer server, List<Player> players, List<Monster> monsters)
         {
@@ -33,7 +32,7 @@ namespace WOC_Server
             this.players.AddRange(players);
             this.monsters.AddRange(monsters);
             random = new Random();
-            hasStarted = true;
+            isOngoing = true;
             this.players.ForEach(p =>
             {
                 p.Init(this);
@@ -47,12 +46,13 @@ namespace WOC_Server
 
         public void MonstersTurnStart()
         {
-            server.Broadcast(new PD_BattleMonsterTurnStart { startTime = DateTime.UtcNow });
             Task.Run(async () =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(5));
+                server.Broadcast(new PD_BattleMonsterTurnStart { startTime = DateTime.UtcNow });
+                await Task.Delay(TimeSpan.FromSeconds(5));
                 server.Broadcast(new PD_BattleMonsterTurnEnd { });
-                await Task.Delay(TimeSpan.FromSeconds(2));
+                await Task.Delay(TimeSpan.FromSeconds(5));
                 PlayersTurnStart();
             });
         }
@@ -98,6 +98,25 @@ namespace WOC_Server
             }
 
             return null;
+        }
+
+        internal void HandleEnd()
+        {
+            if (monsters.All(m => m.life <= 0))
+            {
+                server.Broadcast(new PD_BattleEnd { victory = true });
+                isOngoing = false;
+            }
+            else if (players.All(m => m.life <= 0))
+            {
+                server.Broadcast(new PD_BattleEnd { victory = false });
+                isOngoing = false;
+            }
+
+            if (!isOngoing)
+            {
+                server.HandleBattleEnd();
+            }
         }
     }
 

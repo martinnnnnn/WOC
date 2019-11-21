@@ -82,7 +82,7 @@ namespace WOC_Server
 
             List <Monster> monsters = new List<Monster>()
             {
-                new Monster("monster", 40, 0, 15.0)
+                new Monster("monster", 20, 0, 15.0)
             };
 
             battle = new Battle(this, players, monsters);
@@ -92,6 +92,11 @@ namespace WOC_Server
                 await Task.Delay(TimeSpan.FromSeconds(2));
                 battle.PlayersTurnStart();
             });
+        }
+
+        internal void HandleBattleEnd()
+        {
+            battle = null;
         }
 
         public PD_BattleState GetBattleState(string playerName)

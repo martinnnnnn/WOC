@@ -44,6 +44,13 @@ namespace WOC_Client
         {
             Debug.Log("monster turn end");
         }
+
+        public void OnDestroy()
+        {
+            network.Callback_BattleStateMonster -= HandleAPICall;
+            network.Callback_BattleMonsterTurnStart -= HandleAPICall;
+            network.Callback_BattleMonsterTurnEnd -= HandleAPICall;
+        }
     }
 }
 

@@ -209,6 +209,11 @@ namespace WOC_Core
 
     public class PD_BattleStart : IPacketData {}
 
+    public class PD_BattleEnd : PD_BattleCardEffect
+    {
+        public bool victory;
+    }
+
     public class PD_BattleStatePlayer : IPacketData
     {
         public int location;

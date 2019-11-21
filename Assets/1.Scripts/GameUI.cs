@@ -12,6 +12,7 @@ using System.Net;
 using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 namespace WOC_Client
 {
@@ -54,7 +55,10 @@ namespace WOC_Client
 
         public Button startBattle;
         public Button endTurn;
-        
+
+        public TMP_Text battleResultText;
+        public TMP_Text battleStateText;
+
         private void Start()
         {
             network = FindObjectOfType<NetworkInterface>();
@@ -70,10 +74,17 @@ namespace WOC_Client
             network.Callback_InfoOnlineList += HandleAPICall;
             // battle
             network.Callback_BattleStart += HandleAPICall;
+            network.Callback_BattleEnd += HandleAPICall;
+            network.Callback_BattleMonsterTurnStart += HandleAPICall;
+            network.Callback_BattleMonsterTurnEnd  += HandleAPICall;
+            network.Callback_BattlePlayerTurnStart += HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd   += HandleAPICall;
 
-            ConnectPanel.SetActive(true);
+
+        ConnectPanel.SetActive(true);
             MainPanel.SetActive(false);
             onlinePlayersPanel.SetActive(false);
+            battleResultText.gameObject.SetActive(false);
 
             signin.onClick.AddListener(() =>
             {
@@ -287,13 +298,102 @@ namespace WOC_Client
             startBattle.gameObject.SetActive(false);
         }
 
-    }
+        public void HandleAPICall(PD_BattleEnd data)
+        {
+            startBattle.gameObject.SetActive(true);
 
-    [Serializable]
-    public class ChatMessage
-    {
-        //public string content;
-        public TMP_Text textObject;
+            if (data.victory)
+            {
+                battleResultText.text = "Victory!";
+            }
+            else
+            {
+                battleResultText.text = "DEFEAT!";
+            }
+            battleResultText.gameObject.SetActive(true);
+
+            battleResultText.transform.localScale = new Vector3(0, 0, 0);
+            Sequence mySequence = DOTween.Sequence();
+            mySequence
+                .Append(battleResultText.transform.DOScale(1.0f, 1.0f))
+                .AppendInterval(3.0f)
+                .OnComplete(() => battleResultText.gameObject.SetActive(false));
+        }
+        
+        public void HandleAPICall(PD_BattleMonsterTurnStart data)
+        {
+            battleStateText.text = "Monsters turn start!";
+            ShowBattleState();
+        }
+
+        public void HandleAPICall(PD_BattleMonsterTurnEnd data)
+        {
+            battleStateText.text = "Monsters turn end!";
+            ShowBattleState();
+        }
+
+        public void HandleAPICall(PD_BattlePlayerTurnStart data)
+        {
+            battleStateText.gameObject.SetActive(true);
+
+            int secondsRemaining = (int)data.startTime.Subtract(DateTime.UtcNow).TotalSeconds;
+            StartCoroutine(PlayerStartTurnCoroutine(secondsRemaining));
+        }
+
+        IEnumerator PlayerStartTurnCoroutine(int secondsRemaining)
+        {
+            int remaining = secondsRemaining;
+            battleStateText.text = "Players turn starts in " + secondsRemaining + "s!";
+            battleStateText.transform.localScale = new Vector3(0, 0, 0);
+
+            Sequence mySequence = DOTween.Sequence();
+            mySequence
+                .Append(battleStateText.transform.DOScale(1.0f, 0.3f))
+                .AppendInterval(secondsRemaining)
+                .OnComplete(() => battleStateText.gameObject.SetActive(false));
+
+            while (remaining > 0)
+            {
+                yield return new WaitForSecondsRealtime(1.0f);
+                remaining--;
+                battleStateText.text = "Players turn start in " + remaining + "s!";
+            }
+        }
+
+        private void HandleAPICall(PD_BattlePlayerTurnEnd data)
+        {
+            battleStateText.text = "Players turn end!";
+            ShowBattleState();
+        }
+
+        private void ShowBattleState()
+        {
+            battleStateText.gameObject.SetActive(true);
+
+            battleStateText.transform.localScale = new Vector3(0, 0, 0);
+            Sequence mySequence = DOTween.Sequence();
+            mySequence
+                .Append(battleStateText.transform.DOScale(1.0f, 1.0f))
+                .AppendInterval(3.0f)
+                .OnComplete(() => battleStateText.gameObject.SetActive(false));
+        }
+
+        public void OnDestroy()
+        {
+            network.Callback_AccountMake -= HandleAPICall;
+            network.Callback_AccountConnect -= HandleAPICall;
+            network.Callback_AccountDisconnect -= HandleAPICall;
+            network.Callback_AccountDisconnected -= HandleAPICall;
+            network.Callback_ServerChat -= HandleAPICall;
+            network.Callback_AccountConnected -= HandleAPICall;
+            network.Callback_PartyInvite -= HandleAPICall;
+            network.Callback_PartyMemberNew -= HandleAPICall;
+            network.Callback_PartyMemberLeave -= HandleAPICall;
+            network.Callback_InfoOnlineList -= HandleAPICall;
+            // battle
+            network.Callback_BattleStart -= HandleAPICall;
+            network.Callback_BattleEnd -= HandleAPICall;
+        }
     }
 }
 

@@ -208,6 +208,9 @@ namespace WOC_Client
                 case PD_BattleStart battleStart:
                     Callback_BattleStart?.Invoke(battleStart);
                     break;
+                case PD_BattleEnd battleEnd:
+                    Callback_BattleEnd?.Invoke(battleEnd);
+                    break;
                 case PD_BattleStatePlayer battleStatePlayer:
                     Callback_BattleStatePlayer?.Invoke(battleStatePlayer);
                     break;
@@ -271,6 +274,7 @@ namespace WOC_Client
         public Action<PD_AccountSetCurrentDeck> Callback_AccountSetCurrentDeck;
         public Action<PD_ServerListPlayers> Callback_ServerListPlayers;
         public Action<PD_BattleStart> Callback_BattleStart;
+        public Action<PD_BattleEnd> Callback_BattleEnd;
         public Action<PD_BattleStatePlayer> Callback_BattleStatePlayer;
         public Action<PD_BattleStateMainPlayer> Callback_BattleStateMainPlayer;
         public Action<PD_BattleStateMonster> Callback_BattleStateMonster;

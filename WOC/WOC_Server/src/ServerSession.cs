@@ -464,7 +464,7 @@ namespace WOC_Server
         {
             if (!AssureConnected(data.id)) return;
 
-            if (server.battle == null || !server.battle.hasStarted)
+            if (server.battle == null || !server.battle.isOngoing)
             {
                 // TODO : init battle here
                 server.Broadcast(data, null);
@@ -548,13 +548,9 @@ namespace WOC_Server
                 });
 
                 server.Broadcast(data, null);
-            }
-            else
-            {
-                //errorMessage = "Could not play this card";
-            }
 
-            //SendValidation(data.id, errorMessage);
+                server.battle.HandleEnd();
+            }
         }
 
         public void HandleAPICall(PD_BattleCardDrawn data)

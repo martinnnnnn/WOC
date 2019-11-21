@@ -12,12 +12,15 @@ using System.Net;
 using UnityEditor;
 using UnityEngine.UI;
 using TMPro;
+using DG.Tweening;
 
 namespace WOC_Client
 {
     public class BattleManager : MonoBehaviour
     {
         NetworkInterface network;
+        public Transform runtimeInstances;
+
         public Transform[] playersLocations;
         public GameObject playerPrefab;
         public GameObject mainPlayerPrefab;
@@ -40,6 +43,8 @@ namespace WOC_Client
         [HideInInspector] public float turnEndTime;
         public TMP_Text timeRemainingText;
 
+        [HideInInspector] public bool isOngoing = false;
+
         private void Start()
         {
             network = FindObjectOfType<NetworkInterface>();
@@ -51,7 +56,8 @@ namespace WOC_Client
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
             network.Callback_BattleMonsterTurnStart += HandleAPICall;
             network.Callback_BattleMonsterTurnEnd += HandleAPICall;
-
+            network.Callback_BattleEnd += HandleAPICall;
+            
             timeRemainingText.gameObject.SetActive(false);
         }
 
@@ -62,6 +68,17 @@ namespace WOC_Client
                 if (Time.time >= turnStartTime)
                 {
                     turnStarted = true;
+                    float timeRemaining = turnEndTime - Time.time;
+
+                    timeRemainingText.color = Color.white;
+                    if (timeRemaining < 10.0f)
+                    {
+                        if ((int)(timeRemaining * 10) % 4 == 0)
+                        {
+                            timeRemainingText.color = Color.red;
+                        }
+                    }
+
                     timeRemainingText.gameObject.SetActive(true);
                     timeRemainingText.text = String.Format("{0:0.00}", turnEndTime - Time.time);
                 }
@@ -81,18 +98,29 @@ namespace WOC_Client
 
         public void HandleAPICall(PD_BattleStart data)
         {
+            isOngoing = true;
             network.SendMessage(new PD_BattleState(), validate: false);
+        }
+
+        public void HandleAPICall(PD_BattleEnd data)
+        {
+            isOngoing = false;
+            turnEndTime = Time.time;
+            foreach (Transform t in runtimeInstances)
+            {
+                Destroy(t.gameObject);
+            }
         }
 
         public void HandleAPICall(PD_BattleState data)
         {
-            GameObject newMainPlayer = Instantiate(mainPlayerPrefab, this.transform);
+            GameObject newMainPlayer = Instantiate(mainPlayerPrefab, runtimeInstances);
             mainPlayerController = newMainPlayer.GetComponent<MainPlayerController>();
             mainPlayerController.Init(this, data.mainPlayer);
 
             foreach (var player in data.players)
             {
-                GameObject newPlayer = Instantiate(playerPrefab, this.transform);
+                GameObject newPlayer = Instantiate(playerPrefab, runtimeInstances);
                 PlayerController newPlayerController = newPlayer.GetComponent<PlayerController>();
                 newPlayerController.Init(this, player);
                 playersControllers.Add(newPlayerController);
@@ -100,7 +128,7 @@ namespace WOC_Client
 
             foreach (var monster in data.monsters)
             {
-                GameObject newMonster = Instantiate(monsterPrefab, this.transform);
+                GameObject newMonster = Instantiate(monsterPrefab, runtimeInstances);
                 MonsterController newMonsterController = newMonster.GetComponent<MonsterController>();
                 newMonsterController.Init(this, monster);
                 monstersControllers.Add(newMonsterController);
@@ -191,7 +219,18 @@ namespace WOC_Client
         {
         }
 
-
+        public void OnDestroy()
+        {
+            network.Callback_BattleStart -= HandleAPICall;
+            network.Callback_BattleState -= HandleAPICall;
+            network.Callback_BattleCardDrawn -= HandleAPICall;
+            network.Callback_BattleCardPlayed -= HandleAPICall;
+            network.Callback_BattlePlayerTurnStart -= HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd -= HandleAPICall;
+            network.Callback_BattleMonsterTurnStart -= HandleAPICall;
+            network.Callback_BattleMonsterTurnEnd -= HandleAPICall;
+            network.Callback_BattleEnd -= HandleAPICall;
+        }
     }
 }
 

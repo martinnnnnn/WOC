@@ -54,7 +54,7 @@ namespace WOC_Client
         }
         private void HandleAPICall(PD_BattlePlayerTurnEnd data)
         {
-            if (data.playerName == playerName)
+            if (data.playerName == playerName && battle.isOngoing)
             {
                 for (int i = 0; i < hand.Count; ++i)
                 {
@@ -94,7 +94,7 @@ namespace WOC_Client
                 CardController played = hand[data.cardIndex];
                 battle.turnEndTime -= played.timeCost;
                 played.useRestPos = false;
-                played.transform.DOMove(battle.discardPile.position, 1).OnComplete(() =>
+                played.transform.DOShakeRotation(.3f).OnComplete(() =>
                 {
                     hand.Remove(played);
                     UpdateHandIndexes();
@@ -121,11 +121,11 @@ namespace WOC_Client
             {
                 Vector3 endPosition = 
                     battle.handStartPosition.position + (((float) i / hand.Count) * (battle.handEndPosition.position - battle.handStartPosition.position));
-
+                endPosition.z = i;
                 // this seems useless but it needed for the callback to work :
                 // i keeps incrementing and is going to be == handCount when OnComplete is called.
                 CardController current = hand[i];
-                current.transform.DOMove(endPosition, 1).OnComplete(() =>
+                current.transform.DOMove(endPosition, 0.1f).OnComplete(() =>
                 {
                     current.restPosition = endPosition;
                     current.useRestPos = true;
@@ -138,6 +138,16 @@ namespace WOC_Client
             Debug.Log("draw pile updated : " + data.newDrawPileCount);
             discardPileCountText.text = "0";
             drawPileCountText.text = data.newDrawPileCount.ToString();
+        }
+
+        public void OnDestroy()
+        {
+            network.Callback_BattleStateMainPlayer -= HandleAPICall;
+            network.Callback_BattlePlayerTurnStart -= HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd -= HandleAPICall;
+            network.Callback_BattleCardDrawn -= HandleAPICall;
+            network.Callback_BattleCardPlayed -= HandleAPICall;
+            network.Callback_BattleDiscardToDraw -= HandleAPICall;
         }
     }
 }

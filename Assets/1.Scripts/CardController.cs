@@ -9,7 +9,7 @@ namespace WOC_Client
 {
     public class CardController : MonoBehaviour
     {
-        public float moveSpeed = 0.1f;
+        public float moveSpeed = 0.5f;
         public bool isSelected = false;
         public Vector3 restPosition;
         public bool useRestPos = false;

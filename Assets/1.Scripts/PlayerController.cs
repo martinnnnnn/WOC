@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using WOC_Core;
-
+using DG.Tweening;
 
 
 
@@ -20,7 +20,8 @@ namespace WOC_Client
         public TMP_Text lifeText;
         [HideInInspector] public int handCount;
         public TMP_Text handCountText;
-        
+        public GameObject glow;
+
         public void Init(BattleManager battle, PD_BattleStatePlayer data)
         {
             this.battle = battle;
@@ -29,8 +30,9 @@ namespace WOC_Client
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattleCardPlayed += HandleAPICall;
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
-
             HandleAPICall(data);
+
+            glow.SetActive(false);
         }
 
         private void HandleAPICall(PD_BattleStatePlayer data)
@@ -57,11 +59,15 @@ namespace WOC_Client
         {
             if (data.ownerName == playerName)
             {
-                int newHandCount = handCount - 1;
-                handCountText.text = newHandCount.ToString();
+                glow.SetActive(true);
+                glow.transform.DOPunchScale(new Vector3(5.0f, 5.0f, 5.0f), 1.0f, vibrato: 2, elasticity: 0).OnComplete(() =>
+                {
+                    glow.transform.localScale = Vector3.one;
+                    glow.SetActive(false);
+                });
 
-                // TODO apply card effet
-                battle.monstersControllers.Find(m => m.monsterName == data.targetName);
+                handCount--;
+                handCountText.text = handCount.ToString();
             }
         }
 
@@ -74,7 +80,13 @@ namespace WOC_Client
             }
         }
 
-
+        public void OnDestroy()
+        {
+            network.Callback_BattleStatePlayer -= HandleAPICall;
+            network.Callback_BattleCardDrawn -= HandleAPICall;
+            network.Callback_BattleCardPlayed -= HandleAPICall;
+            network.Callback_BattlePlayerTurnEnd -= HandleAPICall;
+        }
     }
 }
 
