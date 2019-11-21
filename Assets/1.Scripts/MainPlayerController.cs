@@ -10,7 +10,7 @@ namespace WOC_Client
     public class MainPlayerController : MonoBehaviour
     {
         NetworkInterface network;
-        BattleManager battle;
+        [HideInInspector] public BattleManager battle;
 
         public GameObject cardPrefab;
         List<CardController> hand = new List<CardController>();
