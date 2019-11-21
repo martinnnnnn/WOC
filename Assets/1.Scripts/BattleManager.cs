@@ -114,20 +114,53 @@ namespace WOC_Client
 
         private void HandleAPICall(PD_BattleCardPlayed data)
         {
+            // TODO : add these effects to network, call network and handle behaviour inside controller classes.
             data.effects.ForEach(e =>
             {
                 switch (e)
                 {
                     case PD_BattleCardEffectDamage damage:
+                    {
                         MonsterController monster = monstersControllers.Find(m => m.monsterName == data.targetName);
-                        monster.life -= damage.value;
-                        monster.lifeText.text = monster.life.ToString();
-                        break;
-                    case PD_BattleCardEffectHeal heal:
+                        if (monster)
+                        {
+                            monster.life -= damage.value;
+                            monster.lifeText.text = monster.life.ToString();
+                        }
                         PlayerController player = playersControllers.Find(p => p.playerName == data.targetName);
-                        player.life += heal.value;
-                        player.lifeText.text = player.life.ToString();
+                        if (player)
+                        {
+                            player.life -= damage.value;
+                            player.lifeText.text = player.life.ToString();
+                        }
+                        if (mainPlayerController.playerName == data.targetName)
+                        {
+                            mainPlayerController.life -= damage.value;
+                            mainPlayerController.lifeText.text = mainPlayerController.life.ToString();
+                        }
                         break;
+                    }
+                    case PD_BattleCardEffectHeal heal:
+                    {
+                        MonsterController monster = monstersControllers.Find(m => m.monsterName == data.targetName);
+                        if (monster)
+                        {
+                            monster.life += heal.value;
+                            monster.lifeText.text = monster.life.ToString();
+                        }
+                        PlayerController player = playersControllers.Find(p => p.playerName == data.targetName);
+                        if (player)
+                        {
+                            player.life += heal.value;
+                            player.lifeText.text = player.life.ToString();
+                        }
+                        if (mainPlayerController.playerName == data.targetName)
+                        {
+                            mainPlayerController.life += heal.value;
+                            mainPlayerController.lifeText.text = mainPlayerController.life.ToString();
+                        }
+                        break;
+                    }
                     case PD_BattleCardEffectDraw draw:
                         break;
                 }

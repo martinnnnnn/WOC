@@ -72,7 +72,10 @@ namespace WOC_Server
         {
             Card card = hand.Get(index);
 
-            if (card.timeCost <= timeRemaining && card.Play(battle.monsters.Find(m => m.name == targetName)))
+            Combatant comb = battle.monsters.Find(m => m.name == targetName) as Combatant ??
+                battle.players.Find(m => m.name == targetName) as Combatant;
+
+            if (card.timeCost <= timeRemaining && card.Play(comb))
             {
                 timeRemaining -= card.timeCost;
                 hand.Remove(index);

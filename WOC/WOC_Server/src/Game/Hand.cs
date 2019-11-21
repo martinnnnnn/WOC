@@ -58,11 +58,8 @@ namespace WOC_Server
 
         public Card Get(int index)
         {
-            if (index >= 0 && index < Count)
-            {
-                return cards[index];
-            }
-            return null;
+            Debug.Assert(index >= 0 && index < Count, "Index not part of the hand !");
+            return cards[index];
         }
 
         public Card[] Flush()

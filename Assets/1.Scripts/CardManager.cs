@@ -47,59 +47,40 @@ namespace WOC_Client
                     bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, mask);
 
                     if (battleManager.turnStarted
-                        && Time.time + current.timeCost < battleManager.turnEndTime
-                        && hit)
+                        && Time.time + current.timeCost < battleManager.turnEndTime)
                     {
-                        MonsterController monsterController = hitInfo.transform.gameObject.GetComponent<MonsterController>();
-                        if (monsterController != null)
+                        string targetName = "";
+                        if (hit)
                         {
-                            network.SendMessage(new PD_BattleCardPlayed
+                            MonsterController monsterController = hitInfo.transform.gameObject.GetComponent<MonsterController>();
+                            if (monsterController != null)
                             {
-                                eventTime = DateTime.UtcNow,
-                                ownerName = current.owner.playerName,
-                                targetName = monsterController.monsterName,
-                                cardIndex = current.index
-                            }, validate: false);
-                        }
+                                targetName = monsterController.monsterName;
+                            }
 
-                        PlayerController playerController = hitInfo.transform.gameObject.GetComponent<PlayerController>();
-                        if (playerController != null)
-                        {
-                            network.SendMessage(new PD_BattleCardPlayed
+                            PlayerController playerController = hitInfo.transform.gameObject.GetComponent<PlayerController>();
+                            if (playerController != null)
                             {
-                                eventTime = DateTime.UtcNow,
-                                ownerName = current.owner.playerName,
-                                targetName = playerController.playerName,
-                                cardIndex = current.index
-                            }, validate: false);
+                                targetName = playerController.playerName;
+                            }
+
+                            MainPlayerController mainPlayerController = hitInfo.transform.gameObject.GetComponent<MainPlayerController>();
+                            if (mainPlayerController != null)
+                            {
+                                targetName = mainPlayerController.playerName;
+                            }
                         }
+                        network.SendMessage(new PD_BattleCardPlayed
+                        {
+                            eventTime = DateTime.UtcNow,
+                            ownerName = current.owner.playerName,
+                            targetName = targetName,
+                            cardIndex = current.index
+                        }, validate: false);
                     }
                     current.isSelected = false;
                 }
                 current = null;
-                //if (current != null)
-                //{
-                //    RaycastHit hitInfo = new RaycastHit();
-                //    bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, mask);
-                //    if (hit)
-                //    {
-                //        Debug.Log("just hit : " + hitInfo.transform.gameObject.name);
-                //        MonsterController monsterController = hitInfo.transform.gameObject.GetComponent<MonsterController>();
-                //        if (monsterController != null)
-                //        {
-                //            network.SendMessage(new PD_BattleCardPlayed
-                //            {
-                //                eventTime = DateTime.UtcNow,
-                //                ownerName = current.owner.name,
-                //                targetName = "",
-                //                cardIndex = current.index
-                //            });
-                //            current.isSelected = false;
-                //            current.useRestPos = false;
-                //        }
-                //    }
-                //}
-                //current = null;
             }
         }
     }

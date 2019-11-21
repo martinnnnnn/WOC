@@ -90,6 +90,7 @@ namespace WOC_Server
             if (player != null)
             {
                 Card card = player.hand.Get(cardIndex);
+                Console.WriteLine("[BATTLE] played card {0} with cost {1}", card.name, card.timeCost);
                 if (player.PlayCard(cardIndex, targetName, force))
                 {
                     return card;

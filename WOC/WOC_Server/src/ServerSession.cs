@@ -547,7 +547,7 @@ namespace WOC_Server
                     data.effects.Add(effectMessage);
                 });
 
-                server.Broadcast(data, this);
+                server.Broadcast(data, null);
             }
             else
             {

@@ -59,7 +59,7 @@ namespace WOC_Server
 
         public override bool Play(Combatant target)
         {
-            if (target != null && target != player)
+            if (target != null)
             {
                 target.life -= value;
                 return true;
@@ -78,6 +78,7 @@ namespace WOC_Server
         public override bool Play(Combatant target)
         {
             player.DrawCards(value);
+            Console.WriteLine("hand: {0}\ndraw count: {1}\ndiscard count: {2}", string.Join(", ", player.hand.Cards.Select(c => c.name)), player.drawPile.Count, player.discardPile.Count);
             return true;
         }
     }
