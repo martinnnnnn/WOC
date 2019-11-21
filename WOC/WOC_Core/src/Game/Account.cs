@@ -7,12 +7,6 @@ using System.Threading.Tasks;
 
 namespace WOC_Core
 {
-    public class Deck
-    {
-        public string name;
-        public List<Card> cards = new List<Card>();
-    }
-
     public class Account
     {
         public string email;

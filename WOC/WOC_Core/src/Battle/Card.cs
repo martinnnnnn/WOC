@@ -17,4 +17,10 @@ namespace WOC_Core
         public int timeCost = 0;
         public List<ICardEffect> effects = new List<ICardEffect>();
     }
+
+    public class Deck
+    {
+        public string name;
+        public List<Card> cards = new List<Card>();
+    }
 }
