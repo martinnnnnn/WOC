@@ -213,7 +213,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 267742032728882964}
-  - component: {fileID: 267742032728882969}
   - component: {fileID: 267742032728882965}
   m_Layer: 8
   m_Name: CardPrefab
@@ -239,20 +238,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &267742032728882969
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 267742032728882968}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!114 &267742032728882965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +262,7 @@ MonoBehaviour:
   attackSprite: {fileID: 21300000, guid: 8c31c452c354bb146b75b56999ed0780, type: 3}
   healSprite: {fileID: 21300000, guid: 4a88a08b488cfa04d84fae4b7e8ec47f, type: 3}
   drawSprite: {fileID: 21300000, guid: 7981ad974b6545a459c27109054c564c, type: 3}
+  type: 
 --- !u!1 &3565344045615589017
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,6 +273,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4314566652172841792}
   - component: {fileID: 7434493123267626649}
+  - component: {fileID: 7848215849788652271}
   m_Layer: 8
   m_Name: Sprite
   m_TagString: Untagged
@@ -358,6 +345,19 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!65 &7848215849788652271
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3565344045615589017}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 4.2100005, y: 5.750002, z: 0.20000005}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6530995375226152428
 GameObject:
   m_ObjectHideFlags: 0

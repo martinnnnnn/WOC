@@ -32,7 +32,7 @@ namespace WOC_Client
                 bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo);
                 if (hit)
                 {
-                    var card = hitInfo.transform.GetComponent<CardController>();
+                    var card = hitInfo.transform.GetComponentInParent<CardController>();
                     if (card != null)
                     {
                         current = card;
@@ -59,19 +59,19 @@ namespace WOC_Client
                         string targetName = "";
                         if (hit)
                         {
-                            MonsterController monsterController = hitInfo.transform.gameObject.GetComponent<MonsterController>();
+                            MonsterController monsterController = hitInfo.transform.gameObject.GetComponentInParent<MonsterController>();
                             if (monsterController != null)
                             {
                                 targetName = monsterController.monsterName;
                             }
 
-                            PlayerController playerController = hitInfo.transform.gameObject.GetComponent<PlayerController>();
+                            PlayerController playerController = hitInfo.transform.gameObject.GetComponentInParent<PlayerController>();
                             if (playerController != null)
                             {
                                 targetName = playerController.playerName;
                             }
 
-                            MainPlayerController mainPlayerController = hitInfo.transform.gameObject.GetComponent<MainPlayerController>();
+                            MainPlayerController mainPlayerController = hitInfo.transform.gameObject.GetComponentInParent<MainPlayerController>();
                             if (mainPlayerController != null)
                             {
                                 targetName = mainPlayerController.playerName;
