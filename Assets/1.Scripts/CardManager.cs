@@ -13,6 +13,8 @@ namespace WOC_Client
         public LayerMask mask;
         NetworkInterface network;
         public BattleManager battleManager;
+        LineRenderer line;
+        GameObject target = null;
 
         private void Start()
         {
@@ -81,6 +83,27 @@ namespace WOC_Client
                     current.isSelected = false;
                 }
                 current = null;
+            }
+
+            if (line == null)
+            {
+                line = Instantiate(battleManager.beamPrefab, battleManager.runtimeInstances.transform).GetComponent<LineRenderer>();
+                line.transform.position = Vector3.zero;
+            }
+
+            if (current != null)
+            {
+                line.gameObject.SetActive(true);
+
+                line.SetPositions(new Vector3[]
+                {
+                    current.transform.position,
+                    Camera.main.ScreenToWorldPoint(Input.mousePosition) - new Vector3(0, 0, Camera.main.transform.position.z  + 3)
+                });
+            }
+            else
+            {
+                line.gameObject.SetActive(false);
             }
         }
     }

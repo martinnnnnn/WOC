@@ -15,12 +15,13 @@ namespace WOC_Client
 
         [HideInInspector] public string monsterName;
         public TMP_Text nameText;
-        [HideInInspector] public int life;
-        public TMP_Text lifeText;
+        [HideInInspector] public LifeController life;
+
 
         public void Init(BattleManager battle, PD_BattleStateMonster data)
         {
             this.battle = battle;
+            life = GetComponent<LifeController>();
             network = FindObjectOfType<NetworkInterface>();
             network.Callback_BattleStateMonster += HandleAPICall;
             network.Callback_BattleMonsterTurnStart += HandleAPICall;
@@ -33,8 +34,7 @@ namespace WOC_Client
             transform.position = this.battle.monstersLocations[data.location].position;
             monsterName = data.name;
             nameText.text = monsterName;
-            life = data.life;
-            lifeText.text = life.ToString();
+            life.Life = data.life;
         }
         private void HandleAPICall(PD_BattleMonsterTurnStart data)
         {

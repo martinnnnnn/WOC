@@ -226,6 +226,9 @@ namespace WOC_Client
                 case PD_BattleMonsterTurnStart battleMonsterTurnStart:
                     Callback_BattleMonsterTurnStart?.Invoke(battleMonsterTurnStart);
                     break;
+                case PD_BattleMonsterAttack battleMonsterAttack:
+                    Callback_BattleMonsterAttack?.Invoke(battleMonsterAttack);
+                    break;
                 case PD_BattleMonsterTurnEnd battleMonsterTurnEnd:
                     Callback_BattleMonsterTurnEnd?.Invoke(battleMonsterTurnEnd);
                     break;
@@ -280,12 +283,14 @@ namespace WOC_Client
         public Action<PD_BattleStateMonster> Callback_BattleStateMonster;
         public Action<PD_BattleState> Callback_BattleState;
         public Action<PD_BattleMonsterTurnStart> Callback_BattleMonsterTurnStart;
+        public Action<PD_BattleMonsterAttack> Callback_BattleMonsterAttack;
         public Action<PD_BattleMonsterTurnEnd> Callback_BattleMonsterTurnEnd;
         public Action<PD_BattlePlayerTurnStart> Callback_BattlePlayerTurnStart;
         public Action<PD_BattlePlayerTurnEnd> Callback_BattlePlayerTurnEnd;
         public Action<PD_BattleCardPlayed> Callback_BattleCardPlayed;
         public Action<PD_BattleCardDrawn> Callback_BattleCardDrawn;
         public Action<PD_BattleDiscardToDraw> Callback_BattleDiscardToDraw;
+
         
     }
 }

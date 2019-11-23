@@ -17,14 +17,14 @@ namespace WOC_Client
 
         [HideInInspector] public string playerName;
         public TMP_Text nameText;
-        [HideInInspector] public int life;
-        public TMP_Text lifeText;
+        [HideInInspector] public LifeController life;
         public TMP_Text drawPileCountText;
         public TMP_Text discardPileCountText;
 
         public void Init(BattleManager battle, PD_BattleStateMainPlayer data)
         {
             this.battle = battle;
+            life = GetComponent<LifeController>();
             network = FindObjectOfType<NetworkInterface>();
             network.Callback_BattleStateMainPlayer += HandleAPICall;
             network.Callback_BattlePlayerTurnStart += HandleAPICall;
@@ -41,9 +41,7 @@ namespace WOC_Client
         private void HandleAPICall(PD_BattleStateMainPlayer data)
         {
             transform.position = this.battle.playersLocations[data.location].position;
-            life = data.life;
-            lifeText.text = life.ToString();
-            //public List<string> hand;
+            life.Life = data.life;
             drawPileCountText.text = data.drawPileCount.ToString();
             discardPileCountText.text = data.discardPileCount.ToString();
         }

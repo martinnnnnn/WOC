@@ -44,6 +44,7 @@ namespace WOC_Client
         public TMP_Text timeRemainingText;
 
         [HideInInspector] public bool isOngoing = false;
+        public GameObject beamPrefab;
 
         private void Start()
         {
@@ -55,6 +56,7 @@ namespace WOC_Client
             network.Callback_BattlePlayerTurnStart += HandleAPICall;
             network.Callback_BattlePlayerTurnEnd += HandleAPICall;
             network.Callback_BattleMonsterTurnStart += HandleAPICall;
+            network.Callback_BattleMonsterAttack += HandleAPICall;
             network.Callback_BattleMonsterTurnEnd += HandleAPICall;
             network.Callback_BattleEnd += HandleAPICall;
             
@@ -152,19 +154,16 @@ namespace WOC_Client
                         MonsterController monster = monstersControllers.Find(m => m.monsterName == data.targetName);
                         if (monster)
                         {
-                            monster.life -= damage.value;
-                            monster.lifeText.text = monster.life.ToString();
+                            monster.life.Life -= damage.value;
                         }
                         PlayerController player = playersControllers.Find(p => p.playerName == data.targetName);
                         if (player)
                         {
-                            player.life -= damage.value;
-                            player.lifeText.text = player.life.ToString();
+                            player.life.Life -= damage.value;
                         }
                         if (mainPlayerController.playerName == data.targetName)
                         {
-                            mainPlayerController.life -= damage.value;
-                            mainPlayerController.lifeText.text = mainPlayerController.life.ToString();
+                            mainPlayerController.life.Life -= damage.value;
                         }
                         break;
                     }
@@ -173,19 +172,16 @@ namespace WOC_Client
                         MonsterController monster = monstersControllers.Find(m => m.monsterName == data.targetName);
                         if (monster)
                         {
-                            monster.life += heal.value;
-                            monster.lifeText.text = monster.life.ToString();
+                            monster.life.Life += heal.value;
                         }
                         PlayerController player = playersControllers.Find(p => p.playerName == data.targetName);
                         if (player)
                         {
-                            player.life += heal.value;
-                            player.lifeText.text = player.life.ToString();
+                            player.life.Life += heal.value;
                         }
                         if (mainPlayerController.playerName == data.targetName)
                         {
-                            mainPlayerController.life += heal.value;
-                            mainPlayerController.lifeText.text = mainPlayerController.life.ToString();
+                            mainPlayerController.life.Life += heal.value;
                         }
                         break;
                     }
@@ -210,6 +206,24 @@ namespace WOC_Client
         {
             
         }
+
+        private void HandleAPICall(PD_BattleMonsterAttack data)
+        {
+            var monster = monstersControllers.Find(m => m.monsterName == data.monster);
+            var player = playersControllers.Find(m => m.playerName == data.target);
+            if (player != null)
+            {
+                player.life.Life -= data.damage;
+                StartCoroutine(DamageFX(monster.transform.position, player.transform.position));
+            }
+            else if (mainPlayerController.playerName == data.target)
+            {
+                mainPlayerController.life.Life -= data.damage;
+                StartCoroutine(DamageFX(monster.transform.position, mainPlayerController.transform.position));
+            }
+
+        }
+
         private void HandleAPICall(PD_BattleMonsterTurnEnd data)
         {
 
@@ -230,6 +244,40 @@ namespace WOC_Client
             network.Callback_BattleMonsterTurnStart -= HandleAPICall;
             network.Callback_BattleMonsterTurnEnd -= HandleAPICall;
             network.Callback_BattleEnd -= HandleAPICall;
+        }
+
+        IEnumerator DamageFX(Vector3 position1, Vector3 position2)
+        {
+            LineRenderer beam = Instantiate(beamPrefab, runtimeInstances.transform).GetComponent<LineRenderer>();
+            beam.transform.position = -runtimeInstances.position;
+            beam.SetPositions(new Vector3[]
+            {
+                position1,
+                position2
+            });
+
+            yield return new WaitForSeconds(4);
+            Destroy(beam.gameObject);
+        }
+
+        public GameObject GetCombatant(string name)
+        {
+            GameObject combatant = null;
+            if (mainPlayerController.playerName == name)
+            {
+                combatant = mainPlayerController.gameObject;
+            }
+            var player = playersControllers.Find(p => p.playerName == name);
+            if (player != null)
+            {
+                combatant = player.gameObject;
+            }
+            var monster = monstersControllers.Find(m => m.monsterName == name);
+            if (monster != null)
+            {
+                combatant = monster.gameObject;
+            }
+            return combatant;
         }
     }
 }

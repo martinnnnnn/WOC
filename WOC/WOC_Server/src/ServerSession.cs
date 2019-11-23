@@ -548,8 +548,6 @@ namespace WOC_Server
                 });
 
                 server.Broadcast(data, null);
-
-                server.battle.HandleEnd();
             }
         }
 

@@ -18,11 +18,15 @@ namespace WOC_Server
     public class Monster : Combatant
     {
         public double baseTime;
+        public int damage;
+        public int period;
 
-        public Monster(string name, int life, int location, double baseTime)
+        public Monster(string name, int life, int damage, int period, int location, double baseTime)
         {
             this.name = name;
             this.life = life;
+            this.damage = damage;
+            this.period = period;
             this.location = location;
             this.baseTime = baseTime;
         }

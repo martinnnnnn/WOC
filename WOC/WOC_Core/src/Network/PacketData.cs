@@ -275,9 +275,26 @@ namespace WOC_Core
         public string playerName;
     }
 
+    public class PD_BattlePlayerDead : PD_BattleCardEffect
+    {
+        public string playerName;
+    }
+
+    public class PD_BattleMonsterDead : PD_BattleCardEffect
+    {
+        public string monsterName;
+    }
+
     public class PD_BattleMonsterTurnStart : IPacketData
     {
         public DateTime startTime;
+    }
+
+    public class PD_BattleMonsterAttack : IPacketData
+    {
+        public string monster;
+        public string target;
+        public int damage;
     }
 
     public class PD_BattleMonsterTurnEnd : IPacketData

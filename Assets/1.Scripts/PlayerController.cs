@@ -4,8 +4,7 @@ using TMPro;
 using UnityEngine;
 using WOC_Core;
 using DG.Tweening;
-
-
+using System.Collections;
 
 namespace WOC_Client
 {
@@ -14,16 +13,17 @@ namespace WOC_Client
         NetworkInterface network;
         BattleManager battle;
         [HideInInspector] public string playerName;
-
         public TMP_Text nameText;
-        [HideInInspector] public int life;
-        public TMP_Text lifeText;
+
+        [HideInInspector] public LifeController life;
+
         [HideInInspector] public int handCount;
         public TMP_Text handCountText;
         public GameObject glow;
 
         public void Init(BattleManager battle, PD_BattleStatePlayer data)
         {
+            life = GetComponent<LifeController>();
             this.battle = battle;
             network = FindObjectOfType<NetworkInterface>();
             network.Callback_BattleStatePlayer += HandleAPICall;
@@ -40,8 +40,7 @@ namespace WOC_Client
             transform.position = this.battle.playersLocations[data.location].position;
             playerName = data.name;
             nameText.text = playerName;
-            life = data.life;
-            lifeText.text = life.ToString();
+            life.Life = data.life;
             handCount = data.handCount;
             handCountText.text = handCount.ToString();
         }
@@ -55,20 +54,39 @@ namespace WOC_Client
             }
         }
 
+        LineRenderer line;
         private void HandleAPICall(PD_BattleCardPlayed data)
         {
             if (data.ownerName == playerName)
             {
-                glow.SetActive(true);
-                glow.transform.DOPunchScale(new Vector3(5.0f, 5.0f, 5.0f), 1.0f, vibrato: 2, elasticity: 0).OnComplete(() =>
+                //glow.SetActive(true);
+                //glow.transform.DOPunchScale(new Vector3(5.0f, 5.0f, 5.0f), 1.0f, vibrato: 2, elasticity: 0).OnComplete(() =>
+                //{
+                //    glow.transform.localScale = Vector3.one;
+                //    glow.SetActive(false);
+                //});
+                if (line == null)
                 {
-                    glow.transform.localScale = Vector3.one;
-                    glow.SetActive(false);
-                });
+                    line = Instantiate(battle.beamPrefab, battle.runtimeInstances.transform).GetComponent<LineRenderer>();
+                }
+
+                StartCoroutine(LineCoroutine(data.targetName));
 
                 handCount--;
                 handCountText.text = handCount.ToString();
             }
+        }
+
+        IEnumerator LineCoroutine(string targetName)
+        {
+            line.gameObject.SetActive(true);
+            line.SetPositions(new Vector3[]
+            {
+                    gameObject.transform.position,
+                    battle.GetCombatant(targetName).transform.position
+            });
+            yield return new WaitForSeconds(3);
+            line.gameObject.SetActive(false);
         }
 
         private void HandleAPICall(PD_BattlePlayerTurnEnd data)

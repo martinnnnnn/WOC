@@ -94,7 +94,9 @@ namespace WOC_Server
 
             List <Monster> monsters = new List<Monster>()
             {
-                new Monster("monster", 20, 0, 15.0)
+                new Monster("boss", 40, 10, 3, 0, 15.0),
+                //new Monster("add1", 10, 5, 1, 1, 10.0),
+                //new Monster("add2", 10, 5, 1, 2, 10.0)
             };
 
             battle = new Battle(this, players, monsters);

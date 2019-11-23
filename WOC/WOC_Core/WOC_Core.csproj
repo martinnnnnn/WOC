@@ -52,6 +52,7 @@
     <Compile Include="src\Game\Account.cs" />
     <Compile Include="src\Network\PacketData.cs" />
     <Compile Include="src\Network\Session.cs" />
+    <Compile Include="src\Extensions.cs" />
     <Compile Include="src\Serialization\Serialization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
