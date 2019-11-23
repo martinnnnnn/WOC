@@ -26,16 +26,31 @@ namespace WOC_Client
             network.Callback_BattleStateMonster += HandleAPICall;
             network.Callback_BattleMonsterTurnStart += HandleAPICall;
             network.Callback_BattleMonsterTurnEnd += HandleAPICall;
+            network.Callback_BattleMonsterDead += HandleAPICall;
             HandleAPICall(data);
         }
 
         private void HandleAPICall(PD_BattleStateMonster data)
         {
             transform.position = this.battle.monstersLocations[data.location].position;
+            if (data.location > 0)
+            {
+                transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+            }
             monsterName = data.name;
             nameText.text = monsterName;
             life.Life = data.life;
         }
+
+        private void HandleAPICall(PD_BattleMonsterDead data)
+        {
+            if (data.monsterName == monsterName)
+            {
+                life.Life = 0;
+                nameText.color = Color.gray;
+            }
+        }
+
         private void HandleAPICall(PD_BattleMonsterTurnStart data)
         {
             Debug.Log("monster turn start");

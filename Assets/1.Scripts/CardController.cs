@@ -25,12 +25,15 @@ namespace WOC_Client
         public Sprite attackSprite;
         public Sprite healSprite;
         public Sprite drawSprite;
+        [HideInInspector] public string type;
 
         public void Init(MainPlayerController owner, PD_BattleCardDrawn data, Vector3 initPosition)
         {
             this.owner = owner;
             transform.position = initPosition;
             nameText.text = "";
+            type = data.cardName;
+
             switch (data.cardName)
             {
                 case "attack":

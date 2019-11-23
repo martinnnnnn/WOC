@@ -41,6 +41,11 @@ namespace WOC_Client
                 }
             }
 
+            if (battleManager.mainPlayerController?.life.Life <= 0)
+            {
+                current = null;
+            }
+
             if (Input.GetMouseButtonUp(0))
             {
                 if (current != null)
@@ -100,6 +105,22 @@ namespace WOC_Client
                     current.transform.position,
                     Camera.main.ScreenToWorldPoint(Input.mousePosition) - new Vector3(0, 0, Camera.main.transform.position.z  + 3)
                 });
+
+                switch (current.type)
+                {
+                    case "attack":
+                        line.startColor = Color.red;
+                        line.endColor = Color.red;
+                        break;
+                    case "heal":
+                        line.startColor = Color.green;
+                        line.endColor = Color.green;
+                        break;
+                    case "draw":
+                        line.startColor = Color.blue;
+                        line.endColor = Color.blue;
+                        break;
+                }
             }
             else
             {

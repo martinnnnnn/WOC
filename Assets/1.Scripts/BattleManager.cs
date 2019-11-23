@@ -27,7 +27,7 @@ namespace WOC_Client
         public Transform[] monstersLocations;
         public GameObject monsterPrefab;
 
-        MainPlayerController mainPlayerController;
+        [HideInInspector] public MainPlayerController mainPlayerController;
         public Transform drawPile;
         public Transform discardPile;
         public Transform handStartPosition;
@@ -59,7 +59,6 @@ namespace WOC_Client
             network.Callback_BattleMonsterAttack += HandleAPICall;
             network.Callback_BattleMonsterTurnEnd += HandleAPICall;
             network.Callback_BattleEnd += HandleAPICall;
-            
             timeRemainingText.gameObject.SetActive(false);
         }
 
@@ -249,12 +248,13 @@ namespace WOC_Client
         IEnumerator DamageFX(Vector3 position1, Vector3 position2)
         {
             LineRenderer beam = Instantiate(beamPrefab, runtimeInstances.transform).GetComponent<LineRenderer>();
-            beam.transform.position = -runtimeInstances.position;
             beam.SetPositions(new Vector3[]
             {
                 position1,
                 position2
             });
+            beam.startColor = Color.red;
+            beam.endColor = Color.red;
 
             yield return new WaitForSeconds(4);
             Destroy(beam.gameObject);

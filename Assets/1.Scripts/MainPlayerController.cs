@@ -32,6 +32,7 @@ namespace WOC_Client
             network.Callback_BattleCardDrawn += HandleAPICall;
             network.Callback_BattleCardPlayed += HandleAPICall;
             network.Callback_BattleDiscardToDraw += HandleAPICall;
+            network.Callback_BattlePlayerDead += HandleAPICall;
 
             playerName = network.session.account.name;
             nameText.text = playerName;
@@ -101,6 +102,15 @@ namespace WOC_Client
                     int newDiscardPileCount = int.Parse(discardPileCountText.text) + 1;
                     discardPileCountText.text = newDiscardPileCount.ToString();
                 });
+            }
+        }
+
+        private void HandleAPICall(PD_BattlePlayerDead data)
+        {
+            if (data.playerName == playerName)
+            {
+                life.Life = 0;
+                nameText.color = Color.gray;
             }
         }
 
