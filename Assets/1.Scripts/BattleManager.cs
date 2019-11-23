@@ -80,7 +80,7 @@ namespace WOC_Client
                     }
 
                     timeRemainingText.gameObject.SetActive(true);
-                    timeRemainingText.text = String.Format("{0:0.00}", turnEndTime - Time.time);
+                    timeRemainingText.text = String.Format("{0:0}", turnEndTime - Time.time);
                 }
                 if (Time.time >= turnEndTime)
                 {

@@ -26,7 +26,20 @@ namespace WOC_Client
         {
             this.owner = owner;
             transform.position = initPosition;
-            nameText.text = data.cardName;
+            nameText.text = "";
+            switch (data.cardName)
+            {
+                case "attack":
+                    GetComponent<MeshRenderer>().material.color = Color.red;
+                    break;
+                case "heal":
+                    GetComponent<MeshRenderer>().material.color = Color.green;
+                    break;
+                case "draw":
+                    GetComponent<MeshRenderer>().material.color = Color.blue;
+                    break;
+            }
+            //nameText.text = data.cardName;
             timeCost = data.timeCost;
             timeCostText.text = "" + timeCost;
         }

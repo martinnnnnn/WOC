@@ -65,7 +65,8 @@ namespace WOC_Server
                 });
 
             Random rand = new Random();
-            DrawCards(rand.Next(6, 10));
+            DrawCards(5);
+            //DrawCards(rand.Next(6, 10));
         }
 
         public bool PlayCard(int index, string targetName, bool force = false)
