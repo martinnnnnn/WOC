@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 using WOC_Core;
-
+using DG.Tweening;
 
 
 
@@ -48,6 +48,8 @@ namespace WOC_Client
             {
                 life.Life = 0;
                 nameText.color = Color.gray;
+                GetComponentInChildren<SpriteRenderer>().color = Color.gray;
+                transform.DORotate(new Vector3(-30, 0, 0), 1.0f);
             }
         }
 

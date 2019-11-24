@@ -466,9 +466,8 @@ namespace WOC_Server
 
             if (server.battle == null || !server.battle.isOngoing)
             {
-                // TODO : init battle here
-                server.Broadcast(data, null);
                 server.InitBattle();
+                server.Broadcast(data, null);
             }
         }
         

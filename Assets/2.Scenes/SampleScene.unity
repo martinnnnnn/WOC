@@ -2221,6 +2221,7 @@ MonoBehaviour:
   - {fileID: 1136085}
   monsterPrefab: {fileID: 5198828427720999924, guid: 65a397ab3b8456a4db8a2b0aa0a959e1,
     type: 3}
+  mainPlayerController: {fileID: 0}
   drawPile: {fileID: 1729140086}
   discardPile: {fileID: 211441069}
   handStartPosition: {fileID: 393130187}

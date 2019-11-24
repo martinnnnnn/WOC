@@ -107,10 +107,17 @@ namespace WOC_Client
         {
             isOngoing = false;
             turnEndTime = Time.time;
+
             foreach (Transform t in runtimeInstances)
             {
                 Destroy(t.gameObject);
             }
+
+            mainPlayerController = null;
+            playersControllers.Clear();
+            monstersControllers.Clear();
+            turnStarted = false;
+            turnBootStarted = false;
         }
 
         public void HandleAPICall(PD_BattleState data)
