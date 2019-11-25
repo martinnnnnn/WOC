@@ -53,17 +53,6 @@ namespace WOC_Client
 
         private void Update()
         {
-            // position
-            //Vector2 targetPosition = transform.position;
-            //if (isSelected)
-            //{
-            //    transform.position = Vector2.Lerp(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), moveSpeed);
-            //}
-            //else if (useRestPos)
-            //{
-            //    transform.position = Vector2.Lerp(transform.position, restPosition, moveSpeed);
-            //}
-
             // color
             timeCostText.color = Color.black;
             if (Time.time + timeCost >= owner.battle.turnEndTime)

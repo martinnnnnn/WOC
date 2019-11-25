@@ -92,11 +92,56 @@ namespace WOC_Server
                 p.drawPile.Push(p.deck.cards.ToArray());
             });
 
-            List <Monster> monsters = new List<Monster>()
+            var r = new Monster.RoundValues[]
             {
-                new Monster("boss", 40, 10, 1, 0, 15.0),
-                new Monster("add1", 10, 5, 1, 1, 10.0),
-                new Monster("add2", 10, 5, 1, 2, 10.0)
+                new Monster.RoundValues{
+                    mana = 0,
+                    damage = 0,
+                    target = Monster.Target.ALL
+                }
+            };
+
+            List<Monster> monsters = new List<Monster>()
+            {
+                new Monster("boss", 40, new Monster.RoundValues[]
+                {
+                    new Monster.RoundValues{
+                        mana = 2,
+                        damage = 4,
+                        target = Monster.Target.RANDOM
+                    },
+                    new Monster.RoundValues{
+                        mana = 4,
+                        damage = 6,
+                        target = Monster.Target.ALL
+                    }
+                }, 0),
+                new Monster("add1", 10, new Monster.RoundValues[]
+                {
+                    new Monster.RoundValues{
+                        mana = 1,
+                        damage = 1,
+                        target = Monster.Target.ALL
+                    },
+                    new Monster.RoundValues{
+                        mana = 1,
+                        damage = 0,
+                        target = Monster.Target.NONE
+                    },
+                }, 1),
+                new Monster("add2", 10, new Monster.RoundValues[]
+                {
+                    new Monster.RoundValues{
+                        mana = 1,
+                        damage = 1,
+                        target = Monster.Target.ALL
+                    },
+                    new Monster.RoundValues{
+                        mana = 1,
+                        damage = 0,
+                        target = Monster.Target.NONE
+                    },
+                }, 2)
             };
 
             battle = new Battle(this, players, monsters);

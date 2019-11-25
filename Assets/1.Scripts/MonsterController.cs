@@ -12,21 +12,26 @@ namespace WOC_Client
     {
         NetworkInterface network;
         BattleManager battle;
+        int location;
 
         [HideInInspector] public string monsterName;
         public TMP_Text nameText;
         [HideInInspector] public LifeController life;
+        [HideInInspector] public int mana;
+        public TMP_Text manaText;
 
 
         public void Init(BattleManager battle, PD_BattleStateMonster data)
         {
             this.battle = battle;
+            location = data.location;
             life = GetComponent<LifeController>();
             network = FindObjectOfType<NetworkInterface>();
             network.Callback_BattleStateMonster += HandleAPICall;
             network.Callback_BattleMonsterTurnStart += HandleAPICall;
             network.Callback_BattleMonsterTurnEnd += HandleAPICall;
             network.Callback_BattleMonsterDead += HandleAPICall;
+            network.Callback_BattlePlayerTurnStart += HandleAPICall;
             HandleAPICall(data);
         }
 
@@ -60,6 +65,12 @@ namespace WOC_Client
         private void HandleAPICall(PD_BattleMonsterTurnEnd data)
         {
             Debug.Log("monster turn end");
+        }
+
+        private void HandleAPICall(PD_BattlePlayerTurnStart data)
+        {
+            mana = data.manas[location];
+            manaText.text = mana.ToString();
         }
 
         public void OnDestroy()

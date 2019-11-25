@@ -40,7 +40,7 @@ namespace WOC_Client
         [HideInInspector] public bool turnStarted = false;
         [HideInInspector] public bool turnBootStarted = false;
         float turnStartTime;
-        [HideInInspector] public float turnEndTime;
+        //[HideInInspector] public float turnEndTime;
         public TMP_Text timeRemainingText;
 
         [HideInInspector] public bool isOngoing = false;
@@ -202,9 +202,7 @@ namespace WOC_Client
 
         private void HandleAPICall(PD_BattlePlayerTurnStart data)
         {
-            Debug.Log("Turn starts in " + data.startTime.Subtract(DateTime.UtcNow).TotalSeconds + " seconds");
             turnStartTime = Time.time + (float)data.startTime.Subtract(DateTime.UtcNow).TotalSeconds;
-            turnEndTime = turnStartTime + (float)data.turnDuration;
             turnBootStarted = true;
         }
 

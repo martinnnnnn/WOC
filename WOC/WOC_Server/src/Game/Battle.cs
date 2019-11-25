@@ -41,12 +41,6 @@ namespace WOC_Server
             });
         }
 
-
-        public void Update(float dt)
-        {
-            playingPlayers.ForEach(p => p.Update(dt));
-        }
-
         public void MonstersTurnStart()
         {
             Task.Run(async () =>
@@ -54,20 +48,43 @@ namespace WOC_Server
                 await Task.Delay(TimeSpan.FromSeconds(5));
                 server.Broadcast(new PD_BattleMonsterTurnStart { startTime = DateTime.UtcNow });
 
-                Random rand = new Random();
+                await Task.Delay(TimeSpan.FromSeconds(2));
                 foreach (var monster in monsters)
                 {
-                    if (turnCount % monster.period == 0)
-                    {
-                        var player = players[rand.Next(0, players.Count)];
-                        server.Broadcast(new PD_BattleMonsterAttack
-                        {
-                            monster = monster.name,
-                            target = player.name,
-                            damage = monster.damage
-                        });
+                    var roundValue = monster.roundValues[turnCount % monster.roundValues.Length];
+                    int damage = monster.roundValues[turnCount % monster.roundValues.Length].damage;
 
-                        player.life -= monster.damage;
+                    switch (roundValue.target)
+                    {
+                        case Monster.Target.RANDOM:
+                            Random rand = new Random();
+                            var player = players[rand.Next(0, players.Count)];
+                            server.Broadcast(new PD_BattleMonsterAttack
+                            {
+                                monster = monster.name,
+                                target = player.name,
+                                damage = damage
+                            });
+
+                            player.life -= damage;
+                            break;
+                        case Monster.Target.ALL:
+
+                            players.ForEach(p =>
+                            {
+                                server.Broadcast(new PD_BattleMonsterAttack
+                                {
+                                    monster = monster.name,
+                                    target = p.name,
+                                    damage = damage
+                                });
+
+                                p.life -= damage;
+                            });
+
+                            break;
+                        case Monster.Target.LOCATION:
+                            break;
                     }
                 }
 
@@ -80,16 +97,24 @@ namespace WOC_Server
         }
 
         List<Player> playingPlayers = new List<Player>();
-        float turnTimeFactor = 1.0f;
+
         public void PlayersTurnStart()
         {
             turnCount++;
+
+            int highestMana = 0;
+            foreach (var monster in monsters)
+            {
+                int current = monster.roundValues[turnCount % monster.roundValues.Length].mana;
+                players.ForEach(p => monster.currentMana[p] = current);
+                highestMana = current > highestMana ? current : highestMana;
+            }
+
             foreach (var player in players)
             {
-                player.InitTurn(monsters[0].baseTime * turnTimeFactor);
+                player.InitTurn(highestMana);
                 playingPlayers.Add(player);
             }
-            turnTimeFactor += 0.5f;
         }
 
         public void PlayerTurnEnd(Player player)

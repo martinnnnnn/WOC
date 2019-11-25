@@ -253,6 +253,7 @@ namespace WOC_Core
         public string ownerName;
         public string targetName;
         public int cardIndex;
+        public int manaCost;
         public List<PD_BattleCardEffect> effects = new List<PD_BattleCardEffect>();
     }
 
@@ -266,7 +267,8 @@ namespace WOC_Core
     public class PD_BattlePlayerTurnStart : IPacketData
     {
         public DateTime startTime;
-        public double turnDuration;
+        public int[] manas;
+        public int highestMana;
     }
 
     public class PD_BattlePlayerTurnEnd : IPacketData

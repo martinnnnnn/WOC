@@ -24,7 +24,7 @@ namespace WOC_Server
         public CardPile discardPile;
         public Battle battle;
         // battle utils
-        public double timeRemaining;
+        int mana = 0;
 
         public Player(string name, int life, int location, Deck deck)
         {
@@ -45,40 +45,51 @@ namespace WOC_Server
             drawPile.Shuffle();
         }
 
-        public void Update(float dt)
+        public void InitTurn(int highestMana)
         {
-            timeRemaining -= dt;
-            if (timeRemaining <= 0)
-            {
-                battle.PlayerTurnEnd(this);
-            }
-        }
+            mana = highestMana;
 
-        public void InitTurn(double turnDuration)
-        {
-            timeRemaining = turnDuration;
-            battle.server.sessions.First(s => s.account.name == name)?.Send(
-                new PD_BattlePlayerTurnStart
+            var player = battle.server.sessions.First(s => s.account.name == name);
+
+            if (player != null)
+            {
+                player.Send(new PD_BattlePlayerTurnStart
                 {
                     startTime = DateTime.UtcNow.AddSeconds(5),
-                    turnDuration = turnDuration
+                    manas = battle.monsters.Select(m => m.roundValues[battle.turnCount % m.roundValues.Length].mana).ToArray(),
+                    highestMana = highestMana
                 });
 
-            Random rand = new Random();
-            DrawCards(5);
-            //DrawCards(rand.Next(6, 10));
+                if (battle.turnCount == 1)
+                {
+                    DrawCards(5);
+                }
+                else
+                {
+                    DrawCards(3);
+                }
+            }
         }
 
         public bool PlayCard(int index, string targetName, bool force = false)
         {
             Card card = hand.Get(index);
 
-            Combatant comb = battle.monsters.Find(m => m.name == targetName) as Combatant ??
-                battle.players.Find(m => m.name == targetName) as Combatant;
-
-            if (card.timeCost <= timeRemaining && card.Play(comb))
+            var monster = battle.monsters.Find(m => m.name == targetName);
+            if (mana >= card.timeCost && monster != null && monster.currentMana[this] >= card.timeCost && card.Play(monster as Combatant))
             {
-                timeRemaining -= card.timeCost;
+                battle.monsters.ForEach(m => m.currentMana[this] -= card.timeCost);
+                mana -= card.timeCost;
+                hand.Remove(index);
+                discardPile.Push(card);
+                return true;
+            }
+
+            var player = battle.players.Find(p => p.name == targetName);
+            if (card.timeCost <= mana && card.Play(player))
+            {
+                battle.monsters.ForEach(m => m.currentMana[this] -= card.timeCost);
+                mana -= card.timeCost;
                 hand.Remove(index);
                 discardPile.Push(card);
                 return true;

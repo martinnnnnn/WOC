@@ -63,6 +63,27 @@ namespace WOC_Client
                 if (line == null)
                 {
                     line = Instantiate(battle.beamPrefab, battle.runtimeInstances.transform).GetComponent<LineRenderer>();
+                    data.effects.ForEach(e =>
+                    {
+                        switch (e)
+                        {
+                            case PD_BattleCardEffectDamage damage:
+                                {
+                                    line.startColor = Color.red;
+                                    line.endColor = Color.red;
+                                    break;
+                                }
+                            case PD_BattleCardEffectHeal heal:
+                                {
+                                    line.startColor = Color.green;
+                                    line.endColor = Color.green;
+                                    break;
+                                }
+                            case PD_BattleCardEffectDraw draw:
+                                break;
+                        }
+
+                    });
                 }
 
                 StartCoroutine(LineCoroutine(data.targetName));
@@ -80,7 +101,7 @@ namespace WOC_Client
                     gameObject.transform.position,
                     battle.GetCombatant(targetName).transform.position
             });
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(2.5f);
             line.gameObject.SetActive(false);
         }
 

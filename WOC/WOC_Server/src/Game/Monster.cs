@@ -15,20 +15,34 @@ using WOC_Core;
 
 namespace WOC_Server
 {
+
     public class Monster : Combatant
     {
-        public double baseTime;
-        public int damage;
-        public int period;
+        public enum Target
+        {
+            NONE,
+            RANDOM,
+            ALL,
+            LOCATION
+        }
 
-        public Monster(string name, int life, int damage, int period, int location, double baseTime)
+        public struct RoundValues
+        {
+            public int mana;
+            public int damage;
+            public Target target;
+        }
+
+        public RoundValues[] roundValues;
+        public Dictionary<Player, int> currentMana = new Dictionary<Player, int>();
+        public int currentDamage;
+
+        public Monster(string name, int life, RoundValues[] roundValues, int location)
         {
             this.name = name;
             this.life = life;
-            this.damage = damage;
-            this.period = period;
+            this.roundValues = roundValues;
             this.location = location;
-            this.baseTime = baseTime;
         }
     }
 }
